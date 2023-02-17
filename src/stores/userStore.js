@@ -4,7 +4,6 @@ import { ref, computed } from 'vue'
 export const useUserStore = defineStore('users', () => {
   const users = ref([
     { email: 'edpn@gmail.com', password: 'anepicsong' },
-    { email: 'clara@enterprenours.com', password: 'supersecret' }
   ])
   const session = ref({})
 

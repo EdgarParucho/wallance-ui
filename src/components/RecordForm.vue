@@ -1,37 +1,170 @@
 <template>
-  <button
-        class="bg-yellow-400 text-stone-900 mx-6 my-1 font-bold rounded-md px-5 py-2" to="#"
-        @click="open = true"
-      >
-        Add a new record
-      </button>
   <TransitionRoot as="template" :show="open">
-    <Dialog as="div" class="relative z-10" @close="open = false">
-      <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0" enter-to="opacity-100" leave="ease-in duration-200" leave-from="opacity-100" leave-to="opacity-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" />
+    <Dialog as="div" class="relative z-10" @close="$emit('closeForm')">
+      <TransitionChild
+      as="template"
+      enter="ease-out duration-300"
+      enter-from="opacity-0"
+      enter-to="opacity-100"
+      leave="ease-in duration-200"
+      leave-from="opacity-100"
+      leave-to="opacity-0"
+      >
+        <div class="fixed inset-0 bg-stone-500 dark:bg-stone-900 bg-opacity-25 transition-opacity"></div>
       </TransitionChild>
 
       <div class="fixed inset-0 z-10 overflow-y-auto">
         <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
-          <TransitionChild as="template" enter="ease-out duration-300" enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" enter-to="opacity-100 translate-y-0 sm:scale-100" leave="ease-in duration-200" leave-from="opacity-100 translate-y-0 sm:scale-100" leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
-            <DialogPanel class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-              <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                <div class="sm:flex sm:items-start">
-                  <div class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
-                    <ExclamationTriangleIcon class="h-6 w-6 text-red-600" aria-hidden="true" />
-                  </div>
-                  <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                    <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">Deactivate account</DialogTitle>
-                    <div class="mt-2">
-                      <p class="text-sm text-gray-500">Are you sure you want to deactivate your account? All of your data will be permanently removed. This action cannot be undone.</p>
-                    </div>
-                  </div>
+          <TransitionChild
+          as="template"
+          enter="ease-out duration-300"
+          enter-from="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+          enter-to="opacity-100 translate-y-0 sm:scale-100"
+          leave="ease-in duration-200"
+          leave-from="opacity-100 translate-y-0 sm:scale-100"
+          leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+          >
+            <DialogPanel class="relative transform overflow-hidden rounded-lg bg- dark:bg-stone-800 text-left shadow-xl transition-all sm:my-8 p-2">
+              <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-stone-100 dark:bg-indigo-500 sm:mx-0 sm:h-10 sm:w-10 mb-2">
+                <DocumentPlusIcon class="h-6 w-6 text-stone-900 dark:text-white" aria-hidden="true" />
+              </div>
+              <DialogTitle as="h3" class="text-lg font-medium leading-6 text-stone-900 dark:text-white pl-2">
+                Add a new record
+              </DialogTitle>
+              <p class="text-sm text-stone-500 dark:text-stone-300 pl-2">
+                It's safe to consider records as financial movements.
+              </p>
+              <div aria-hidden="true">
+                <div class="py-5">
+                  <div class="border-t border-stone-400" />
                 </div>
               </div>
-              <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                <button type="button" class="inline-flex w-full justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm" @click="open = false">Deactivate</button>
-                <button type="button" class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm" @click="open = false" ref="cancelButtonRef">Cancel</button>
-              </div>
+              <form class="p-5">
+                <fieldset>
+                  <legend class="mx-auto text-stone-700 dark:text-stone-300 text-lg">Record Data</legend>
+
+                  <div class="my-4 flex items-center space-x-6">
+                    <div class="flex items-center space-x-2">
+                      <input
+                        id="push-everything"
+                        name="push-notifications"
+                        type="radio"
+                        class="border-stone-300 text-indigo-600 focus:ring-indigo-500 p-2"
+                        value="Credit"
+                        v-model="record.type"
+                      >
+                      <label
+                        for="push-everything"
+                        class="text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif"
+                      >
+                        Credit
+                      </label>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                      <input
+                        id="push-email"
+                        name="push-notifications"
+                        type="radio"
+                        class="border-stone-300 text-indigo-600 focus:ring-indigo-500 p-2"
+                        value="Debit"
+                        v-model="record.type"
+                      >
+                      <label
+                        for="push-email"
+                        class="text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif"
+                      >
+                        Debit
+                      </label>
+                    </div>
+                  </div>
+                  
+                  <div class="my-4 flex items-center">
+                    <label for="amount" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
+                      Amount
+                    </label>
+                    <div class="relative rounded-md w-1/2">
+                      <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                        <span class="text-stone-500 dark:text-white sm:text-md">$</span>
+                      </div>
+                      <input
+                        type="number"
+                        min="0"
+                        name="amount"
+                        id="amount"
+                        class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white pl-6 text-right"
+                        placeholder="0.00"
+                        v-model.number="record.amount"
+                      >
+                    </div>
+                  </div>
+
+                  <div class="my-4 flex items-center">
+                    <label for="date" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
+                      Date
+                    </label>
+                    <input
+                      type="date"
+                      name="date"
+                      id="date"
+                      class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white"
+                      v-model="record.date"
+                    >
+                  </div>
+                
+                  <div class="my-4 flex items-center">
+                    <label for="note" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
+                      Note (Optional)
+                    </label>
+                    <input
+                      type="text"
+                      name="note"
+                      id="note"
+                      class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white"
+                      maxlength="30"
+                      placeholder="Car fuel"
+                      v-model="record.note"
+                    >
+                  </div>
+                
+                  <div class="my-4 flex items-center">
+                    <label for="note" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
+                      Source
+                    </label>
+                    <select
+                      id="country"
+                      name="country"
+                      autocomplete="country-name"
+                      class="w-1/2 bg-transparent border-transparent border-b-stone-300 text-stone-700 dark:text-stone-300 border-stone-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                      v-model="record.sourceID"
+                    >
+                      <option
+                      class="text-stone-600"
+                      v-for="source in sourceOptions"
+                      :key="source.id"
+                      :value="source.id"
+                      >
+                        {{ source.name }}
+                      </option>
+                    </select>
+                  </div>
+                </fieldset>
+                <div class="bg-stone-50 dark:bg-stone-800 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                  <button
+                  type="button"
+                  class="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-500 text-white 00 px-4 py-2 text-base font-medium shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
+                  @click="$emit('closeForm')">
+                    Save
+                  </button>
+                  <button
+                  type="button"
+                  class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-stone-700 dark:text-white px-4 py-2 text-base font-medium text-stone-700 shadow-sm hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                  @click="$emit('closeForm')"
+                  ref="cancelButtonRef">
+                    Cancel
+                  </button>
+                </div>
+              </form>
+
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -41,9 +174,42 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline'
+import { DocumentPlusIcon } from '@heroicons/vue/24/outline'
+import { reactive } from 'vue'
 
-let open = ref(false)
+const props = defineProps({
+  open: Boolean
+})
+
+let record = reactive({
+  amount: 0,
+  date: '2023-02-07',
+  note: '',
+  sourceID: '1',
+  type: 'Credit'
+})
+const sourceOptions = [
+  { id: '1', name: 'Main' },
+  { id: '2', name: 'Secondary' },
+  { id: '3', name: 'Ocassional' },
+]
 </script>
+
+<style scoped>
+/* Remove the default arrows from input number fields */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+</style>

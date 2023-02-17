@@ -1,6 +1,8 @@
 <template>
   <div class="py-4">
-    <router-link class="hover:underline font-bold text-white" to="/">Home</router-link>
+    <router-link class="hover:underline font-bold text-white" to="/dashboard">
+      Dashboard
+    </router-link>
     <h1 class="dark:text-white text-4xl font-bold">
       Records History
     </h1>

@@ -1,6 +1,7 @@
 <template>
   <div class="text-center">
     <!-- logo -->
+    <RecordForm :open="open" @close-form="open = false" />
     <span class="text-6xl dark:text-white font-bold">
       Wallance
     </span>
@@ -15,7 +16,12 @@
       <button class="bg-stone-100 dark:bg-stone-800 dark:text-white mx-6 my-1 font-bold rounded-md px-5 py-2">
         Check my savings
       </button>
-      <RecordForm />
+      <button
+      class="bg-yellow-400 text-stone-900 mx-6 my-1 font-bold rounded-md px-5 py-2" to="#"
+      @click="open = true">
+        Add a new record
+      </button>
+  
       <router-link to="/history">
         <button class="bg-stone-100 dark:bg-stone-800 dark:text-white mx-6 my-1 font-bold rounded-md px-5 py-2">
           Check my records
@@ -29,9 +35,5 @@
 import { ref } from 'vue'
 import RecordForm from '../components/RecordForm.vue';
 
-let open = ref(true)
-function toggle () {
-  open = !open
-  console.log(open);
-}
+let open = ref(false)
 </script>

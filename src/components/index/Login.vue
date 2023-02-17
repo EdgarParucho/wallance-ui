@@ -82,7 +82,7 @@ function recoverPassword() {
 }
 
 function validateEmailFormat(email) {
-  let mailformat = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);
+  let mailformat = new RegExp(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/);
   let emailValidation = mailformat.test(email)
   return emailValidation
 }
