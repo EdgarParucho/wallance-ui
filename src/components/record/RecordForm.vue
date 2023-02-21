@@ -46,15 +46,16 @@
                   <div class="my-4 flex items-center space-x-6">
                     <div class="flex items-center space-x-2">
                       <input
-                        id="push-everything"
-                        name="push-notifications"
+                        id="credit"
+                        name="credit"
                         type="radio"
                         class="border-stone-300 text-indigo-600 focus:ring-indigo-500 p-2"
                         value="Credit"
                         v-model="record.type"
+                        required
                       >
                       <label
-                        for="push-everything"
+                        for="credit"
                         class="text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif"
                       >
                         Credit
@@ -62,15 +63,16 @@
                     </div>
                     <div class="flex items-center space-x-2">
                       <input
-                        id="push-email"
-                        name="push-notifications"
+                        id="debit"
+                        name="debit"
                         type="radio"
                         class="border-stone-300 text-indigo-600 focus:ring-indigo-500 p-2"
                         value="Debit"
                         v-model="record.type"
+                        required
                       >
                       <label
-                        for="push-email"
+                        for="debit"
                         class="text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif"
                       >
                         Debit
@@ -94,6 +96,7 @@
                         class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white pl-6 text-right"
                         placeholder="0.00"
                         v-model.number="record.amount"
+                        required
                       >
                     </div>
                   </div>
@@ -108,6 +111,7 @@
                       id="date"
                       class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white"
                       v-model="record.date"
+                      required
                     >
                   </div>
                 
@@ -127,15 +131,15 @@
                   </div>
                 
                   <div class="my-4 flex items-center">
-                    <label for="note" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
+                    <label for="sourceID" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
                       Source
                     </label>
                     <select
-                      id="country"
-                      name="country"
-                      autocomplete="country-name"
+                      id="sourceID"
+                      name="sourceID"
                       class="w-1/2 bg-transparent border-transparent border-b-stone-300 text-stone-700 dark:text-stone-300 border-stone-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
                       v-model="record.sourceID"
+                      required
                     >
                       <option
                       class="text-stone-600"
@@ -152,14 +156,18 @@
                   <button
                   type="button"
                   class="inline-flex w-full justify-center rounded-md border border-transparent bg-indigo-500 text-white 00 px-4 py-2 text-base font-medium shadow-sm hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 sm:ml-3 sm:w-auto sm:text-sm"
-                  @click="$emit('closeForm')">
+                  @click="handleSubmit"
+                  :disabled="queryInProgress"
+                  >
                     Save
                   </button>
                   <button
                   type="button"
                   class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-stone-700 dark:text-white px-4 py-2 text-base font-medium text-stone-700 shadow-sm hover:bg-stone-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                   @click="$emit('closeForm')"
-                  ref="cancelButtonRef">
+                  ref="cancelButtonRef"
+                  :disabled="queryInProgress"
+                  >
                     Cancel
                   </button>
                 </div>
@@ -174,17 +182,19 @@
 </template>
 
 <script setup>
-import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import { ref } from 'vue'
+import { useRecordStore } from '../../stores/recordStore';
 import { DocumentPlusIcon } from '@heroicons/vue/24/outline'
-import { reactive } from 'vue'
+import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
-const props = defineProps({
-  open: Boolean
-})
+const props = defineProps({ open: Boolean })
+const recordStore = useRecordStore()
+const emit = defineEmits(['closeForm'])
 
-let record = reactive({
+let queryInProgress = ref(false)
+let record = ref({
   amount: 0,
-  date: '2023-02-07',
+  date: new Date().toISOString().slice(0, 10),
   note: '',
   sourceID: '1',
   type: 'Credit'
@@ -192,8 +202,26 @@ let record = reactive({
 const sourceOptions = [
   { id: '1', name: 'Main' },
   { id: '2', name: 'Secondary' },
-  { id: '3', name: 'Ocassional' },
+  { id: '3', name: 'Occassional' },
 ]
+
+function resetForm() {
+  record.value = {
+    amount: 0,
+    date: new Date().toISOString().slice(0, 10),
+    note: '',
+    sourceID: '1',
+    type: 'Credit'
+  }
+}
+function handleSubmit() {
+  queryInProgress.value = true
+  const queryStatus = recordStore.addRecord(record.value)
+  alert(queryStatus.feedback)
+  queryInProgress.value = false
+  resetForm()
+  if(queryStatus.succeed) emit('closeForm')
+}
 </script>
 
 <style scoped>
@@ -203,12 +231,11 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
-/* Firefox */
 input[type=number] {
   -moz-appearance: textfield;
 }
 
+/* Invert the default white color from input date fields icon */
 ::-webkit-calendar-picker-indicator {
     filter: invert(1);
 }

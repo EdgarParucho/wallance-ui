@@ -16,5 +16,5 @@
 </template>
 
 <script setup>
-import RecordCard from '../components/RecordCard.vue';
+import RecordCard from '../components/record/RecordCard.vue';
 </script>
