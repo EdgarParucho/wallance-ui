@@ -3,7 +3,7 @@
     <h3 class="text-2xl text-center">
       Time is priceless, let's log in!
     </h3>
-    <form @submit.prevent="submit">
+    <form @submit.prevent="handleSubmit">
       <div class="mt-6">
         <input
         type="email"
@@ -26,7 +26,7 @@
         >
         <button
         class="block rounded-sm px-3 py-1 mx-auto w-72 bg-yellow-400 hover:bg-yellow-500 text-black font-bold"
-        @submit="submit"
+        @submit="handleSubmit"
         :disabled="queryInProgress"
         >
           {{ forgotPassword ? 'Recover my password' : 'Log In' }}
@@ -47,44 +47,51 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useUserStore } from '../../stores/userStore';
 import { useRouter } from 'vue-router';
+import { useUserStore } from '../../stores/userStore';
 
 const store = useUserStore()
 const router = useRouter()
 
 const forgotPassword = ref(false)
-const form = ref({ email: '', password: '' })
-const queryInProgress = ref(false)
+const form = ref({ email: 'edpn@gmail.com', password: 'anepicsong' })
+let queryInProgress = ref(false)
 
-function submit() {
-  if(form.value.email === '') alert('Please, type your email in the corresponding field to be able to proceed')
+function handlePassRecovery() {
+  const recoveryIsConfirmed = confirm('The "Forgot password" field is checked. Confirm to recover your password or cancel to uncheck the field')
+  if(recoveryIsConfirmed) alert('You will receive an email to recover your password.')
+  else forgotPassword.value = false
+}
 
-  const emailIsValid = validateEmailFormat(form.value.email)
-  if (!emailIsValid) return alert('The email format seems to be wrong, please check and try again')
+function validateFormat(email) {
+  const emailformat = new RegExp(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/);
+  const emailIsValid = emailformat.test(email)
+  return emailIsValid
+}
 
-  if(forgotPassword.value) {
-    const recoveryIsConfirmed = confirm(`You have checked the "Forgot password" field. Please confirm to receive an email in ${form.value.email}`)
-    if(recoveryIsConfirmed) return recoverPassword()
-    else return forgotPassword.value = false
-  }
+function validateForm() {
+  let formValidation = { failed: false, feedback: '' }
 
+  const emailIsEmpty = form.value.email === ''
+  if(emailIsEmpty) return formValidation = { failed: true, feedback: 'Please, type your email in the corresponding field to be able to proceed' }
+
+  const emailIsValid = validateFormat(form.value.email)
+  if(!emailIsValid) return formValidation = { failed: true, feedback: 'The email format seems to be wrong, please check and try again' }
+
+  if(forgotPassword.value) return handlePassRecovery()
+  
+  return formValidation
+
+}
+
+
+function handleSubmit() {
+  const formValidation = validateForm()
+  if(formValidation.failed) return alert(formValidation.feedback)
   queryInProgress.value = true
-  const loginStatus = store.tryLogin(form.value)
-  alert(loginStatus.feedback)
+  const queryStatus = store.login(form.value)
+  alert(queryStatus.feedback)
   queryInProgress.value = false
-  if(loginStatus.succeed) router.push('/dashboard')
+  if(queryStatus.succeed) router.push('/dashboard')
 }
-
-function recoverPassword() {
-  console.log('Recovering password');
-  return
-}
-
-function validateEmailFormat(email) {
-  let mailformat = new RegExp(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/);
-  let emailValidation = mailformat.test(email)
-  return emailValidation
-}
-
 </script>
