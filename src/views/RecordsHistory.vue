@@ -11,10 +11,13 @@
       <button class="bg-yellow-500 font-bold rounded-lg px-2">Debit</button>
       <button>Credit</button>
     </div>
-    <RecordCard />
+    <RecordCard v-for="record in store.records" :key="record.id" :record="record" />
   </div>
 </template>
 
 <script setup>
 import RecordCard from '../components/record/RecordCard.vue';
+import { useRecordStore } from '../stores/recordStore';
+
+const store = useRecordStore()
 </script>
