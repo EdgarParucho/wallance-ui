@@ -2,7 +2,10 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useRecordStore = defineStore('records', () => {
-  const records = ref([])
+  const records = ref([
+    { amount: 8, type: 'Debit', note: 'Paying services: electricity, condominium)', date: '2023-02-17' },
+    { amount: 300, type: 'Credit', note: 'Salary', date: '2023-02-14' }
+  ])
 
   function addRecord(record) {
     let queryStatus = { succeed: false, feedback: '' }
