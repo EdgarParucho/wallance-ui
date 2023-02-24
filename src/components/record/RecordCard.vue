@@ -12,19 +12,43 @@
     </div>
     <p class="ml-2 text-md">{{ record.note }}</p>
     <div class="flex mt-4">
-      <button class="bg-stone-800 w-1/2 py-1 hover:bg-stone-700 text-yellow-500 active:bg-stone-800 transition-colors">
+      <button
+      class="bg-stone-800 w-1/2 py-1 hover:bg-stone-700 text-yellow-500 active:bg-stone-800 transition-colors"
+      @click="formIsOpen = true"
+      >
         <PencilSquareIcon class="w-6 mx-auto" aria-hidden="true" />
       </button>
-      <button class="bg-stone-800 w-1/2 py-1 hover:bg-red-900 text-red-500 active:bg-stone-800 transition-colors">
+      <button
+      class="bg-stone-800 w-1/2 py-1 hover:bg-red-900 text-red-500 active:bg-stone-800 transition-colors"
+      @click="confirmDelete"
+      >
         <TrashIcon class="w-6 mx-auto" aria-hidden="true" />
       </button>
     </div>
+    <div v-if="markedToDelete" class="flex justify-center space-x-2 text-sm items-center bg-stone-700 text-red-500">
+      <InformationCircleIcon class="w-6" aria-hidden="true" />
+      <p>This record is being deleted</p>
+    </div>
   </div>
+  <RecordForm :formIsOpen="formIsOpen" @close-form="formIsOpen = false" :editing-record="record" v-if="formIsOpen" />
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
-import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { defineProps, ref, defineAsyncComponent } from 'vue';
+import { PencilSquareIcon, TrashIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
+import { useRecordStore } from '../../stores/recordStore';
+const RecordForm = defineAsyncComponent(() => import('./RecordForm.vue'))
 
 const props = defineProps(['record'])
+const recordStore = useRecordStore()
+let formIsOpen = ref(false)
+const markedToDelete = ref(false)
+
+function confirmDelete() {
+  markedToDelete.value = true
+  const deleteIsConfirmed = confirm('Please confirm only if you want to delete the selected record, this action is irreversible.')
+  if(!deleteIsConfirmed) return
+  const queryStatus = recordStore.deleteRecord(props.record._id)
+  alert(queryStatus.feedback)
+}
 </script>

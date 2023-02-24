@@ -1,5 +1,5 @@
 <template>
-  <TransitionRoot as="template" :show="open">
+  <TransitionRoot as="template" :show="formIsOpen">
     <Dialog as="div" class="relative z-10" @close="$emit('closeForm')">
       <TransitionChild
       as="template"
@@ -25,11 +25,15 @@
           leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
           >
             <DialogPanel class="relative transform overflow-hidden rounded-lg bg- dark:bg-stone-800 text-left shadow-xl transition-all sm:my-8 p-2">
-              <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-stone-100 dark:bg-indigo-500 sm:mx-0 sm:h-10 sm:w-10 mb-2">
-                <DocumentPlusIcon class="h-6 w-6 text-stone-900 dark:text-white" aria-hidden="true" />
+              <div
+                class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10 mb-2"
+                :class="editingRecord ? 'bg-stone-700' : 'bg-stone-100 dark:bg-indigo-500'"
+              >
+              <PencilSquareIcon v-if="editingRecord" class="h-6 w-6 text-stone-900 dark:text-yellow-500" aria-hidden="true" />
+              <DocumentPlusIcon v-else class="h-6 w-6 text-stone-900 dark:text-white" aria-hidden="true" />
               </div>
               <DialogTitle as="h3" class="text-lg font-medium leading-6 text-stone-900 dark:text-white pl-2">
-                Add a new record
+                {{ editingRecord ? 'You are editing an exisiting record' : 'Add a new record' }}
               </DialogTitle>
               <p class="text-sm text-stone-500 dark:text-stone-300 pl-2">
                 It's safe to consider records as financial movements.
@@ -184,14 +188,20 @@
 <script setup>
 import { ref } from 'vue'
 import { useRecordStore } from '../../stores/recordStore';
-import { DocumentPlusIcon } from '@heroicons/vue/24/outline'
+import { DocumentPlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
-const props = defineProps({ open: Boolean })
+const props = defineProps({ formIsOpen: Boolean, editingRecord: Object })
 const recordStore = useRecordStore()
 const emit = defineEmits(['closeForm'])
 
+const sourceOptions = [
+  { id: '1', name: 'Main' },
+  { id: '2', name: 'Secondary' },
+  { id: '3', name: 'Occassional' },
+]
 let queryInProgress = ref(false)
+
 let record = ref({
   amount: 0,
   date: new Date().toISOString().slice(0, 10),
@@ -199,11 +209,8 @@ let record = ref({
   sourceID: '1',
   type: 'Credit'
 })
-const sourceOptions = [
-  { id: '1', name: 'Main' },
-  { id: '2', name: 'Secondary' },
-  { id: '3', name: 'Occassional' },
-]
+
+if(props.editingRecord !== undefined) record.value = { ...props.editingRecord };
 
 function resetForm() {
   record.value = {
@@ -216,7 +223,7 @@ function resetForm() {
 }
 function handleSubmit() {
   queryInProgress.value = true
-  const queryStatus = recordStore.addRecord(record.value)
+  const queryStatus = props.editingRecord ? recordStore.editRecord(record.value) : recordStore.addRecord(record.value)
   alert(queryStatus.feedback)
   queryInProgress.value = false
   resetForm()

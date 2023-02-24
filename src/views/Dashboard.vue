@@ -10,27 +10,38 @@
       <h2 class="mt-10 text-2xl font-bold mb-6 dark:text-white">
         Control is yours, what do you want to do?
       </h2>
-      <router-link class="bg-stone-100 dark:bg-stone-800 dark:text-white mx-6 my-1 font-bold rounded-md px-5 py-2" to="#">
-        Check my savings
-      </router-link>
       <button
-        class="bg-yellow-400 text-stone-900 mx-6 my-1 font-bold rounded-md px-5 py-2"
-        @click="open = true"
+      class="bg-yellow-400 text-stone-900 font-bold rounded-sm px-6 py-1"
+      @click="formIsOpen = true"
       >
-        Add a new record
-      </button>
-      <router-link class="bg-stone-100 dark:bg-stone-800 dark:text-white mx-6 my-1 font-bold rounded-md px-5 py-2" to="/history">
-        Check my records
+      Add a new record
+    </button>
+    <div class="flex justify-center space-x-12 items-center mt-4">
+      <router-link
+      class="text-stone-300 hover:underline hover:text-white font-semibold"
+      to="#"
+      >
+        Manage my savings
       </router-link>
+      <router-link
+      class="text-stone-300 hover:underline hover:text-white font-semibold"
+      to="/history">
+        Check my records
+    </router-link>
     </div>
+  </div>
 
-    <RecordForm :open="open" @close-form="open = false" />
+  <RecordForm v-if="formIsOpen" :formIsOpen="formIsOpen" @close-form="formIsOpen = false" />
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
-import RecordForm from '../components/record/RecordForm.vue';
+import { defineAsyncComponent } from 'vue'
 
-let open = ref(false)
+const RecordForm = defineAsyncComponent(
+  () => import('../components/record/RecordForm.vue')
+)
+
+let formIsOpen = ref(false)
 </script>
