@@ -27,13 +27,13 @@
             <DialogPanel class="relative transform overflow-hidden rounded-lg bg- dark:bg-stone-800 text-left shadow-xl transition-all sm:my-8 p-2">
               <div
                 class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full sm:mx-0 sm:h-10 sm:w-10 mb-2"
-                :class="editingRecord ? 'bg-stone-700' : 'bg-stone-100 dark:bg-indigo-500'"
+                :class="editing ? 'bg-stone-700' : 'bg-stone-100 dark:bg-indigo-500'"
               >
-              <PencilSquareIcon v-if="editingRecord" class="h-6 w-6 text-stone-900 dark:text-yellow-500" aria-hidden="true" />
-              <DocumentPlusIcon v-else class="h-6 w-6 text-stone-900 dark:text-white" aria-hidden="true" />
+                <PencilSquareIcon v-if="editingRecord" class="h-6 w-6 text-stone-900 dark:text-yellow-500" aria-hidden="true" />
+                <DocumentPlusIcon v-else class="h-6 w-6 text-stone-900 dark:text-white" aria-hidden="true" />
               </div>
               <DialogTitle as="h3" class="text-lg font-medium leading-6 text-stone-900 dark:text-white pl-2">
-                {{ editingRecord ? 'You are editing an exisiting record' : 'Add a new record' }}
+                {{ editing ? 'You are editing an exisiting record' : 'Add a new record' }}
               </DialogTitle>
               <p class="text-sm text-stone-500 dark:text-stone-300 pl-2">
                 It's safe to consider records as financial movements.
@@ -54,8 +54,8 @@
                         name="credit"
                         type="radio"
                         class="border-stone-300 text-indigo-600 focus:ring-indigo-500 p-2"
-                        value="Credit"
-                        v-model="record.type"
+                        :value="true"
+                        v-model="record.isCredit"
                         required
                       >
                       <label
@@ -71,8 +71,8 @@
                         name="debit"
                         type="radio"
                         class="border-stone-300 text-indigo-600 focus:ring-indigo-500 p-2"
-                        value="Debit"
-                        v-model="record.type"
+                        :value="false"
+                        v-model="record.isCredit"
                         required
                       >
                       <label
@@ -120,42 +120,43 @@
                   </div>
                 
                   <div class="my-4 flex items-center">
-                    <label for="note" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
-                      Note (Optional)
-                    </label>
-                    <input
-                      type="text"
-                      name="note"
-                      id="note"
-                      class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white"
-                      maxlength="30"
-                      placeholder="Car fuel"
-                      v-model="record.note"
-                    >
-                  </div>
-                
-                  <div class="my-4 flex items-center">
                     <label for="sourceID" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
                       Source
                     </label>
                     <select
-                      id="sourceID"
-                      name="sourceID"
-                      class="w-1/2 bg-transparent border-transparent border-b-stone-300 text-stone-700 dark:text-stone-300 border-stone-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-                      v-model="record.sourceID"
-                      required
+                    id="sourceID"
+                    name="sourceID"
+                    class="w-1/2 bg-transparent border-transparent border-b-stone-300 text-stone-700 dark:text-stone-300 border-stone-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                    v-model="record.sourceID"
+                    required
                     >
                       <option
-                      class="text-stone-600"
-                      v-for="source in sourceOptions"
-                      :key="source.id"
-                      :value="source.id"
+                      class="text-white bg-stone-800"
+                      v-for="source in validSourceOptions"
+                      :key="source._id"
+                      :value="source._id"
                       >
                         {{ source.name }}
                       </option>
                     </select>
                   </div>
+
+                  <div class="my-4">
+                    <label for="note" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
+                      Note (Optional)
+                    </label>
+                    <textarea
+                      type="text"
+                      name="note"
+                      id="note"
+                      class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white"
+                      maxlength="40"
+                      placeholder="Car fuel"
+                      v-model="record.note"
+                    ></textarea>
+                  </div>
                 </fieldset>
+
                 <div class="bg-stone-50 dark:bg-stone-800 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                   <button
                   type="button"
@@ -186,7 +187,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useRecordStore } from '../../stores/recordStore';
 import { DocumentPlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
@@ -195,40 +196,44 @@ const props = defineProps({ formIsOpen: Boolean, editingRecord: Object })
 const recordStore = useRecordStore()
 const emit = defineEmits(['closeForm'])
 
-const sourceOptions = [
-  { id: '1', name: 'Main' },
-  { id: '2', name: 'Secondary' },
-  { id: '3', name: 'Occassional' },
-]
-let queryInProgress = ref(false)
+const queryInProgress = ref(false)
+let validSourceOptions = []
 
 let record = ref({
   amount: 0,
   date: new Date().toISOString().slice(0, 10),
   note: '',
-  sourceID: '1',
-  type: 'Credit'
+  sourceID: null,
+  isCredit: false
 })
 
-if(props.editingRecord !== undefined) record.value = { ...props.editingRecord };
+const editing = props.editingRecord !== undefined
+if(editing) record.value = { ...props.editingRecord };
 
 function resetForm() {
   record.value = {
     amount: 0,
     date: new Date().toISOString().slice(0, 10),
     note: '',
-    sourceID: '1',
-    type: 'Credit'
+    sourceID: null,
+    isCredit: false
   }
 }
 function handleSubmit() {
   queryInProgress.value = true
-  const queryStatus = props.editingRecord ? recordStore.editRecord(record.value) : recordStore.addRecord(record.value)
+  const queryStatus = editing ? recordStore.editRecord(record.value) : recordStore.addRecord(record.value)
   alert(queryStatus.feedback)
   queryInProgress.value = false
   resetForm()
   if(queryStatus.succeed) emit('closeForm')
 }
+
+watch(
+  () => record.value.isCredit,
+  (isCredit) => {
+    validSourceOptions = recordStore.sourceOptions.filter(source => source.isCredit === isCredit)
+  }, { immediate: true }
+)
 </script>
 
 <style scoped>

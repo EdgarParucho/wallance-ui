@@ -2,12 +2,20 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 
 export const useRecordStore = defineStore('records', () => {
+  const dummyID = (() => records.value.length.toString())
   const queryStatus = (succeed, feedback) => { return { succeed, feedback } }
   const records = ref([
-    { _id: '0', amount: 8, type: 'Debit', note: 'Paying services: electricity, condominium)', date: '2023-02-17', sourceID: '1' },
-    { _id: '1', amount: 300, type: 'Credit', note: 'Salary', date: '2023-02-14', sourceID: '2' }
+    { _id: '0', amount: 8, isCredit: false, note: 'Paying services: electricity, condominium)', date: '2023-02-17', sourceID: '5' },
+    { _id: '1', amount: 300, isCredit: true, note: 'Salary', date: '2023-02-14', sourceID: '2' }
   ])
-  const dummyID = (() => records.value.length.toString())
+  const sourceOptions = [
+    { _id: '1', name: 'Main', isCredit: true },
+    { _id: '2', name: 'Secondary', isCredit: true },
+    { _id: '3', name: 'Occassional', isCredit: true },
+    { _id: '4', name: 'Bucket 1', isCredit: false },
+    { _id: '5', name: 'Bucket 2', isCredit: false },
+    { _id: '6', name: 'Bucket 3', isCredit: false },
+  ]  
 
   function addRecord(record) {
     try {
@@ -42,5 +50,5 @@ export const useRecordStore = defineStore('records', () => {
       return queryStatus
     }
   }
-  return { records, addRecord, editRecord, deleteRecord }
+  return { records, sourceOptions, addRecord, editRecord, deleteRecord }
 })
