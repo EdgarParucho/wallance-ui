@@ -1,27 +1,24 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import users from '../../placeholders/users.json'
 
 export const useUserStore = defineStore('users', () => {
-  const users = ref([
-    { email: 'edpn@gmail.com', password: 'anepicsong' },
-  ])
-  const session = ref({})
+  const session = ref({
+    userLoged: {},
+    sessionToken: null }
+  )
 
-  function login(credentials) {
-    let queryStatus = { succeed: false, feedback: '' }
+  function login({ email, password }) {
+    const queryStatus = (succeed, feedback) => { return { succeed, feedback } }
     try {
-      const queryStatus = (succeed, feedback) => { return { succeed, feedback } }
-      const userQueryResult = users.value.find(user => user.email === credentials.email)
-      if(userQueryResult === undefined) return queryStatus(false, 'The email you provided is not registered. Please check for any typo or sign up.')
-      if(userQueryResult.password !== credentials.password) return queryStatus(false, 'The password provided is incorrect. Please check for any typo and try again.')
-      session.value = userQueryResult
+      const query = users.find(user => user.email === email && user.password === password)
+      if (query === undefined) throw new Error('The provided credentials does not match in the database. Please check for typos, then try again.')
+      session.value.userLoged = query
       return queryStatus(true, 'Your session is ready')
     } catch (error) {
-      console.error(error)
-      queryStatus = { succeed: false, feedback: `The login process failed. ${error.message}` }
-      return queryStatus
+      return queryStatus(false, `The login process failed. Error: ${error.message}`)
     }
   }
 
-  return { login }
+  return { login, session }
 })

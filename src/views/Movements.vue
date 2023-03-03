@@ -32,13 +32,14 @@ const filteredRecords = ref([])
 const filters = ref([
   {
     name: 'Credits',
-    targetProperty: 'isCredit',
-    fn: (r) => r.isCredit,
+    targetProperty: 'type',
+    fn: (r) => r.type === 1,
     isApplied: false
   },
   {
     name: 'Debits',
-    targetProperty: 'isCredit', fn: (r) => !r.isCredit,
+    targetProperty: 'type',
+    fn: (r) => r.type === 2,
     isApplied: false
   },
   {

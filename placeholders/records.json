@@ -1,0 +1,47 @@
+[
+  {
+    "_id": "r0",
+    "amount": 300,
+    "date": "2023-02-28",
+    "note": "Salary",
+    "fundSource": { "_id": "s1", "name": "Main income" },
+    "fundTarget": { "_id": "f0", "name": "Base fund" },
+    "type": 1
+  },
+  {
+    "_id": "r1",
+    "amount": 100,
+    "date": "2023-02-28",
+    "note": "Services: electricity, condominium, school.",
+    "fundSource": { "_id": "f0", "name": "Base fund" },
+    "fundTarget": { "_id": "f0", "name": "Base fund" },
+    "type": 2
+  },
+  {
+    "_id": "r3",
+    "amount": 70,
+    "date": "2023-03-01",
+    "note": "Supplements: groceries and hygiene products.",
+    "fundSource": { "_id": "f0", "name": "Base fund" },
+    "fundTarget": { "_id": "f0", "name": "Base fund" },
+    "type": 2
+  },
+  {
+    "_id": "r5",
+    "amount": 30,
+    "date": "2023-02-28",
+    "note": "Saving.",
+    "fundSource": { "_id": "f0", "name": "Base fund" },
+    "fundTarget": { "_id": "f1", "name": "Short term" },
+    "type": 0
+  },
+  {
+    "_id": "r4",
+    "amount": 100,
+    "date": "2023-02-28",
+    "note": "Saving.",
+    "fundSource": { "_id": "f0", "name": "Base fund" },
+    "fundTarget": { "_id": "f1", "name": "Mid term" },
+    "type": 0
+  }
+]

@@ -19,13 +19,13 @@
     <div class="flex justify-center space-x-12 items-center mt-4">
       <router-link
       class="text-stone-300 hover:underline hover:text-white font-semibold"
-      to="#"
+      to="/funds"
       >
         Manage my savings
       </router-link>
       <router-link
       class="text-stone-300 hover:underline hover:text-white font-semibold"
-      to="/history">
+      to="/movements">
         Check my records
     </router-link>
     </div>

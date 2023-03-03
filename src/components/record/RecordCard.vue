@@ -2,8 +2,8 @@
   <div class="bg-stone-800 text-white font-sans rounded-md md:w-3/6 lg:w-2/6 mt-5">
     <div class="flex justify-between">
       <p class="ml-2 text-stone-300">{{ record.date }}</p>
-      <span :class="[record.isCredit ? 'text-green-400 bg-green-900' : 'text-red-400 bg-red-900', 'flex items-center justify-center bg-stone-700 h-6 w-16 text-sm rounded-sm']">
-        {{ record.isCredit ? 'Credit' : 'Debit' }}
+      <span :class="[recordType(record.type).textClass, 'flex items-center justify-center h-6 w-16 text-sm rounded-sm']">
+        {{ recordType(record.type).name }}
       </span>
     </div>
     <div class="justify-end flex items-baseline first-letter:text-2xl my-2 mr-3">
@@ -29,7 +29,7 @@
       <p>This record is being deleted</p>
     </div>
   </div>
-  <RecordForm :formIsOpen="formIsOpen" @close-form="formIsOpen = false" :editing-record="record" v-if="formIsOpen" />
+  <RecordForm v-if="formIsOpen" :formIsOpen="formIsOpen" @close-form="formIsOpen = false" :editing-record="record" />
 </template>
 
 <script setup>
@@ -50,5 +50,19 @@ function confirmDelete() {
   const queryStatus = recordStore.deleteRecord(props.record._id)
   alert(queryStatus.feedback)
   markedToDelete.value = false
+}
+
+function recordType(recordType) {
+  switch (recordType) {
+    case 1:
+      return { name: 'Credit', textClass: 'text-green-400 bg-green-900' }
+      break;
+    case 2:
+      return { name: 'Debit', textClass: 'text-red-400 bg-red-900' }
+      break;
+    default:
+      return { name: 'Balance', textClass: 'text-white bg-stone-700' }
+      break;
+  }
 }
 </script>

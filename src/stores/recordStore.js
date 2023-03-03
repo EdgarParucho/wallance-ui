@@ -1,13 +1,10 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import records from '../../placeholders/records.json'
 
 export const useRecordStore = defineStore('records', () => {
   const dummyID = (() => records.value.length.toString())
   const queryStatus = (succeed, feedback) => { return { succeed, feedback } }
-  const records = ref([
-    { _id: '0', amount: 8, isCredit: false, note: 'Paying services: electricity, condominium)', date: '2023-02-17', sourceID: '5' },
-    { _id: '1', amount: 300, isCredit: true, note: 'Salary', date: '2023-02-14', sourceID: '2' }
-  ])
   const sourceOptions = [
     { _id: '1', name: 'Main', isCredit: true },
     { _id: '2', name: 'Secondary', isCredit: true },
