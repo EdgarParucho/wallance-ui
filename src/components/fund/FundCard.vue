@@ -26,7 +26,7 @@
         <div class="h-1/3 w-full flex items-center justify-end mt-2">
           <button
           class="text-yellow-400 bg-stone-900 hover:bg-stone-700 focus:ring-2 focus:outline-none focus:ring-stone-600 font-bold w-12 h-10 rounded-md"
-          @click="$emit('open-modal')"
+          @click="$emit('open-modal', fund)"
           >
             <PencilSquareIcon class="w-5 h-5 text-yellow-500 mx-auto" aria-hidden="true" />
           </button>
