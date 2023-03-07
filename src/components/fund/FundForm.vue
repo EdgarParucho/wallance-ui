@@ -28,22 +28,17 @@
               <DialogTitle as="h3" class="text-lg font-bold leading-6 text-white">
                 Fund Form
               </DialogTitle>
-              <form class="md:flex" @submit.prevent="handleSubmit">
-                <div class="w-full md:w-2/6 p-4 md:flex items-center justify-center text-center">
-                  <button class="h-24 w-16">
-                    <CameraIcon class="text-stone-400 hover:text-white" />
-                  </button>
-                </div>
-                <div class="w-full md:w-4/6 p-4">
-                  <div class="h-1/3 w-full">
+              <form @submit.prevent="handleSubmit">
+                <div class="p-4">
+                  <div class="h-1/3">
                     <label for="fund-name" class="text-xs font-semibold">Name</label>
                     <input id="fund-name" class="px-2 text-xl font-bold text-stone-50 mb-2 bg-transparent w-full border-0 border-b focus:outline-0 active:outline-0" v-model="fund.name" placeholder="College">
                   </div>
-                  <div class="h-1/3 w-full">
+                  <div class="h-1/3">
                     <label for="fund-description" class="text-xs font-semibold">Description</label>
-                    <textarea id="fund-description" class="text-sm text-stone-200 bg-transparent w-full border-0 border-b focus:outline-0 active:outline-0 focus:ring-0 active:ring-0" v-model="fund.description" placeholder="A creative description"></textarea>
+                    <textarea id="fund-description" class="text-sm text-stone-200 bg-transparent w-full border-0 border-b focus:outline-0 active:outline-0 focus:ring-0 active:ring-0" v-model="fund.description" placeholder="A creative description" maxlength="80"></textarea>
                   </div>
-                  <div class="h-1/3 w-full flex items-center justify-end my-4">
+                  <div class="h-1/3 flex items-center justify-end my-4">
                     <button
                     class="text-yellow-400 bg-stone-900 hover:bg-stone-700 focus:ring-2 focus:outline-none focus:ring-stone-600 font-bold rounded-md text-sm px-4 py-2"
                     type="submit"
@@ -63,8 +58,7 @@
 </template>
  
 <script setup>
-import { CameraIcon } from '@heroicons/vue/24/outline'
-import { ref, defineEmits } from 'vue'
+import { ref } from 'vue'
 import { useFundStore } from '../../stores/fundStore';
 import {
  TransitionRoot,
@@ -84,7 +78,6 @@ const fund = ref({
   usersIDs: [],
   name: '',
   description: '',
-  picture: '',
   lastUpdated: new Date().toISOString().slice(0, 10),
   savings: 0,
 })
@@ -98,7 +91,6 @@ function resetForm() {
     usersIDs: [],
     name: '',
     description: '',
-    picture: '',
     lastUpdated: new Date().toISOString().slice(0, 10),
     savings: 0,
   }

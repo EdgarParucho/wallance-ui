@@ -33,7 +33,7 @@
 </template>
 
 <script setup>
-import { defineProps, ref, defineAsyncComponent } from 'vue';
+import { ref, defineAsyncComponent } from 'vue';
 import { PencilSquareIcon, TrashIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
 import { useRecordStore } from '../../stores/recordStore';
 const RecordForm = defineAsyncComponent(() => import('./RecordForm.vue'))

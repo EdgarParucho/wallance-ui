@@ -4,6 +4,7 @@ import funds from '../../placeholders/funds.json'
 export const useFundStore = defineStore('funds', () => {
   const dummyID = () => `f${funds.length}`
   const queryStatus = (succeed, feedback) => { return { succeed, feedback } }
+
   function addFund(fund) {
     try {
       fund._id = dummyID()
@@ -11,8 +12,7 @@ export const useFundStore = defineStore('funds', () => {
       return queryStatus(true, 'The new fund has been created successfully.')
     } catch (error) {
       console.error(error)
-      queryStatus = { succeed: false, feedback: `Error creating fund: ${error.message}` }
-      return queryStatus
+      return queryStatus(false, `Error creating fund: ${error.message}`)
     }
   }
   function editFund(editingFund) {
@@ -22,8 +22,7 @@ export const useFundStore = defineStore('funds', () => {
       return queryStatus(true, 'The fund has been modified successfully.')
     } catch (error) {
       console.error(error)
-      queryStatus = { succeed: false, feedback: `Error editing fund. ${error.message}` }
-      return queryStatus
+      return queryStatus(false, `Error editing fund. ${error.message}`)
     }
   }
   function deleteFund(fundID) {
@@ -33,8 +32,7 @@ export const useFundStore = defineStore('funds', () => {
       return queryStatus(true, 'The fund has been deleted successfully.')
     } catch (error) {
       console.error(error)
-      queryStatus = { succeed: false, feedback: `Error deleting fund. ${error.message}` }
-      return queryStatus
+      return queryStatus(false, `Error deleting fund. ${error.message}`)
     }
   }
   return { funds, addFund, editFund, deleteFund }

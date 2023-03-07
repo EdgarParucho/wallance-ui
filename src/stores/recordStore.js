@@ -21,8 +21,7 @@ export const useRecordStore = defineStore('records', () => {
       return queryStatus(true, 'The new record has been created successfully.')
     } catch (error) {
       console.error(error)
-      queryStatus = { succeed: false, feedback: `Create process failed. ${error.message}` }
-      return queryStatus
+      return queryStatus(false, `Create process failed. ${error.message}`)
     }
   }
   function editRecord(editingRecord) {
@@ -31,9 +30,7 @@ export const useRecordStore = defineStore('records', () => {
       records.value.splice(recordIndex, 1, editingRecord)
       return queryStatus(true, 'The record has been modified successfully.')
     } catch (error) {
-      console.error(error)
-      queryStatus = { succeed: false, feedback: `Edit process failed. ${error.message}` }
-      return queryStatus
+      return queryStatus(false, `Edit process failed. ${error.message}`)
     }
   }
   function deleteRecord(recordID) {
@@ -43,8 +40,7 @@ export const useRecordStore = defineStore('records', () => {
       return queryStatus(true, 'The record has been deleted successfully.')
     } catch (error) {
       console.error(error)
-      queryStatus = { succeed: false, feedback: `Delete process failed. ${error.message}` }
-      return queryStatus
+      return queryStatus(false, `Delete process failed. ${error.message}`)
     }
   }
   return { records, sourceOptions, addRecord, editRecord, deleteRecord }

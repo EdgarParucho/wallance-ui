@@ -4,7 +4,6 @@
     "usersIDs": ["0"],
     "name": "Base fund",
     "description": "Fixed expenses, like rent, fares, and food.",
-    "picture": "https://images.pexels.com/photos/4386321/pexels-photo-4386321.jpeg?auto=compress&cs=tinysrgb&w=1600",
     "lastUpdated": "Last updated 3 mins ago",
     "savings": 0
   },
@@ -13,7 +12,6 @@
     "usersIDs": ["0"],
     "name": "Short term",
     "description": "Ocasional needs and affairs, like orthodontist, clothes, the cinema.",
-    "picture": "https://images.pexels.com/photos/2531236/pexels-photo-2531236.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     "lastUpdated": "Last updated 23 days ago",
     "savings": 30
   },
@@ -22,7 +20,6 @@
     "usersIDs": ["0"],
     "name": "Mid term",
     "description": "Could require some time saving. The new IPhone, house renovations.",
-    "picture": "https://images.pexels.com/photos/5767799/pexels-photo-5767799.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     "lastUpdated": "Last updated 2 hours ago",
     "savings": 100
   },
@@ -31,7 +28,6 @@
     "usersIDs": ["0"],
     "name": "Long term",
     "description": "Your some-day goal. Like traveling, buying a car or a house.",
-    "picture": "https://images.pexels.com/photos/7144212/pexels-photo-7144212.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
     "lastUpdated": "Last updated 1 month ago",
     "savings": 0
   }

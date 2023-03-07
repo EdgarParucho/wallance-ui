@@ -7,12 +7,14 @@
       Saving Funds
     </h1>
     <p>From here you can manage your savings into funds according to your needs.</p>
-    <FundCard
-    v-for="fund in store.funds"
-    :key="fund._id"
-    :fund="fund"
-    @open-modal="(editingFund) => editFund(editingFund)"
-    />
+    <div class="mt-8">
+      <FundCard
+      v-for="fund in store.funds"
+      :key="fund._id"
+      :fund="fund"
+      @open-modal="(editingFund) => editFund(editingFund)"
+      />
+    </div>
     <FundForm v-if="formIsOpen" :form-is-open="formIsOpen" @close-form="formIsOpen = false" :editing-fund="selectedFund" />
   </div>
 </template>
