@@ -13,7 +13,7 @@
     <div class="flex mt-4">
       <button
       class="w-1/2 py-1 text-yellow-500 bg-stone-800 active:bg-stone-800 hover:bg-stone-700 focus:bg-stone-700 focus:outline-none transition-colors"
-      @click="formIsOpen = true"
+      @click="$emit('edit-record', record)"
       >
         <PencilSquareIcon class="w-6 mx-auto" aria-hidden="true" />
       </button>
@@ -29,18 +29,16 @@
       <p>This record is being deleted</p>
     </div>
   </div>
-  <RecordForm v-if="formIsOpen" :formIsOpen="formIsOpen" @close-form="formIsOpen = false" :editing-record="record" />
 </template>
 
 <script setup>
-import { ref, defineAsyncComponent } from 'vue';
+import { ref } from 'vue';
 import { PencilSquareIcon, TrashIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
 import { useRecordStore } from '../../stores/recordStore';
-const RecordForm = defineAsyncComponent(() => import('./RecordForm.vue'))
 
-const props = defineProps(['record'])
 const recordStore = useRecordStore()
-let formIsOpen = ref(false)
+const props = defineProps(['record'])
+const emit = defineEmits(['edit-record'])
 const markedToDelete = ref(false)
 
 function confirmDelete() {

@@ -54,8 +54,8 @@
                         name="credit"
                         type="radio"
                         class="border-stone-300 text-indigo-600 focus:ring-indigo-500 p-2"
-                        :value="true"
-                        v-model="record.isCredit"
+                        :value="1"
+                        v-model="record.type"
                         required
                       >
                       <label
@@ -71,8 +71,8 @@
                         name="debit"
                         type="radio"
                         class="border-stone-300 text-indigo-600 focus:ring-indigo-500 p-2"
-                        :value="false"
-                        v-model="record.isCredit"
+                        :value="2"
+                        v-model="record.type"
                         required
                       >
                       <label
@@ -192,14 +192,13 @@ import { useRecordStore } from '../../stores/recordStore';
 import { DocumentPlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
-const props = defineProps({ formIsOpen: Boolean, editingRecord: Object })
-const recordStore = useRecordStore()
+const props = defineProps(['formIsOpen', 'editingRecord', 'editing'])
 const emit = defineEmits(['closeForm'])
+const recordStore = useRecordStore()
 
-const queryInProgress = ref(false)
 let validSourceOptions = []
-
-let record = ref({
+const queryInProgress = ref(false)
+const record = ref({
   amount: 0,
   date: new Date().toISOString().slice(0, 10),
   note: '',
@@ -207,24 +206,13 @@ let record = ref({
   isCredit: false
 })
 
-const editing = props.editingRecord !== undefined
-if(editing) record.value = { ...props.editingRecord };
+if(props.editing) record.value = { ...props.editingRecord };
 
-function resetForm() {
-  record.value = {
-    amount: 0,
-    date: new Date().toISOString().slice(0, 10),
-    note: '',
-    sourceID: null,
-    isCredit: false
-  }
-}
 function handleSubmit() {
   queryInProgress.value = true
   const queryStatus = editing ? recordStore.editRecord(record.value) : recordStore.addRecord(record.value)
   alert(queryStatus.feedback)
   queryInProgress.value = false
-  resetForm()
   if(queryStatus.succeed) emit('closeForm')
 }
 
