@@ -1,7 +1,9 @@
 import { defineStore } from 'pinia'
-import funds from '../../placeholders/funds.json'
+import { reactive } from 'vue'
+import testFunds from '../../placeholders/funds.json'
 
 export const useFundStore = defineStore('funds', () => {
+  const funds = reactive(testFunds)
   const dummyID = () => `f${funds.length}`
   const queryStatus = (succeed, feedback) => { return { succeed, feedback } }
 
@@ -22,7 +24,7 @@ export const useFundStore = defineStore('funds', () => {
       return queryStatus(true, 'The fund has been modified successfully.')
     } catch (error) {
       console.error(error)
-      return queryStatus(false, `Error editing fund. ${error.message}`)
+      return queryStatus(false, `Error editing fund: ${error.message}`)
     }
   }
   function deleteFund(fundID) {
@@ -32,7 +34,7 @@ export const useFundStore = defineStore('funds', () => {
       return queryStatus(true, 'The fund has been deleted successfully.')
     } catch (error) {
       console.error(error)
-      return queryStatus(false, `Error deleting fund. ${error.message}`)
+      return queryStatus(false, `Error deleting fund: ${error.message}`)
     }
   }
   return { funds, addFund, editFund, deleteFund }

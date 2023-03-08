@@ -24,14 +24,14 @@
       v-for="fund in store.funds"
       :key="fund._id"
       :fund="fund"
-      @open-modal="(editingFund) => editFund(editingFund)"
+      @edit-fund="(fund) => editFund(fund)"
       />
     </div>
     <FundForm
     v-if="formIsOpen"
     :form-is-open="formIsOpen"
-    @close-form="clearAndClose"
-    :editing-fund="selectedFund"
+    @close-form="closeForm"
+    :editing-fund="editingFund"
     />
   </div>
 </template>
@@ -46,14 +46,14 @@ const FundForm = defineAsyncComponent(() => import('../components/fund/FundForm.
 
 const store = useFundStore()
 let formIsOpen = ref(false)
-let selectedFund = null
+let editingFund = null
 
-function editFund(editingFund) {
-  selectedFund = editingFund
+function editFund(fund) {
+  editingFund = fund
   formIsOpen.value = true
 }
-function clearAndClose() {
-  selectedFund = null
+function closeForm() {
+  editingFund = null
   formIsOpen.value = false
 }
 </script>

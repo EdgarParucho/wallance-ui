@@ -187,26 +187,32 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useRecordStore } from '../../stores/recordStore';
+import { useUserStore } from '../../stores/userStore';
+import { useFundStore } from '../../stores/fundStore';
 import { DocumentPlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
 
-const props = defineProps(['formIsOpen', 'editingRecord', 'editing'])
+const props = defineProps(['form-is-open', 'editing-record', 'editing'])
 const emit = defineEmits(['closeForm'])
 const recordStore = useRecordStore()
+const userStore = useUserStore()
+const fundStore = useFundStore()
 
-let validSourceOptions = []
 const queryInProgress = ref(false)
+const validSourceOptions = computed(
+  () => record.value.type === 1 ? userStore.session.user.creditSources : fundStore.funds
+)
 const record = ref({
   amount: 0,
   date: new Date().toISOString().slice(0, 10),
   note: '',
   sourceID: null,
-  isCredit: false
+  type: 2
 })
 
-if(props.editing) record.value = { ...props.editingRecord };
+if(props.editing) record.value = { ...props.editingRecord }
 
 function handleSubmit() {
   queryInProgress.value = true
@@ -217,10 +223,8 @@ function handleSubmit() {
 }
 
 watch(
-  () => record.value.isCredit,
-  (isCredit) => {
-    validSourceOptions = recordStore.sourceOptions.filter(source => source.isCredit === isCredit)
-  }, { immediate: true }
+  () => record.value.type,
+  () => record.value.sourceID = null
 )
 </script>
 
