@@ -32,7 +32,7 @@
     </div>
   </div>
 
-  <RecordForm v-if="formIsOpen" :formIsOpen="formIsOpen" @close-form="formIsOpen = false" :editing="false" />
+  <RecordForm v-if="formIsOpen" :form-is-open="formIsOpen" @close-form="formIsOpen = false" :editing="false" />
   </div>
 </template>
 
