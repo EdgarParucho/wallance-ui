@@ -1,6 +1,6 @@
 import { defineStore } from "pinia";
 import { reactive } from "vue";
-import testRecords from '../../placeholders/records.json'
+import testRecords from '../../placeholders/data/records.json'
 
 export const useRecordStore = defineStore('records', () => {
   const records = reactive(testRecords)

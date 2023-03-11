@@ -178,6 +178,7 @@ const record = ref({
   date: new Date().toISOString().slice(0, 10),
   note: '',
   sourceID: null,
+  targetID: null,
   type: 2
 })
 

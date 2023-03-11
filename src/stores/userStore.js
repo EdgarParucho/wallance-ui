@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import users from '../../placeholders/users.json'
+import users from '../../placeholders/data/users.json'
 
 export const useUserStore = defineStore('users', () => {
   const session = ref({ user: {}, token: null })

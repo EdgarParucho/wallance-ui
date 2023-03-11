@@ -1,41 +1,47 @@
 import { defineStore } from 'pinia'
-import { reactive } from 'vue'
-import testFunds from '../../placeholders/funds.json'
+import { reactive, ref } from 'vue'
+import { Create, Update, Delete, Find } from '../../placeholders/query/fund'
 
 export const useFundStore = defineStore('funds', () => {
-  const funds = reactive(testFunds)
-  const dummyID = () => `f${funds.length}`
+  const funds = ref([])
   const queryStatus = (succeed, feedback) => { return { succeed, feedback } }
 
+  function getUserFunds(userID) {
+    const response = Find(userID)
+    funds.value = [...response.data]
+    return response
+  }
   function addFund(fund) {
     try {
-      fund._id = dummyID()
-      funds.push(fund)
-      return queryStatus(true, 'The new fund has been created successfully.')
+      const response = Create(fund)
+      funds.value.push(response.data)
+      return response
     } catch (error) {
       console.error(error)
       return queryStatus(false, `Error creating fund: ${error.message}`)
     }
   }
-  function editFund(editingFund) {
+  function updateFund(fund) {
     try {
-      const fundIndex = funds.findIndex(fund => fund._id === editingFund._id)
-      funds.splice(fundIndex, 1, editingFund)
-      return queryStatus(true, 'The fund has been modified successfully.')
+      const response = Update(fund)
+      const index = funds.value.findIndex(f => f._id === fund._id)
+      funds.value.splice(index, 1, response.data)
+      return response
     } catch (error) {
       console.error(error)
       return queryStatus(false, `Error editing fund: ${error.message}`)
     }
   }
-  function deleteFund(fundID) {
+  function deleteFund(id) {
     try {
-      const fundIndex = funds.findIndex(fund => fund._id === fundID)
-      funds.splice(fundIndex, 1)
-      return queryStatus(true, 'The fund has been deleted successfully.')
+      const response = Delete(id)
+      const index = funds.value.findIndex(f => f._id === id)
+      funds.value.splice(index, 1)
+      return response
     } catch (error) {
       console.error(error)
       return queryStatus(false, `Error deleting fund: ${error.message}`)
     }
   }
-  return { funds, addFund, editFund, deleteFund }
+  return { funds, getUserFunds, addFund, updateFund, deleteFund }
 })

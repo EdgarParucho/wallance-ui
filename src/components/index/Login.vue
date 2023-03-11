@@ -48,9 +48,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router';
+import { useFundStore } from '../../stores/fundStore';
 import { useUserStore } from '../../stores/userStore';
 
-const store = useUserStore()
+const userStore = useUserStore()
+const fundStore = useFundStore()
 const router = useRouter()
 
 const forgotPassword = ref(false)
@@ -69,6 +71,7 @@ function validateFormat(email) {
   return emailIsValid
 }
 
+// Turn this into a computed object. Set the properties to use it for errors highlights.
 function validateForm() {
   let formValidation = { failed: false, feedback: '' }
 
@@ -81,17 +84,22 @@ function validateForm() {
   if(forgotPassword.value) return handlePassRecovery()
   
   return formValidation
-
 }
 
+function postLogin() {
+  const userID = userStore.session.user._id
+  const queryStatus = fundStore.getUserFunds(userID)
+  alert(queryStatus.message)
+  if(queryStatus.succeed) router.push('/dashboard')
+}
 
 function handleSubmit() {
   const formValidation = validateForm()
   if(formValidation.failed) return alert(formValidation.feedback)
   queryInProgress.value = true
-  const queryStatus = store.login(form.value)
+  const queryStatus = userStore.login(form.value)
   alert(queryStatus.feedback)
+  if(queryStatus.succeed) postLogin()
   queryInProgress.value = false
-  if(queryStatus.succeed) router.push('/dashboard')
 }
 </script>

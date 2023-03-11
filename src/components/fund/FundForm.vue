@@ -55,8 +55,8 @@ if(editing) fund.value = { ...props.editingFund };
 
 function handleSubmit() {
   queryInProgress.value = true
-  const queryStatus = editing ? fundStore.editFund(fund.value) : fundStore.addFund(fund.value)
-  alert(queryStatus.feedback)
+  const queryStatus = editing ? fundStore.updateFund(fund.value) : fundStore.addFund(fund.value)
+  alert(queryStatus.message)
   queryInProgress.value = false
   if(queryStatus.succeed) emit('close-form')
 }
