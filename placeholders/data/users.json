@@ -1,0 +1,14 @@
+[
+  {
+    "_id": "u0",
+    "email": "edpn@gmail.com",
+    "password": "anepicsong",
+    "name": "Dev",
+    "totalSavings": 292,
+    "creditSources": [
+      { "_id": "cs1", "name": "Main" },
+      { "_id": "cs2", "name": "Secondary" },
+      { "_id": "cs3", "name": "Occasional" }
+    ]
+  }
+]
