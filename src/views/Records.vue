@@ -12,12 +12,17 @@
       <button
       v-for="filter, i in filters"
       :key="i"
-      :class="[filter.isApplied ? 'bg-yellow-500 text-stone-900' : 'bg-stone-900 text-white','text-xs font-bold rounded-xl w-20 m-1 py-1 transition-colors']"
-      @click="filter.isApplied = !filter.isApplied"
+      :class="[filter.isApplied ? 'bg-stone-300 text-stone-900' : 'bg-stone-900 text-white','text-xs font-bold rounded-xl w-20 m-1 py-1 transition-colors']"
+      @click="applyFilter(filter)"
       >
         {{ filter.name }}
       </button>
     </div>
+    <button
+    class="bg-yellow-500 hover:bg-yellow-400 rounded-md w-20 m-1 py-1 transition-colors"
+    @click="recordStore.getRecords">
+      <MagnifyingGlassIcon class="w-5 h-5 text-stone-900 mx-auto" aria-hidden="true" />
+    </button>
 
     <RecordCard
     v-for="record in filteredRecords"
@@ -39,11 +44,13 @@
 import RecordCard from '../components/record/RecordCard.vue';
 import { useRecordStore } from '../stores/recordStore';
 import { ref, computed, watch, defineAsyncComponent } from 'vue'
+import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
 
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'))
-const store = useRecordStore()
+const recordStore = useRecordStore()
 
 let editingRecord = null
+const records = computed(() => recordStore.records)
 const formIsOpen = ref(false)
 const filteredRecords = ref([])
 const appliedFilters = computed(() => filters.value.filter(filter => filter.isApplied))
@@ -78,13 +85,21 @@ function editRecord(record) {
   editingRecord = record
   formIsOpen.value = true
 }
-
 function closeForm() {
   editingRecord = null
   formIsOpen.value = false
 }
 
-watch([store.records, appliedFilters], ([records, appliedFilters]) => {
+function applyFilter(newFilter) {
+  if (newFilter.isApplied) return newFilter.isApplied = false
+  const conflictFilter = filters.value.find(
+    filter => filter.isApplied && filter.targetProperty === newFilter.targetProperty
+  )
+  if (conflictFilter !== undefined) conflictFilter.isApplied = false
+  newFilter.isApplied = true
+}
+
+watch([records, appliedFilters], ([records, appliedFilters]) => {
   filteredRecords.value = records
   for(const filter of appliedFilters) filteredRecords.value = filteredRecords.value.filter(filter.fn)
 }, { immediate: true })

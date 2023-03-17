@@ -29,7 +29,14 @@
 
 <script setup>
 import { PencilSquareIcon } from '@heroicons/vue/24/outline'
+import { useFundStore } from '../../stores/fundStore';
+import { computed } from 'vue'
 
 const emit = defineEmits(['edit-fund'])
-const props = defineProps(['fund'])
+const props = defineProps(['id'])
+const fundStore = useFundStore()
+
+const fund = computed(
+  () => fundStore.funds.find(f => f._id === props.id)
+)
 </script>

@@ -186,8 +186,8 @@ if(props.editing) record.value = { ...props.editingRecord }
 
 function handleSubmit() {
   queryInProgress.value = true
-  const queryStatus = props.editing ? recordStore.editRecord(record.value) : recordStore.addRecord(record.value)
-  alert(queryStatus.feedback)
+  const queryStatus = props.editing ? recordStore.updateRecord(record.value) : recordStore.createRecord(record.value)
+  alert(queryStatus.message)
   queryInProgress.value = false
   if(queryStatus.succeed) emit('close-form')
 }

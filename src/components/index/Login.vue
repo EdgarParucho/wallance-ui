@@ -88,7 +88,7 @@ function validateForm() {
 
 function postLogin() {
   const userID = userStore.session.user._id
-  const queryStatus = fundStore.getUserFunds(userID)
+  const queryStatus = fundStore.getFunds(userID)
   alert(queryStatus.message)
   if(queryStatus.succeed) router.push('/dashboard')
 }

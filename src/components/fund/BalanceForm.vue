@@ -1,6 +1,6 @@
 <template>
   <Dialog :form-is-open="formIsOpen" @close-form="$emit('close-form')">
-    <form @submit.prevent="handleSubmit">
+    <form @submit.prevent="handleSubmit(record)">
       <div class="p-4">
 
         <div class="h-1/3">
@@ -8,7 +8,7 @@
           <select id="source" name="source"
             class="px-2 text-stone-50 mb-2 bg-transparent w-full rounded-md border-stone-400 focus:outline-0 active:outline-0"
             required v-model="record.sourceID">
-            <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="fund in  fundStore.funds"
+            <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="fund in fundStore.funds"
               :key="fund._id" :value="fund._id" :disabled="fund.savings < 1">
               {{ fund.name }} (${{ fund.savings }})
             </option>
@@ -20,7 +20,7 @@
           <select id="target" name="target"
             class="px-2 text-stone-50 mb-2 bg-transparent w-full rounded-md border-stone-400 disabled:border-stone-700 focus:outline-0 active:outline-0"
             required :disabled="record.sourceID === null" v-model="record.targetID">
-            <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="fund in  fundStore.funds"
+            <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="fund in fundStore.funds"
               :key="fund._id" :value="fund._id" :disabled="fund._id === record.sourceID">
               {{ fund.name }} (${{ fund.savings }})
             </option>
@@ -81,7 +81,7 @@
           </button>
           <button
             class="text-yellow-400 bg-stone-900 hover:bg-stone-700 focus:ring-2 focus:outline-none focus:ring-stone-600 font-bold rounded-md text-sm w-1/3 py-2 transition-colors disabled:text-stone-300 disabled:bg-stone-700"
-            type="submit" @click.prevent="handleSubmit">
+            type="submit" @click.prevent="handleSubmit(record)">
             Save
           </button>
         </div>
@@ -93,12 +93,10 @@
 <script setup>
 import { ref, watch } from 'vue'
 import { useFundStore } from '../../stores/fundStore';
-import { useRecordStore } from '../../stores/recordStore'
 import { ChartPieIcon } from '@heroicons/vue/24/outline'
 import Dialog from '../helper/Dialog.vue';
 
 const fundStore = useFundStore()
-const recordStore = useRecordStore()
 const emit = defineEmits(['close-form'])
 const props = defineProps(['form-is-open'])
 
@@ -128,12 +126,12 @@ function pickerIsApplied({ divisor }) {
   return pickerIsApplied
 }
 
-function handleSubmit() {
+function handleSubmit(record) {
   queryInProgress.value = true
-  const queryStatus = recordStore.addRecord(record.value)
-  alert(queryStatus.feedback)
+  const queryStatus = fundStore.balanceFunds(record)
+  alert(queryStatus.message)
   queryInProgress.value = false
-  if (queryStatus.succeed) emit('close-form')
+  if(queryStatus.succeed) emit('close-form')
 }
 
 function fixFormIncoherences(sourceID) {

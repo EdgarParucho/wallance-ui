@@ -1,41 +1,52 @@
 import { defineStore } from "pinia";
-import { reactive } from "vue";
-import testRecords from '../../placeholders/data/records.json'
+import { ref } from "vue";
+import { Create, Update, Delete, Find } from '../../placeholders/query/record'
 
 export const useRecordStore = defineStore('records', () => {
-  const records = reactive(testRecords)
-  const dummyID = () => `r${records.length}`
+  const records = ref([])
   const queryStatus = (succeed, feedback) => { return { succeed, feedback } }
 
-  function addRecord(record) {
+  function getRecords() {
     try {
-      record._id = dummyID()
-      records.push(record)
-      return queryStatus(true, 'The new record has been created successfully.')
+      const response = Find()
+      records.value = [...response.data]
+      return response
+    } catch (error) {
+      console.error(error)
+      return queryStatus(false, `Error getting records: ${error.message}`)
+    }
+  }
+  function createRecord(record) {
+    try {
+      const response = Create(record)
+      records.value.push(response.data)
+      return response
     } catch (error) {
       console.error(error)
       return queryStatus(false, `Error creating record: ${error.message}`)
     }
   }
-  function editRecord(editingRecord) {
+  function updateRecord(record) {
     try {
-      const recordIndex = records.findIndex(record => record._id === editingRecord._id)
-      records.splice(recordIndex, 1, editingRecord)
-      return queryStatus(true, 'The record has been modified successfully.')
+      const response = Update(record)
+      const index = records.value.findIndex(f => f._id === record._id)
+      records.value.splice(index, 1, response.data)
+      return response
     } catch (error) {
       console.error(error)
-      return queryStatus(false, `Error editing record: ${error.message}`)
+      return queryStatus(false, `Error updating record: ${error.message}`)
     }
   }
-  function deleteRecord(recordID) {
+  function deleteRecord(id) {
     try {
-      const recordIndex = records.findIndex(record => record._id === recordID)
-      records.splice(recordIndex, 1)
-      return queryStatus(true, 'The record has been deleted successfully.')
+      const response = Delete(id)
+      const index = records.value.findIndex(f => f._id === id)
+      records.value.splice(index, 1)
+      return response
     } catch (error) {
       console.error(error)
       return queryStatus(false, `Error deleting record: ${error.message}`)
     }
   }
-  return { records, addRecord, editRecord, deleteRecord }
+  return { records, getRecords, createRecord, updateRecord, deleteRecord }
 })

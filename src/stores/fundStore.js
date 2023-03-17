@@ -1,17 +1,25 @@
 import { defineStore } from 'pinia'
-import { reactive, ref } from 'vue'
+import { ref } from 'vue'
 import { Create, Update, Delete, Find } from '../../placeholders/query/fund'
+import { Balance } from '../../placeholders/query/fund'
+import { useRecordStore } from './recordStore'
 
 export const useFundStore = defineStore('funds', () => {
   const funds = ref([])
   const queryStatus = (succeed, feedback) => { return { succeed, feedback } }
+  const recordStore = useRecordStore()
 
-  function getUserFunds(userID) {
-    const response = Find(userID)
-    funds.value = [...response.data]
-    return response
+  function getFunds(userID) {
+    try {
+      const response = Find(userID)
+      funds.value = [...response.data]
+      return response
+    } catch (error) {
+      console.error(error)
+      return queryStatus(false, `Error getting funds: ${error.message}`)
+    }
   }
-  function addFund(fund) {
+  function createFund(fund) {
     try {
       const response = Create(fund)
       funds.value.push(response.data)
@@ -29,7 +37,7 @@ export const useFundStore = defineStore('funds', () => {
       return response
     } catch (error) {
       console.error(error)
-      return queryStatus(false, `Error editing fund: ${error.message}`)
+      return queryStatus(false, `Error updating fund: ${error.message}`)
     }
   }
   function deleteFund(id) {
@@ -43,5 +51,16 @@ export const useFundStore = defineStore('funds', () => {
       return queryStatus(false, `Error deleting fund: ${error.message}`)
     }
   }
-  return { funds, getUserFunds, addFund, updateFund, deleteFund }
+  function balanceFunds(record) {
+    try {
+      const response = Balance(record)
+      funds.value = [...response.data]
+      return recordStore.createRecord(record)
+    } catch (error) {
+      console.error(error)
+      return queryStatus(false, `Error balancing funds: ${error.message}`)
+    }
+  }
+
+  return { funds, getFunds, createFund, updateFund, deleteFund, balanceFunds }
 })
