@@ -1,0 +1,34 @@
+[
+  {
+    "_id": "f0",
+    "usersIDs": ["u0"],
+    "name": "Base fund",
+    "description": "Fixed expenses, like rent, fares, and food.",
+    "lastUpdated": "Last updated 3 mins ago",
+    "savings": 0
+  },
+  {
+    "_id": "f1",
+    "usersIDs": ["u0"],
+    "name": "Short term",
+    "description": "Ocasional needs and affairs, like orthodontist, clothes, the cinema.",
+    "lastUpdated": "Last updated 23 days ago",
+    "savings": 30
+  },
+  {
+    "_id": "f2",
+    "usersIDs": ["u0"],
+    "name": "Mid term",
+    "description": "Could require some time saving. The new IPhone, house renovations.",
+    "lastUpdated": "Last updated 2 hours ago",
+    "savings": 100
+  },
+  {
+    "_id": "f3",
+    "usersIDs": ["u0"],
+    "name": "Long term",
+    "description": "Your some-day goal. Like traveling, buying a car or a house.",
+    "lastUpdated": "Last updated 1 month ago",
+    "savings": 0
+  }
+]

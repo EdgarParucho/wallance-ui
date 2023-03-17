@@ -1,0 +1,52 @@
+[
+  {
+    "_id": "r0",
+    "amount": 300,
+    "date": "2023-02-28",
+    "note": "Salary",
+    "sourceID": "cs1",
+    "targetID": "f0",
+    "type": 1,
+    "userID": "0"
+  },
+  {
+    "_id": "r1",
+    "amount": 100,
+    "date": "2023-02-28",
+    "note": "Services: electricity, condominium, school.",
+    "sourceID": "f0",
+    "targetID": "f0",
+    "type": 2,
+    "userID": "0"
+  },
+  {
+    "_id": "r3",
+    "amount": 70,
+    "date": "2023-03-01",
+    "note": "Supplements: groceries and hygiene products.",
+    "sourceID": "f0",
+    "targetID": "f0",
+    "type": 2,
+    "userID": "0"
+  },
+  {
+    "_id": "r5",
+    "amount": 30,
+    "date": "2023-02-28",
+    "note": "Saving.",
+    "sourceID": "f0",
+    "targetID": "f1",
+    "type": 0,
+    "userID": "0"
+  },
+  {
+    "_id": "r4",
+    "amount": 100,
+    "date": "2023-02-28",
+    "note": "Saving.",
+    "sourceID": "f0",
+    "targetID": "f1",
+    "type": 0,
+    "userID": "0"
+  }
+]

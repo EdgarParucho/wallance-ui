@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <div class="pt-14 px-4">
+  <div class="px-2 pt-8">
     <!-- views -->
     <router-view></router-view>
   </div>

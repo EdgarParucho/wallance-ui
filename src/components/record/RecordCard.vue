@@ -2,8 +2,8 @@
   <div class="bg-stone-800 text-white font-sans rounded-md md:w-3/6 lg:w-2/6 mt-5">
     <div class="flex justify-between">
       <p class="ml-2 text-stone-300">{{ record.date }}</p>
-      <span :class="[record.isCredit ? 'text-green-400 bg-green-900' : 'text-red-400 bg-red-900', 'flex items-center justify-center bg-stone-700 h-6 w-16 text-sm rounded-sm']">
-        {{ record.isCredit ? 'Credit' : 'Debit' }}
+      <span :class="[recordType(record.type).textClass, 'flex items-center justify-center h-6 w-16 text-sm rounded-sm']">
+        {{ recordType(record.type).name }}
       </span>
     </div>
     <div class="justify-end flex items-baseline first-letter:text-2xl my-2 mr-3">
@@ -13,7 +13,7 @@
     <div class="flex mt-4">
       <button
       class="w-1/2 py-1 text-yellow-500 bg-stone-800 active:bg-stone-800 hover:bg-stone-700 focus:bg-stone-700 focus:outline-none transition-colors"
-      @click="formIsOpen = true"
+      @click="$emit('edit-record', record)"
       >
         <PencilSquareIcon class="w-6 mx-auto" aria-hidden="true" />
       </button>
@@ -29,18 +29,16 @@
       <p>This record is being deleted</p>
     </div>
   </div>
-  <RecordForm :formIsOpen="formIsOpen" @close-form="formIsOpen = false" :editing-record="record" v-if="formIsOpen" />
 </template>
 
 <script setup>
-import { defineProps, ref, defineAsyncComponent } from 'vue';
+import { ref } from 'vue';
 import { PencilSquareIcon, TrashIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
 import { useRecordStore } from '../../stores/recordStore';
-const RecordForm = defineAsyncComponent(() => import('./RecordForm.vue'))
 
-const props = defineProps(['record'])
 const recordStore = useRecordStore()
-let formIsOpen = ref(false)
+const props = defineProps(['record'])
+const emit = defineEmits(['edit-record'])
 const markedToDelete = ref(false)
 
 function confirmDelete() {
@@ -50,5 +48,19 @@ function confirmDelete() {
   const queryStatus = recordStore.deleteRecord(props.record._id)
   alert(queryStatus.feedback)
   markedToDelete.value = false
+}
+
+function recordType(recordType) {
+  switch (recordType) {
+    case 1:
+      return { name: 'Credit', textClass: 'text-green-400 bg-green-900' }
+      break;
+    case 2:
+      return { name: 'Debit', textClass: 'text-red-400 bg-red-900' }
+      break;
+    default:
+      return { name: 'Balance', textClass: 'text-white bg-stone-700' }
+      break;
+  }
 }
 </script>

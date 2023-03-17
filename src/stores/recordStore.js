@@ -1,54 +1,57 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { Create, Update, Delete, Find } from '../../placeholders/query/record'
+import { Balance } from '../../placeholders/query/fund'
+import { useFundStore } from "./fundStore";
 
 export const useRecordStore = defineStore('records', () => {
-  const dummyID = (() => records.value.length.toString())
+  const records = ref([])
   const queryStatus = (succeed, feedback) => { return { succeed, feedback } }
-  const records = ref([
-    { _id: '0', amount: 8, isCredit: false, note: 'Paying services: electricity, condominium)', date: '2023-02-17', sourceID: '5' },
-    { _id: '1', amount: 300, isCredit: true, note: 'Salary', date: '2023-02-14', sourceID: '2' }
-  ])
-  const sourceOptions = [
-    { _id: '1', name: 'Main', isCredit: true },
-    { _id: '2', name: 'Secondary', isCredit: true },
-    { _id: '3', name: 'Occassional', isCredit: true },
-    { _id: '4', name: 'Bucket 1', isCredit: false },
-    { _id: '5', name: 'Bucket 2', isCredit: false },
-    { _id: '6', name: 'Bucket 3', isCredit: false },
-  ]  
+  const fundStore = useFundStore()
 
-  function addRecord(record) {
+  function getRecords() {
     try {
-      record._id = dummyID()
-      records.value.push(record)
-      return queryStatus(true, 'The new record has been created successfully.')
+      const response = Find()
+      records.value = [...response.data]
+      return response
     } catch (error) {
       console.error(error)
-      queryStatus = { succeed: false, feedback: `Create process failed. ${error.message}` }
-      return queryStatus
+      return queryStatus(false, `Error getting records: ${error.message}`)
     }
   }
-  function editRecord(editingRecord) {
+  function createRecord(record) {
     try {
-      const recordIndex = records.value.findIndex(record => record._id === editingRecord._id)
-      records.value.splice(recordIndex, 1, editingRecord)
-      return queryStatus(true, 'The record has been modified successfully.')
+      const updateFunds = Balance(record)
+      fundStore.funds = [...updateFunds.data]
+      const response = Create(record)
+      records.value.push(response.data)
+      return response
     } catch (error) {
       console.error(error)
-      queryStatus = { succeed: false, feedback: `Edit process failed. ${error.message}` }
-      return queryStatus
+      return queryStatus(false, `Error creating record: ${error.message}`)
     }
   }
-  function deleteRecord(recordID) {
+  function updateRecord(record) {
     try {
-      const recordIndex = records.value.findIndex(record => record._id === recordID)
-      records.value.splice(recordIndex, 1)
-      return queryStatus(true, 'The record has been deleted successfully.')
+      const response = Update(record)
+      const index = records.value.findIndex(f => f._id === record._id)
+      records.value.splice(index, 1, response.data)
+      return response
     } catch (error) {
       console.error(error)
-      queryStatus = { succeed: false, feedback: `Delete process failed. ${error.message}` }
-      return queryStatus
+      return queryStatus(false, `Error updating record: ${error.message}`)
     }
   }
-  return { records, sourceOptions, addRecord, editRecord, deleteRecord }
+  function deleteRecord(id) {
+    try {
+      const response = Delete(id)
+      const index = records.value.findIndex(f => f._id === id)
+      records.value.splice(index, 1)
+      return response
+    } catch (error) {
+      console.error(error)
+      return queryStatus(false, `Error deleting record: ${error.message}`)
+    }
+  }
+  return { records, getRecords, createRecord, updateRecord, deleteRecord }
 })
