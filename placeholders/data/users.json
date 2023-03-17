@@ -4,7 +4,7 @@
     "email": "edpn@gmail.com",
     "password": "anepicsong",
     "name": "Dev",
-    "totalSavings": 292,
+    "defaultFund": "f0",
     "creditSources": [
       { "_id": "cs1", "name": "Main" },
       { "_id": "cs2", "name": "Secondary" },

@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { Create, Update, Delete, Find } from '../../placeholders/query/fund'
-import { Balance } from '../../placeholders/query/fund'
 import { useRecordStore } from './recordStore'
 
 export const useFundStore = defineStore('funds', () => {
@@ -51,16 +50,16 @@ export const useFundStore = defineStore('funds', () => {
       return queryStatus(false, `Error deleting fund: ${error.message}`)
     }
   }
-  function balanceFunds(record) {
-    try {
-      const response = Balance(record)
-      funds.value = [...response.data]
-      return recordStore.createRecord(record)
-    } catch (error) {
-      console.error(error)
-      return queryStatus(false, `Error balancing funds: ${error.message}`)
-    }
-  }
+  // function balanceFunds(record) {
+  //   try {
+  //     const response = Balance(record)
+  //     funds.value = [...response.data]
+  //     return recordStore.createRecord(record)
+  //   } catch (error) {
+  //     console.error(error)
+  //     return queryStatus(false, `Error balancing funds: ${error.message}`)
+  //   }
+  // }
 
-  return { funds, getFunds, createFund, updateFund, deleteFund, balanceFunds }
+  return { funds, getFunds, createFund, updateFund, deleteFund }
 })

@@ -1,10 +1,13 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { Create, Update, Delete, Find } from '../../placeholders/query/record'
+import { Balance } from '../../placeholders/query/fund'
+import { useFundStore } from "./fundStore";
 
 export const useRecordStore = defineStore('records', () => {
   const records = ref([])
   const queryStatus = (succeed, feedback) => { return { succeed, feedback } }
+  const fundStore = useFundStore()
 
   function getRecords() {
     try {
@@ -18,6 +21,8 @@ export const useRecordStore = defineStore('records', () => {
   }
   function createRecord(record) {
     try {
+      const updateFunds = Balance(record)
+      fundStore.funds = [...updateFunds.data]
       const response = Create(record)
       records.value.push(response.data)
       return response

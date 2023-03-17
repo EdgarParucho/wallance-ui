@@ -28,11 +28,12 @@ export function Delete(id) {
   return response
 }
 
-export function Balance({ amount, sourceID, targetID }) {
-  const targetFund = funds.find(f => f._id === targetID)
+export function Balance({ amount, sourceID, targetID, type }) {
+  // When type = 1, the amount comes from a credit source. It would be incongruent to subtract from saving funds.
   const sourceFund = funds.find(f => f._id === sourceID)
-  targetFund.savings += amount
-  sourceFund.savings -= amount
+  const targetFund = funds.find(f => f._id === targetID)
+  if (type !== 1) sourceFund.savings -= amount
+  if (type !== 2) targetFund.savings += amount
   const response = {
     data: funds,
     message: 'Confirmed: You updated your funds',

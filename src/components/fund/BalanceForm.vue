@@ -95,10 +95,12 @@ import { ref, watch } from 'vue'
 import { useFundStore } from '../../stores/fundStore';
 import { ChartPieIcon } from '@heroicons/vue/24/outline'
 import Dialog from '../helper/Dialog.vue';
+import { useRecordStore } from '../../stores/recordStore';
 
 const fundStore = useFundStore()
 const emit = defineEmits(['close-form'])
 const props = defineProps(['form-is-open'])
+const recordStore = useRecordStore()
 
 const queryInProgress = ref(false)
 const sourceFund = ref({})
@@ -128,7 +130,7 @@ function pickerIsApplied({ divisor }) {
 
 function handleSubmit(record) {
   queryInProgress.value = true
-  const queryStatus = fundStore.balanceFunds(record)
+  const queryStatus = recordStore.createRecord(record)
   alert(queryStatus.message)
   queryInProgress.value = false
   if(queryStatus.succeed) emit('close-form')

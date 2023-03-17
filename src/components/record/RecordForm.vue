@@ -69,7 +69,7 @@
             </div>
             <input
               type="number"
-              min="0"
+              :min="1"
               name="amount"
               id="amount"
               class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white pl-6 text-right"
@@ -102,16 +102,17 @@
           id="sourceID"
           name="sourceID"
           class="w-1/2 bg-transparent border-transparent border-b-stone-300 text-stone-700 dark:text-stone-300 border-stone-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
-          v-model="record.sourceID"
           required
+          v-model="record.sourceID"
           >
             <option
-            class="text-white bg-stone-800"
-            v-for="source in validSourceOptions"
-            :key="source._id"
+            class="text-white bg-stone-800 disabled:text-opacity-50"
+            v-for="source in sources" :key="source._id"
+            :disabled="(record.type === 2 && source.savings < 1)"
             :value="source._id"
             >
-              {{ source.name }}
+              <span v-if="record.type === 2">{{ source.name }} (${{ source.savings }})</span>
+              <span v-else>{{ source.name }}</span>
             </option>
           </select>
         </div>
@@ -170,15 +171,15 @@ const userStore = useUserStore()
 const fundStore = useFundStore()
 
 const queryInProgress = ref(false)
-const validSourceOptions = computed(
-  () => record.value.type === 1 ? userStore.session.user.creditSources : fundStore.funds
-)
+const sources = computed(() => record.value.type === 1 ? userStore.session.user.creditSources : fundStore.funds)
+const targetID = computed(() => record.value.type === 1 ? userStore.session.user.defaultFund : record.value.sourceID)
+
 const record = ref({
   amount: 0,
   date: new Date().toISOString().slice(0, 10),
   note: '',
   sourceID: null,
-  targetID: null,
+  targetID,
   type: 2
 })
 
