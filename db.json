@@ -1,7 +1,7 @@
 {
   "users": [
     {
-      "_id": "u0",
+      "id": "u0",
       "email": "edpn@gmail.com",
       "password": "anepicsong",
       "name": "Dev",
@@ -15,7 +15,7 @@
   ],
   "funds": [
     {
-      "_id": "f0",
+      "id": "f0",
       "users": ["u0"],
       "name": "Base fund",
       "description": "Fixed expenses, like rent, fares, and food.",
@@ -23,7 +23,7 @@
       "savings": 0
     },
     {
-      "_id": "f1",
+      "id": "f1",
       "users": ["u0"],
       "name": "Short term",
       "description": "Ocasional needs and affairs, like orthodontist, clothes, the cinema.",
@@ -31,7 +31,7 @@
       "savings": 30
     },
     {
-      "_id": "f2",
+      "id": "f2",
       "users": ["u0"],
       "name": "Mid term",
       "description": "Could require some time saving. The new IPhone, house renovations.",
@@ -39,7 +39,7 @@
       "savings": 100
     },
     {
-      "_id": "f3",
+      "id": "f3",
       "users": ["u0"],
       "name": "Long term",
       "description": "Your some-day goal. Like traveling, buying a car or a house.",
@@ -49,7 +49,7 @@
   ],
   "records": [
     {
-      "_id": "r0",
+      "id": "r0",
       "amount": 300,
       "date": "2023-02-28",
       "note": "Salary",
@@ -69,7 +69,7 @@
       "user": "u0"
     },
     {
-      "_id": "r3",
+      "id": "r3",
       "amount": 70,
       "date": "2023-03-01",
       "note": "Supplements: groceries and hygiene products.",
@@ -79,7 +79,7 @@
       "user": "u0"
     },
     {
-      "_id": "r5",
+      "id": "r5",
       "amount": 30,
       "date": "2023-02-28",
       "note": "Fund 2 savings.",
@@ -89,7 +89,7 @@
       "user": "u0"
     },
     {
-      "_id": "r4",
+      "id": "r4",
       "amount": 100,
       "date": "2023-02-28",
       "note": "Fund 3 savings.",
@@ -99,7 +99,7 @@
       "user": "u0"
     },
     {
-      "_id": "r6",
+      "id": "r6",
       "amount": 23,
       "date": "2023-02-28",
       "note": "Other Saving.",
