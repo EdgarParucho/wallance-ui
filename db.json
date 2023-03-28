@@ -7,9 +7,9 @@
       "name": "Dev",
       "defaultFund": "f0",
       "creditSources": [
-        { "_id": "cs1", "name": "Main" },
-        { "_id": "cs2", "name": "Secondary" },
-        { "_id": "cs3", "name": "Occasional" }
+        { "id": "cs1", "name": "Main" },
+        { "id": "cs2", "name": "Secondary" },
+        { "id": "cs3", "name": "Occasional" }
       ]
     }
   ],
@@ -59,7 +59,7 @@
       "user": "u0"
     },
     {
-      "_id": "r1",
+      "id": "r1",
       "amount": 100,
       "date": "2023-02-28",
       "note": "Services: electricity, condominium, school.",
