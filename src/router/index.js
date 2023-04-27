@@ -3,6 +3,7 @@ import Dashboard from '../views/Dashboard.vue'
 import Index from '../views/Index.vue'
 import Records from '../views/Records.vue'
 import Funds from '../views/Funds.vue'
+import Account from '../views/Account.vue'
 
 const routes = [
   {
@@ -24,6 +25,11 @@ const routes = [
     path: '/funds',
     name: 'Funds',
     component: Funds
+  },
+  {
+    path: '/account',
+    name: 'Account',
+    component: Account
   }
 ]
 

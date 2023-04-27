@@ -1,57 +1,93 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
-import { Create, Update, Delete, Find } from '../../placeholders/query/record'
-import { Balance } from '../../placeholders/query/fund'
-import { useFundStore } from "./fundStore";
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
+import { Find, Create, Update, Delete } from '../services/recordAPI'
 
 export const useRecordStore = defineStore('records', () => {
   const records = ref([])
-  const queryStatus = (succeed, feedback) => { return { succeed, feedback } }
-  const fundStore = useFundStore()
 
-  function getRecords() {
+  async function getRecords(fundsIDs) {
     try {
-      const response = Find()
+      const response = await Find(fundsIDs)
+      const feedback = { message: 'Your records were loaded.', succeed: true }
       records.value = [...response.data]
-      return response
+      return feedback
     } catch (error) {
-      console.error(error)
-      return queryStatus(false, `Error getting records: ${error.message}`)
+      console.error(error);
+      const feedback = {
+        message: 'Could not get your records.\n',
+        succeed: false
+      }
+      if (error.response !== undefined) feedback.message += error.response.data
+      else feedback.message += error.message
+      return feedback 
     }
   }
-  function createRecord(record) {
+
+  async function createRecord(record) {
     try {
-      const updateFunds = Balance(record)
-      fundStore.funds = [...updateFunds.data]
-      const response = Create(record)
-      records.value.push(response.data)
-      return response
+      const response = await Create(record)
+      const [createdRecord] = response.data
+      records.value.push(createdRecord)
+      const feedback = { message: 'Your record was created.', succeed: true }
+      return feedback
     } catch (error) {
-      console.error(error)
-      return queryStatus(false, `Error creating record: ${error.message}`)
+      console.error(error);
+      const feedback = {
+        message: 'Could not create your record.\n',
+        succeed: false
+      }
+      if (error.response !== undefined) feedback.message += error.response.data
+      else feedback.message += error.message
+      return feedback 
     }
   }
-  function updateRecord(record) {
+  
+  async function updateRecord(record) {
     try {
-      const response = Update(record)
-      const index = records.value.findIndex(f => f._id === record._id)
-      records.value.splice(index, 1, response.data)
-      return response
+      const response = await Update(record)
+      const [updatedRecord] = response.data
+      const index = records.value.findIndex(f => f._id === updatedRecord._id)
+      records.value.splice(index, 1, updatedRecord)
+      const feedback = { message: 'Your record was updated.', succeed: true }
+      return feedback
     } catch (error) {
-      console.error(error)
-      return queryStatus(false, `Error updating record: ${error.message}`)
+      console.error(error);
+      const feedback = {
+        message: 'Could not update your record.\n',
+        succeed: false
+      }
+      if (error.response !== undefined) feedback.message += error.response.data
+      else feedback.message += error.message
+      return feedback 
     }
   }
-  function deleteRecord(id) {
-    try {
-      const response = Delete(id)
-      const index = records.value.findIndex(f => f._id === id)
+  const newPromise = (Service, arg, mutation, pastVerb) => {
+    return new Promise((resolve, reject) => {
+      Service(arg)
+        .then((response) => {
+          const { data } = response
+          mutation(data)
+        })
+        .then(() => resolve(`Your record was ${pastVerb}.`))
+        .catch((error) => {
+          let feedback = `Your record could not be ${pastVerb}.\n`
+          if (error.response !== undefined) feedback += error.response.data
+          else feedback += error.message
+          reject(feedback)
+        })
+    })
+  }
+  function deleteRecord(recordID) {
+    const Service = Delete
+    const arg = recordID
+    const mutation = (data) => {
+      const [deletedRecord] = data
+      const index = records.value.findIndex(f => f._id === deletedRecord._id)
       records.value.splice(index, 1)
-      return response
-    } catch (error) {
-      console.error(error)
-      return queryStatus(false, `Error deleting record: ${error.message}`)
     }
+    const pastVerb = 'deleted'
+    return newPromise(Service, arg, mutation, pastVerb)
   }
+
   return { records, getRecords, createRecord, updateRecord, deleteRecord }
 })

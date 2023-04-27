@@ -21,7 +21,13 @@
       </button>
     </div>
 
-    <FundCard v-for="fund in fundStore.funds" :key="fund._id" :id="fund._id" @edit-fund="(fund) => editFund(fund)" />
+    <FundCard
+    v-for="fund in fundStore.funds"
+    :key="fund._id"
+    :id="fund._id"
+    @edit-fund="(fund) => editFund(fund)"
+    @confirm-deletion="(fund) => confirmDeletion(fund)"
+    />
 
     <FundForm v-if="fundFormIsOpen" :form-is-open="fundFormIsOpen" @close-form="closeForm" :editing-fund="editingFund" />
     <BalanceForm v-if="balanceFormIsOpen" :form-is-open="balanceFormIsOpen" @close-form="balanceFormIsOpen = false" />
@@ -41,6 +47,16 @@ const fundStore = useFundStore()
 let fundFormIsOpen = ref(false)
 let balanceFormIsOpen = ref(false)
 let editingFund = null
+const queryInProgress = ref(false)
+
+async function confirmDeletion(fund) {
+  queryInProgress.value = true
+  const deleteIsConfirmed = confirm(`Please confirm if you want to delete "${fund.name}". The action is irreversible.`)
+  if(!deleteIsConfirmed) return
+  const response = await fundStore.deleteFund(fund._id)
+  alert(response.message)
+  queryInProgress.value = false
+}
 
 function editFund(fund) {
   editingFund = fund
