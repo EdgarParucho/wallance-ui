@@ -42,9 +42,7 @@ const emit = defineEmits(['edit-fund', 'confirm-deletion'])
 const props = defineProps(['id'])
 const fundStore = useFundStore()
 
-const fund = computed(
-  () => fundStore.funds.find(f => f._id === props.id)
-)
+const fund = computed(() => fundStore.funds.find(f => f._id === props.id))
 
 function validateDeletion(fund) {
   if(fund.isDefault) return alert('Cannot delete the default fund.')

@@ -62,13 +62,11 @@ const fund = ref({
 const editing = props.editingFund !== null
 if(editing) fund.value = { ...props.editingFund };
 
-async function handleSubmit() {
+function handleSubmit() {
   queryInProgress.value = true
-  const saveFund = editing
-    ? await fundStore.updateFund(fund.value)
-    : await fundStore.createFund(fund.value)
-  alert(saveFund.message)
-  queryInProgress.value = false
-  if(saveFund.succeed) emit('close-form')
+  const saveFund = editing ? fundStore.updateFund : fundStore.createFund
+  saveFund(fund.value)
+    .then((message) => alert(message))
+    .then(() => emit('close-form'))
 }
  </script>
