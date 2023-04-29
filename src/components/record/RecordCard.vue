@@ -6,8 +6,8 @@
         {{ recordType(record.type).name }}
       </span>
     </div>
-    <div class="justify-end flex items-baseline first-letter:text-2xl my-2 mr-3">
-      $<span class="text-3xl">{{ record.amount }}</span>
+    <div class="justify-end flex items-baseline my-2 mr-3">
+      <span class="text-3xl">${{ record.amount }}</span>
     </div>
     <p class="ml-2 text-md">{{ record.note }}</p>
     <div class="flex mt-4">
@@ -19,37 +19,21 @@
       </button>
       <button
       class="w-1/2 py-1 text-red-500 bg-stone-800 active:bg-red-800 hover:bg-red-900 focus:bg-red-900 focus:outline-none transition-colors"
-      @click="confirmDelete"
+      @click="confirmDeletion(record)"
       >
         <TrashIcon class="w-6 mx-auto" aria-hidden="true" />
       </button>
-    </div>
-    <div v-if="markedToDelete" class="flex justify-center space-x-2 text-sm items-center bg-stone-700 text-red-500">
-      <InformationCircleIcon class="w-6" aria-hidden="true" />
-      <p>This record is being deleted</p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { PencilSquareIcon, TrashIcon, InformationCircleIcon } from '@heroicons/vue/24/outline'
-import { useRecordStore } from '../../stores/recordStore';
+import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
-const recordStore = useRecordStore()
 const props = defineProps(['record'])
-const emit = defineEmits(['edit-record'])
-const markedToDelete = ref(false)
+const emit = defineEmits(['edit-record', 'delete-record'])
 
-function confirmDelete() {
-  const deleteIsConfirmed = confirm('Please confirm only if you want to delete the selected record, this action is irreversible.')
-  if(!deleteIsConfirmed) return
-  markedToDelete.value = true
-  const queryStatus = recordStore.deleteRecord(props.record._id)
-  alert(queryStatus.feedback)
-  markedToDelete.value = false
-}
-
+// bind the class
 function recordType(recordType) {
   switch (recordType) {
     case 1:
@@ -62,5 +46,9 @@ function recordType(recordType) {
       return { name: 'Balance', textClass: 'text-white bg-stone-700' }
       break;
   }
+}
+function confirmDeletion(record) {
+  const deletionIsConfirmed = confirm('Please confirm if you want to delete the record. The action is irreversible.')
+  if (deletionIsConfirmed) emit('delete-record', record) 
 }
 </script>

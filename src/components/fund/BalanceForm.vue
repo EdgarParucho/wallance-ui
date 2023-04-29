@@ -1,7 +1,7 @@
 <template>
   <Dialog :form-is-open="formIsOpen" @close-form="$emit('close-form')">
-    <form @submit.prevent="handleSubmit(record)">
-      <div class="p-4">
+    <form @submit.prevent="save(record)">
+      <div class="p-4 w-80">
 
         <div class="h-1/3">
           <label for="source" class="text-xs font-semibold">Source</label>
@@ -48,7 +48,7 @@
             <input type="number" name="amount" id="amount"
               class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white pl-6 text-right"
               placeholder="0.00" v-model.number="record.amount" required :min="1" :disabled="record.sourceID === null"
-              :max="sourceFund.savings">
+              :max="sourceFund?.savings">
           </div>
         </div>
 
@@ -81,7 +81,8 @@
           </button>
           <button
             class="text-yellow-400 bg-stone-900 hover:bg-stone-700 focus:ring-2 focus:outline-none focus:ring-stone-600 font-bold rounded-md text-sm w-1/3 py-2 transition-colors disabled:text-stone-300 disabled:bg-stone-700"
-            type="submit" @click.prevent="handleSubmit(record)">
+            type="submit" @click.prevent="onSave(record, editing)"
+            :disabled="loading">
             Save
           </button>
         </div>
@@ -91,61 +92,120 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { useFundStore } from '../../stores/fundStore';
 import { ChartPieIcon } from '@heroicons/vue/24/outline'
 import Dialog from '../helper/Dialog.vue';
 import { useRecordStore } from '../../stores/recordStore';
+import { useUserStore } from '../../stores/userStore';
 
-const fundStore = useFundStore()
-const emit = defineEmits(['close-form'])
-const props = defineProps(['form-is-open'])
-const recordStore = useRecordStore()
-
-const queryInProgress = ref(false)
-const sourceFund = ref({})
-const record = ref({
-  amount: 1,
-  date: new Date().toISOString().slice(0, 10),
-  note: '',
-  sourceID: null,
-  targetID: null,
-  type: 0
+const props = defineProps({
+  formIsOpen: {
+    type: Boolean,
+    required: true,
+    default: false
+  },
+  originalRecord: {
+    type: Object,
+    required: false,
+  },
+  editing: {
+    type: Boolean,
+    required: false,
+    default: false
+  }
 })
+const emit = defineEmits(['close-form'])
+const recordStore = useRecordStore()
+const fundStore = useFundStore()
+const userStore = useUserStore()
 
+const loading = ref(false)
 const amountPickers = [
   { name: 'All', divisor: 1 },
   { name: '1/2', divisor: 2 },
   { name: '1/3', divisor: 3 }
 ]
 
-function useAmountPicker(divisor) {
-  record.value.amount = (sourceFund.value.savings / divisor)
+const newRecord = {
+  amount: 0,
+  date: new Date().toISOString().slice(0, 10),
+  note: '',
+  sourceID: '',
+  targetID: '',
+  type: 0,
+  user: userStore.session.user._id
 }
+const record = reactive(props.editing ? { ...props.originalRecord } : newRecord)
+const sourceFund = computed(() => findFundByID(record.sourceID))
 
 function pickerIsApplied({ divisor }) {
-  const pickerIsApplied = (record.value.amount === (sourceFund.value.savings / divisor))
+  if (sourceFund.value === undefined) return false
+  const pickerIsApplied = (record.amount === (sourceFund.value.savings / divisor))
   return pickerIsApplied
 }
 
-function handleSubmit(record) {
-  queryInProgress.value = true
-  const queryStatus = recordStore.createRecord(record)
-  alert(queryStatus.message)
-  queryInProgress.value = false
-  if(queryStatus.succeed) emit('close-form')
+function findFundByID(fundID) {
+  return fundStore.funds.find(fund => fund._id === fundID)
 }
 
-function fixFormIncoherences(sourceID) {
-  if (record.value.targetID === sourceID) record.value.targetID = null
-  sourceFund.value = fundStore.funds.find(f => f._id === sourceID)
-  record.value.amount = 1
+function useAmountPicker(divisor) {
+  record.amount = (sourceFund.value.savings / divisor)
 }
 
-watch(
-  () => record.value.sourceID,
-  (sourceID) => fixFormIncoherences(sourceID)
-)
+function onSave(record, editing) {
+  const actions = defineActions(record, editing)
+  const makePromises = (actions) => Array.from(actions, ({ action, arg }) => action(arg))
+  const unbalancedFund = actions.find(action => action.arg.savings < 0)
+  if (unbalancedFund !== undefined) return alert(
+    `Cannot update, "${unbalancedFund.arg.name}" would have a negative balance.`
+  )
+  Promise.all(makePromises(actions))
+    .then((responses) => {
+      const message = responses.map(response => response.message).join('\n')
+      alert(message)
+      emit('close-form')
+    })
+    .catch((responses) => {
+      const message = responses.map(response => response.message).join('\n')
+      alert(message)
+      loading.value = true
+    })
+}
+
+function defineActions(record, editing) {
+  const actions = []
+
+  const actionOnRecord = (editing) ? recordStore.updateRecord : recordStore.createRecord
+  const actionOnFund = fundStore.updateFund
+  actions.push({ action: actionOnRecord, arg: record })
+
+  const fundsToUpdate = defineFundsToUpdate(record, editing)
+  for (const fundToUpdate of fundsToUpdate) actions.push({ action: actionOnFund, arg: fundToUpdate })
+  return actions
+}
+
+function defineFundsToUpdate(record, editing) {
+  const fundsToUpdate = []
+  const notIncluded = ({ _id }) => fundsToUpdate.find(fund => fund._id === _id) === undefined
+  if (editing) {
+    const originalSource = findFundByID(props.originalRecord.sourceID)
+    const originalTarget = findFundByID(props.originalRecord.targetID)
+    const reversedSource = { ...originalSource, savings: originalSource.savings + props.originalRecord.amount }
+    const reversedTarget = { ...originalTarget, savings: originalTarget.savings - props.originalRecord.amount }
+    fundsToUpdate.push(reversedSource, reversedTarget)
+  }
+  const recordSource = findFundByID(record.sourceID)
+  const recordTarget = findFundByID(record.targetID)
+  if (notIncluded(recordSource)) fundsToUpdate.push({ ...recordSource })
+  if (notIncluded(recordTarget)) fundsToUpdate.push({ ...recordTarget })
+  const applyNewRecordEffect = (fundToUpdate) => {
+    if (record.sourceID === fundToUpdate._id) fundToUpdate.savings -= record.amount
+    if (record.targetID === fundToUpdate._id) fundToUpdate.savings += record.amount
+  }
+  for (const fundToUpdate of fundsToUpdate) applyNewRecordEffect(fundToUpdate)
+  return fundsToUpdate
+}
 </script>
 
 <style scoped>

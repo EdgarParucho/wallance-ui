@@ -28,11 +28,10 @@
         class="text-stone-300 hover:underline hover:text-white font-semibold"
         to="/records">
           Check my records
-      </router-link>
+        </router-link>
+      </div>
     </div>
-  </div>
-
-  <RecordForm v-if="formIsOpen" :form-is-open="formIsOpen" @close-form="formIsOpen = false" :editing="false" />
+    <RecordForm v-if="formIsOpen" :form-is-open="formIsOpen" @close-form="formIsOpen = false" :editing="false" />
   </div>
 </template>
 

@@ -1,10 +1,10 @@
 <script setup>
-// import HelloWorld from './components/HelloWorld.vue'
+import AppBar from './components/helper/AppBar.vue';
 </script>
 
 <template>
   <div class="px-2 pt-8">
-    <!-- views -->
-    <router-view></router-view>
+    <AppBar />
+    <router-view class="mt-12"></router-view>
   </div>
 </template>

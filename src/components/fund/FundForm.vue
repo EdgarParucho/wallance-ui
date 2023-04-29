@@ -4,7 +4,11 @@
       <div class="p-4">
         <div class="h-1/3">
           <label for="fund-name" class="text-xs font-semibold">Name</label>
-          <input id="fund-name" class="px-2 text-xl font-bold text-stone-50 mb-2 bg-transparent w-full border-0 border-b focus:outline-0 active:outline-0" v-model="fund.name" placeholder="College">
+          <input
+          id="fund-name"
+          class="px-2 text-xl font-bold text-stone-50 mb-2 bg-transparent w-full border-0 border-b focus:outline-0 active:outline-0"
+          v-model="fund.name"
+          placeholder="College">
         </div>
         <div class="h-1/3">
           <label for="fund-description" class="text-xs font-semibold">Description</label>
@@ -34,30 +38,37 @@
 <script setup>
 import { ref } from 'vue'
 import { useFundStore } from '../../stores/fundStore';
+import { useUserStore } from '../../stores/userStore';
 import Dialog from '../helper/Dialog.vue';
 
 const props = defineProps(['form-is-open', 'editing-fund'])
 const emit = defineEmits(['close-form'])
 const fundStore = useFundStore()
+const userStore = useUserStore()
 
 const queryInProgress = ref(false)
 const fund = ref({
-  _id: '',
-  usersIDs: [],
+  users: [userStore.session.user._id],
   name: '',
   description: '',
   lastUpdated: new Date().toISOString().slice(0, 10),
+  createdAt: new Date().toISOString().slice(0, 10),
   savings: 0,
+  isDefault: false,
+  disabled: false,
+  createdBy: userStore.session.user._id
 })
 
 const editing = props.editingFund !== null
 if(editing) fund.value = { ...props.editingFund };
 
-function handleSubmit() {
+async function handleSubmit() {
   queryInProgress.value = true
-  const queryStatus = editing ? fundStore.updateFund(fund.value) : fundStore.createFund(fund.value)
-  alert(queryStatus.message)
+  const saveFund = editing
+    ? await fundStore.updateFund(fund.value)
+    : await fundStore.createFund(fund.value)
+  alert(saveFund.message)
   queryInProgress.value = false
-  if(queryStatus.succeed) emit('close-form')
+  if(saveFund.succeed) emit('close-form')
 }
  </script>
