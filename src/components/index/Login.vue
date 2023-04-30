@@ -90,11 +90,12 @@ function validateForm() {
   return formValidation
 }
 
-async function postLogin() {
+function postLogin() {
   const userID = userStore.session.user._id
-  const getFunds = await fundStore.getFunds(userID)
-  alert(getFunds.message)
-  if(getFunds.succeed) router.push('/dashboard')
+  fundStore.getFunds(userID)
+    .then((message) => alert(message))
+    .then(() => router.push('/dashboard'))
+    .catch((message) => alert(message))
 }
 
 async function handleSubmit() {

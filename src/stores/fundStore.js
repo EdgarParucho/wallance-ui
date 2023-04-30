@@ -8,85 +8,66 @@ export const useFundStore = defineStore('fund', () => {
   const funds = useLocalStorage('vueUseFunds', [])
   const defaultFund = computed(() => funds.value.find(fund => fund.isDefault))
   const recordStore = useRecordStore()
-  async function getFunds(userID) {
-    try {
-      const response = await Find(userID)
-      const feedback = { message: 'Your funds were loaded.', succeed: true }
-      funds.value = [...response.data]
-      return feedback
-    } catch (error) {
-      console.error(error);
-      const feedback = {
-        message: 'Could not get your funds.\n',
-        succeed: false
-      }
-      if (error.response !== undefined) feedback.message += error.response.data
-      else feedback.message += error.message
-      return feedback 
-    }
+  
+  const useService = (Service, arg, mutation, pastVerb) => {
+    return new Promise((resolve, reject) => {
+      Service(arg)
+        .then((response) => {
+          const { data } = response
+          mutation(data)
+        })
+        .then(() => resolve(`Fund(s) ${pastVerb}.`))
+        .catch((error) => {
+          let feedback = `Your fund(s) could not be ${pastVerb}.\n`
+          if (error.response !== undefined) feedback += error.response.data
+          else feedback += error.message
+          reject(feedback)
+        })
+    })
   }
-  async function createFund(fund) {
-    try {
-      const response = await Create(fund)
-      const [createdFund] = response.data
+  
+  function getFunds(userID) {
+    const Service = Find
+    const arg = userID
+    const mutation = (data) => funds.value = [...data]
+    const pastVerb = 'loaded'
+    return useService(Service, arg, mutation, pastVerb)
+  }
+
+  function createFund(fund) {
+    const Service = Create
+    const arg =  fund
+    const mutation = (data) => {
+      const [createdFund] = data
       funds.value.push(createdFund)
-      const feedback = { message: 'Your fund was created.', succeed: true }
-      return feedback
-    } catch (error) {
-      console.error(error);
-      const feedback = {
-        message: 'Could not create your fund.\n',
-        succeed: false
-      }
-      if (error.response !== undefined) feedback.message += error.response.data
-      else feedback.message += error.message
-      return feedback 
     }
+    const pastVerb = 'created'
+    return useService(Service, arg, mutation, pastVerb)
   }
-  async function updateFund(fund) {
-    try {
-      const response = await Update(fund)
-      const [updatedFund] = response.data
+
+  function updateFund(fund) {
+    const Service = Update
+    const arg = fund
+    const mutation = (data) => {
+      const [updatedFund] = data
       const index = funds.value.findIndex(f => f._id === fund._id)
       funds.value.splice(index, 1, updatedFund)
-      const feedback = { message: 'Your fund was updated.', succeed: true }
-      return feedback
-    } catch (error) {
-      console.error(error);
-      const feedback = {
-        message: 'Could not update your fund.\n',
-        succeed: false
-      }
-      if (error.response !== undefined) feedback.message += error.response.data
-      else feedback.message += error.message
-      return feedback 
     }
+    const pastVerb = 'updated'
+    return useService(Service, arg, mutation, pastVerb)
   }
-  async function deleteFund(fundID) {
-    try {
-      const response = await Delete(fundID)
-      console.log(response.data);
-      const { deletedFund, deletedRecords, updatedRecords } = response.data
+  
+  function deleteFund(fundID) {
+    const Service = Delete
+    const arg = fundID
+    const mutation = (data) => {
+      const { deletedFund, deletedRecords, updatedRecords } = data
       const index = funds.value.findIndex(fund => fund._id === deletedFund._id)
       funds.value.splice(index, 1)
-
       if (recordStore.records.length > 0) fixRelatedRecords(updatedRecords, deletedRecords)
-      
-      const feedback = {
-        message: `Your fund was deleted, its records were related to "${defaultFund.value.name}" so you can still track them.`,
-        succeed: true
-      }
-      return feedback
-    } catch (error) {
-      console.error(error);
-      const feedback = {
-        message: 'Could not delete your fund.\n',
-        succeed: false
-      }
-      if (error.response !== undefined) feedback.message += error.response.data
-      else feedback.message += error.message
-      return feedback 
     }
+    const pastVerb = 'deleted'
+    return useService(Service, arg, mutation, pastVerb)
   }
 
   function fixRelatedRecords(updatedRecords, deletedRecords) {

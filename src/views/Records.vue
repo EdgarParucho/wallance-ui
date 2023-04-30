@@ -97,12 +97,12 @@ const filters = ref([
   },
 ])
 
-async function findRecords() {
+function findRecords() {
   queryInProgress.value = true
   const fundsIDs = fundStore.funds.map(fund => fund._id)
-  const getRecords = await recordStore.getRecords(fundsIDs)
-  alert(getRecords.message)
-  queryInProgress.value = false
+  recordStore.getRecords(fundsIDs)
+    .then((message) => alert(message))
+    .finally(() => queryInProgress.value = false)
 }
 
 function editRecord(record) {
@@ -158,7 +158,6 @@ function confirmDeletion(record, requiredActions) {
   const makePromises = (requiredActions) => Array.from(requiredActions, ({ action, arg }) => action(arg))
   Promise.all(makePromises(requiredActions))
     .then((responses) => {
-      console.log('This should be third');
       const message = responses.join('\n')
       alert(message)
       recordFormIsOpen.value = false

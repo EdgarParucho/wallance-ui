@@ -49,13 +49,14 @@ let balanceFormIsOpen = ref(false)
 let editingFund = null
 const queryInProgress = ref(false)
 
-async function confirmDeletion(fund) {
+function confirmDeletion(fund) {
   queryInProgress.value = true
   const deleteIsConfirmed = confirm(`Please confirm if you want to delete "${fund.name}". The action is irreversible.`)
   if(!deleteIsConfirmed) return
-  const response = await fundStore.deleteFund(fund._id)
-  alert(response.message)
-  queryInProgress.value = false
+  fundStore.deleteFund(fund._id)
+    .then((message) => alert(message))
+    .catch((message) => alert(message))
+    .finally(() => queryInProgress.value = false)
 }
 
 function editFund(fund) {
