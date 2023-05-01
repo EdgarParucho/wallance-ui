@@ -26,9 +26,9 @@ function logout() {
         <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right rounded-md bg-stone-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-white">
           <div class="py-1">
             <MenuItem v-slot="{ active }">
-              <a href="/account" :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']">
+              <RouterLink to="/account" :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']">
                 My Account
-              </a>
+              </RouterLink>
             </MenuItem>
             <MenuItem v-slot="{ active }">
               <button

@@ -4,7 +4,7 @@
       <h3 class="text-2xl text-center">
         Updating my password
       </h3>
-      <form @submit.prevent="onSubmit">
+      <form @submit.prevent="onSubmit(form)">
         <fieldset class="my-6">
           <input
           type="password"
@@ -30,7 +30,7 @@
         </fieldset>
         <button
         class="block rounded-sm px-3 py-1 mx-auto w-72 bg-yellow-400 hover:bg-yellow-500 text-stone-900 font-bold disabled:bg-stone-700"
-        @click="onSubmit(form)"
+        type="submit"
         :disabled="loading || passwordMismatch || someFieldIsEmpty"
         >
           Update Now

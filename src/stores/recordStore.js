@@ -5,65 +5,65 @@ import { Find, Create, Update, Delete } from '../services/recordAPI'
 export const useRecordStore = defineStore('records', () => {
   const records = ref([])
 
-  const useService = (Service, arg, mutation, pastVerb) => {
-    return new Promise((resolve, reject) => {
-      Service(arg)
-        .then((response) => {
-          const { data } = response
-          mutation(data)
-        })
-        .then(() => resolve(`Record(s) ${pastVerb}.`))
-        .catch((error) => {
-          let feedback = `Your record(s) could not be ${pastVerb}.\n`
-          if (error.response !== undefined) feedback += error.response.data
-          else feedback += error.message
-          reject(feedback)
-        })
-    })
-  }
-
-  function getRecords(fundsIDs) {
-    const Service = Find
-    const arg = fundsIDs
-    const mutation = (data) => records.value = [...data]
-    const pastVerb = 'loaded'
-    return useService(Service, arg, mutation, pastVerb)
-  }
-
-  function createRecord(record) {
-    const Service = Create
-    const arg = record
-    const mutation = (data) => {
+  const mutations = {
+    getRecords: (data) => {
+      records.value = [...data]
+      return 'Your records were loaded.'
+    },
+    createRecord: (data) => {
       const [createdRecord] = data
       records.value.push(createdRecord)
-    }
-    const pastVerb = 'created'
-    return useService(Service, arg, mutation, pastVerb)
-  }
-  
-  function updateRecord(record) {
-    const Service = Update
-    const arg = record
-    const mutation = (data) => {
+      return 'Your record was created.'
+    },
+    updateRecord: (data) => {
       const [updatedRecord] = data
-      const index = records.value.findIndex(f => f._id === updatedRecord._id)
+      const index = records.value.findIndex(record => record._id === updatedRecord._id)
       records.value.splice(index, 1, updatedRecord)
-    }
-    const pastVerb = 'updated'
-    return useService(Service, arg, mutation, pastVerb)
-  }
-  
-  function deleteRecord(recordID) {
-    const Service = Delete
-    const arg = recordID
-    const mutation = (data) => {
+      return 'Your record was updated.'
+    },
+    deleteRecord: (data) => {
       const [deletedRecord] = data
       const index = records.value.findIndex(f => f._id === deletedRecord._id)
       records.value.splice(index, 1)
+      return 'Your record was deleted.'
     }
-    const pastVerb = 'deleted'
-    return useService(Service, arg, mutation, pastVerb)
   }
+  
+  const useService = ({ service, data, mutation }) => new Promise((resolve, reject) => service(data)
+    .then((response) => resolve(
+      mutation(response.data)
+    ))
+    .catch((error) => {
+      let feedback = 'An error was detected while operating your records.\n'
+      if (error.response !== undefined) feedback += error.response.data
+      else feedback += error.message
+      reject(feedback)
+    })
+  )
 
+  const getRecords = (fundsIDs) => useService({
+    service: Find,
+    data: fundsIDs,
+    mutation: mutations.getRecords
+  })
+
+  const createRecord = (record) => useService({
+    service: Create,
+    data: record,
+    mutation: mutations.createRecord
+  })
+
+  const updateRecord = (record) => useService({
+    service: Update,
+    data: record,
+    mutation: mutations.updateRecord
+  })
+  
+  const deleteRecord = (recordID) => useService ({
+    service: Delete,
+    data: recordID,
+    mutation: mutations.deleteRecord
+  })
+  
   return { records, getRecords, createRecord, updateRecord, deleteRecord }
 })

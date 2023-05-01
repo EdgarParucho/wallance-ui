@@ -162,12 +162,12 @@ function onSave(record, editing) {
   )
   Promise.all(makePromises(actions))
     .then((responses) => {
-      const message = responses.map(response => response.message).join('\n')
+      const message = responses.join('\n')
       alert(message)
       emit('close-form')
     })
     .catch((responses) => {
-      const message = responses.map(response => response.message).join('\n')
+      const message = responses.join('\n')
       alert(message)
       loading.value = true
     })
