@@ -98,8 +98,10 @@ function validateForm() {
 function validateEmail(email) {
   loading.value = true
   userStore.requestOTP(email)
-    .then((response) => alert(response))
-    .then(() => validatingEmail.value = true)
+    .then((response) => {
+      alert(response)
+      validatingEmail.value = true
+    })
     .catch((error) => alert(error))
     .finally(() => loading.value = false)
 }

@@ -75,7 +75,6 @@ function validateFormat(email) {
   return emailIsValid
 }
 
-// Turn this into a computed object. Set the properties to use it for errors highlights.
 function validateForm() {
   let formValidation = { failed: false, feedback: '' }
 
@@ -93,18 +92,23 @@ function validateForm() {
 function postLogin() {
   const userID = userStore.session.user._id
   fundStore.getFunds(userID)
-    .then((message) => alert(message))
-    .then(() => router.push('/dashboard'))
+    .then((message) => {
+      alert(message)
+      router.push('/dashboard')
+    })
     .catch((message) => alert(message))
 }
 
-async function handleSubmit() {
+function handleSubmit() {
   const formValidation = validateForm()
   if(formValidation.failed) return alert(formValidation.feedback)
   loading.value = true
-  const login = await userStore.login(form.value)
-  alert(login.message)
-  if(login.succeed) postLogin()
-  loading.value = false
+  userStore.login(form.value)
+    .then((message) => {
+      alert(message)
+      postLogin()
+    })
+    .catch((message) => alert(message))
+    .finally(() => loading.value = false)
 }
 </script>
