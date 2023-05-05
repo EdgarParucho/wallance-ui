@@ -9,8 +9,8 @@
             class="px-2 text-stone-50 mb-2 bg-transparent w-full rounded-md border-stone-400 focus:outline-0 active:outline-0"
             required v-model="record.sourceID">
             <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="fund in fundStore.funds"
-              :key="fund._id" :value="fund._id" :disabled="fund.savings < 1">
-              {{ fund.name }} (${{ fund.savings }})
+              :key="fund._id" :value="fund._id" :disabled="fund.balance < 1">
+              {{ fund.name }} (${{ fund.balance }})
             </option>
           </select>
         </div>
@@ -22,7 +22,7 @@
             required :disabled="record.sourceID === null" v-model="record.targetID">
             <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="fund in fundStore.funds"
               :key="fund._id" :value="fund._id" :disabled="fund._id === record.sourceID">
-              {{ fund.name }} (${{ fund.savings }})
+              {{ fund.name }} (${{ fund.balance }})
             </option>
           </select>
         </div>
@@ -48,7 +48,7 @@
             <input type="number" name="amount" id="amount"
               class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white pl-6 text-right"
               placeholder="0.00" v-model.number="record.amount" required :min="1" :disabled="record.sourceID === null"
-              :max="sourceFund?.savings">
+              :max="sourceFund?.balance">
           </div>
         </div>
 
@@ -120,6 +120,7 @@ const recordStore = useRecordStore()
 const fundStore = useFundStore()
 const userStore = useUserStore()
 
+const userID = userStore.session.user._id;
 const loading = ref(false)
 const amountPickers = [
   { name: 'All', divisor: 1 },
@@ -134,14 +135,14 @@ const newRecord = {
   sourceID: '',
   targetID: '',
   type: 0,
-  user: userStore.session.user._id
+  user: userID
 }
 const record = reactive(props.editing ? { ...props.originalRecord } : newRecord)
 const sourceFund = computed(() => findFundByID(record.sourceID))
 
 function pickerIsApplied({ divisor }) {
   if (sourceFund.value === undefined) return false
-  const pickerIsApplied = (record.amount === (sourceFund.value.savings / divisor))
+  const pickerIsApplied = (record.amount === (sourceFund.value.balance / divisor))
   return pickerIsApplied
 }
 
@@ -150,17 +151,18 @@ function findFundByID(fundID) {
 }
 
 function useAmountPicker(divisor) {
-  record.amount = (sourceFund.value.savings / divisor)
+  record.amount = (sourceFund.value.balance / divisor)
 }
 
 function onSave(record, editing) {
-  const actions = defineActions(record, editing)
-  const makePromises = (actions) => Array.from(actions, ({ action, arg }) => action(arg))
-  const unbalancedFund = actions.find(action => action.arg.savings < 0)
+  loading.value = true;
+  const actions = defineActions(record, editing);
+  const unbalancedFund = actions.onFund.find(action => action.data.body.balance < 0);
   if (unbalancedFund !== undefined) return alert(
-    `Cannot update, "${unbalancedFund.arg.name}" would have a negative balance.`
-  )
-  Promise.all(makePromises(actions))
+    `Cannot update, "${unbalancedFund.data.name}" would have a negative balance.`
+    );
+  const makePromises = (actions) => Array.from(actions, ({ action, data }) => action(data));
+  Promise.all(makePromises([...actions.onRecord, ...actions.onFund]))
     .then((responses) => {
       const message = responses.join('\n')
       alert(message)
@@ -169,43 +171,52 @@ function onSave(record, editing) {
     .catch((responses) => {
       const message = responses.join('\n')
       alert(message)
-      loading.value = true
+      loading.value = false
     })
 }
 
 function defineActions(record, editing) {
-  const actions = []
+  const actions = { onRecord: [], onFund: [] };
 
-  const actionOnRecord = (editing) ? recordStore.updateRecord : recordStore.createRecord
-  const actionOnFund = fundStore.updateFund
-  actions.push({ action: actionOnRecord, arg: record })
-
+  actions.onRecord.push({
+    action: (editing) ? recordStore.updateRecord : recordStore.createRecord,
+    data: record
+  });
+  
   const fundsToUpdate = defineFundsToUpdate(record, editing)
-  for (const fundToUpdate of fundsToUpdate) actions.push({ action: actionOnFund, arg: fundToUpdate })
+  for (const fundToUpdate of fundsToUpdate) {
+    const { _id, balance } = fundToUpdate;
+    actions.onFund.push({ action: fundStore.updateFund, data: { userID, _id, body: { balance } } })
+  }
   return actions
 }
 
 function defineFundsToUpdate(record, editing) {
-  const fundsToUpdate = []
-  const notIncluded = ({ _id }) => fundsToUpdate.find(fund => fund._id === _id) === undefined
-  if (editing) {
-    const originalSource = findFundByID(props.originalRecord.sourceID)
-    const originalTarget = findFundByID(props.originalRecord.targetID)
-    const reversedSource = { ...originalSource, savings: originalSource.savings + props.originalRecord.amount }
-    const reversedTarget = { ...originalTarget, savings: originalTarget.savings - props.originalRecord.amount }
-    fundsToUpdate.push(reversedSource, reversedTarget)
-  }
-  const recordSource = findFundByID(record.sourceID)
-  const recordTarget = findFundByID(record.targetID)
-  if (notIncluded(recordSource)) fundsToUpdate.push({ ...recordSource })
-  if (notIncluded(recordTarget)) fundsToUpdate.push({ ...recordTarget })
-  const applyNewRecordEffect = (fundToUpdate) => {
-    if (record.sourceID === fundToUpdate._id) fundToUpdate.savings -= record.amount
-    if (record.targetID === fundToUpdate._id) fundToUpdate.savings += record.amount
-  }
-  for (const fundToUpdate of fundsToUpdate) applyNewRecordEffect(fundToUpdate)
+  const fundsToUpdate = editing ? reversedFunds : [];
+  const sourceFund = findFundByID(record.sourceID);
+  const targetFund = findFundByID(record.targetID);
+  
+  const notAlreadyIncluded = ({ _id }) => fundsToUpdate.find(fundToUpdate => fundToUpdate._id === _id) === undefined;
+  if (notAlreadyIncluded(sourceFund)) fundsToUpdate.push({ ...sourceFund });
+  if (notAlreadyIncluded(targetFund)) fundsToUpdate.push({ ...targetFund });
+
+  fundsToUpdate.forEach(applyNewRecordEffect);
   return fundsToUpdate
 }
+
+const applyNewRecordEffect = (fundToUpdate) => {
+  if (record.sourceID === fundToUpdate._id) fundToUpdate.balance -= record.amount
+  if (record.targetID === fundToUpdate._id) fundToUpdate.balance += record.amount
+}
+
+const reversedFunds = () => {
+  const originalSource = findFundByID(props.originalRecord.sourceID)
+  const originalTarget = findFundByID(props.originalRecord.targetID)
+  const reversedSource = { ...originalSource, balance: originalSource.balance + props.originalRecord.amount }
+  const reversedTarget = { ...originalTarget, balance: originalTarget.balance - props.originalRecord.amount }
+  return [{ reversedSource, reversedTarget }]
+}
+  
 </script>
 
 <style scoped>

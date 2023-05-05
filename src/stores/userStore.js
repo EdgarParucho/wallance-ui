@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
-import { Login, GetOTP, Create, UpdateEmail, UpdatePassword, DeleteAccount } from '../services/userAPI'
+import { Create, UpdateEmail, UpdatePassword, DeleteAccount } from '../services/userAPI'
+import { Login, GetOTP } from '../services/sessionAPI'
 import { useLocalStorage } from '@vueuse/core'
 import { useFundStore } from './fundStore';
 
