@@ -120,7 +120,7 @@ const recordStore = useRecordStore()
 const fundStore = useFundStore()
 const userStore = useUserStore()
 
-const userID = userStore.session.user._id;
+const userID = userStore.userID;
 const loading = ref(false)
 const amountPickers = [
   { name: 'All', divisor: 1 },
@@ -160,18 +160,18 @@ function onSave(record, editing) {
   const unbalancedFund = actions.onFund.find(action => action.data.body.balance < 0);
   if (unbalancedFund !== undefined) return alert(
     `Cannot update, "${unbalancedFund.data.name}" would have a negative balance.`
-    );
+  );
   const makePromises = (actions) => Array.from(actions, ({ action, data }) => action(data));
   Promise.all(makePromises([...actions.onRecord, ...actions.onFund]))
     .then((responses) => {
-      const message = responses.join('\n')
-      alert(message)
-      emit('close-form')
+      const message = responses.join('\n');
+      alert(message);
+      emit('close-form');
     })
     .catch((responses) => {
-      const message = responses.join('\n')
-      alert(message)
-      loading.value = false
+      const message = responses.join('\n');
+      alert(message);
+      loading.value = false;
     })
 }
 

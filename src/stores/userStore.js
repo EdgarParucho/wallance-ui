@@ -5,8 +5,9 @@ import { useLocalStorage } from '@vueuse/core'
 import { useFundStore } from './fundStore';
 
 export const useUserStore = defineStore('user', () => {
-  const session = useLocalStorage('vueUseUser', { user: {}, token: null })
-  const fundStore = useFundStore()
+  const session = useLocalStorage('vueUseUser', { user: {}, token: null });
+  const fundStore = useFundStore();
+  const userID = session.value.user._id;
 
   const mutations = {
     login: (data) => {
@@ -86,5 +87,5 @@ export const useUserStore = defineStore('user', () => {
       return feedback
     })
 
-  return { session, login, requestOTP, sign, updatePassword, updateEmail, logout, deleteAccount };
+  return { session, login, requestOTP, sign, updatePassword, updateEmail, logout, deleteAccount, userID };
 });

@@ -15,19 +15,16 @@ export const useFundStore = defineStore('fund', () => {
       return 'Your funds were loaded.'
     },
     createFund: (data) => {
-      const [createdFund] = data
-      funds.value.push(createdFund)
+      funds.value.push(data)
       return 'Your fund was created.'
     },
     updateFund: (data) => {
-      const updatedFund = data;
-      const index = funds.value.findIndex(fund => fund._id === updatedFund._id);
-      funds.value.splice(index, 1, updatedFund);
+      const index = funds.value.findIndex(fund => fund._id === data._id);
+      funds.value.splice(index, 1, data);
       return 'Your fund was updated.'
     },
     deleteFund: (data) => {
-      const _id = data;
-      const index = funds.value.findIndex(fund => fund._id === _id);
+      const index = funds.value.findIndex(fund => fund._id === data);
       funds.value.splice(index, 1);
       if (recordStore.records.length > 0) {
         const fundsIDs = funds.value.map(fund => fund._id);

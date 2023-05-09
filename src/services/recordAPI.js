@@ -1,6 +1,6 @@
-import API from './API'
+import API from './API';
 
-export const Find = (fundsIDs) => API.post('/records', fundsIDs)
-export const Create = (record) => API.post('/records', record)
-export const Update = (record) => API.put('/records', record)
-export const Delete = (recordID) => API.delete(`/records/${recordID}`)
+export const Find = (userFunds) => API.get(`/records/${userFunds}`);
+export const Create = (body) => API.post('/records', body);
+export const Update = ({ userID, _id, body }) => API.patch(`/records/${userID}/${_id}`, body);
+export const Delete = ({ userID, _id }) => API.delete(`/records/${userID}/${_id}`);
