@@ -4,14 +4,14 @@
       <h3 class="text-2xl text-center">
         Deleting my account
       </h3>
-      <form @submit.prevent="onSubmit(token)">
+      <form @submit.prevent="onSubmit(OTP)">
         <fieldset class="my-6">
           <input
           type="text"
           class="block my-2 p-3 w-72 mx-auto rounded-sm text-stone-800"
           placeholder="Validation"
           required
-          v-model.number="token"
+          v-model.number="OTP"
           >
         </fieldset>
         <button
@@ -30,21 +30,24 @@
 import { useRouter } from 'vue-router';
 import { computed, ref } from 'vue'
 import { useUserStore } from '../../stores/userStore';
+import { useSessionStore } from '../../stores/sessionStore';
 import Dialog from '../helper/Dialog.vue';
+import { storeToRefs } from 'pinia';
 
-const userStore = useUserStore()
+const userStore = useUserStore();
+const sessionStore = useSessionStore();
 const emit = defineEmits(['close-form'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
 const router = useRouter()
 
 const loading = ref(false)
-const token = ref('')
+const OTP = ref('')
+const { userID } = storeToRefs(userStore);
+const fieldIsEmpty = computed(() => OTP.value === '')
 
-const fieldIsEmpty = computed(() => token.value === '')
-
-function onSubmit(token) {
+function onSubmit(OTP) {
   loading.value = true
-  userStore.deleteAccount({ userID: userStore.session.user._id, token })
+  userStore.erase({ userID: userID.value, OTP })
     .then((response) => {
       alert(response)
       logout()
@@ -54,7 +57,7 @@ function onSubmit(token) {
 }
 
 function logout() {
-  userStore.logout()
+  sessionStore.logout()
   router.replace('/')
 }
 </script>

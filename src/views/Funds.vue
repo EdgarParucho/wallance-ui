@@ -49,18 +49,18 @@ const userStore = useUserStore();
 let fundFormIsOpen = ref(false)
 let balanceFormIsOpen = ref(false)
 let editingFund = null
-const queryInProgress = ref(false)
-const userID = userStore.session.user._id;
+const loading = ref(false)
+const userID = userStore.userID;
 const defaultFundID = fundStore.defaultFund._id;
 
 function confirmDeletion(fund) {
-  queryInProgress.value = true
+  loading.value = true
   const deleteIsConfirmed = confirm(`Please confirm if you want to delete "${fund.name}". The action is irreversible.`)
   if(!deleteIsConfirmed) return
   fundStore.deleteFund({ userID, _id: fund._id, defaultFundID })
     .then((message) => alert(message))
     .catch((message) => alert(message))
-    .finally(() => queryInProgress.value = false)
+    .finally(() => loading.value = false)
 }
 
 function editFund(fund) {

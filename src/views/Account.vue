@@ -44,7 +44,7 @@
       <div class="my-4">
         <h6 class="font-semibold">My Password</h6>
         <button
-        @click="passwordFormIsOpen = true"
+        @click="updatePassword"
         class="flex w-full justify-center rounded-md bg-stone-800 mt-2 p-2 text-sm text-white shadow-sm hover:bg-stone-700 font-semibold"
         >
           Update My Password
@@ -74,16 +74,26 @@ import { useUserStore } from '../stores/userStore';
 import UpdateEmail from '../components/account/UpdateEmail.vue';
 import UpdatePassword from '../components/account/UpdatePassword.vue';
 import DeleteAccount from '../components/account/DeleteAccount.vue'
+import { storeToRefs } from 'pinia';
 
-const userStore = useUserStore()
+const userStore = useUserStore();
 
-const user = reactive({ ...userStore.session.user })
+const { user } = storeToRefs(userStore);
 const emailFormIsOpen = ref(false)
 const passwordFormIsOpen = ref(false)
 const deleteFormIsOpen = ref(false)
+
 function onDelete() {
-  // request an email token to confirm deletion in form
-  alert('A code has ben sent to your email, please introduce it in the next form to confirm the action.')
-  deleteFormIsOpen.value = true
+  userStore.preValidate({ email: user.value.email, mustBeNew: false })
+    .then((response) => alert(response))
+    .then(() => deleteFormIsOpen.value = true)
+    .catch((error) => alert(error))
+}
+
+function updatePassword() {
+  userStore.preValidate({ email: user.value.email, mustBeNew: false })
+    .then((response) => alert(response))
+    .then(() => passwordFormIsOpen.value = true)
+    .catch((error) => alert(error))
 }
 </script>

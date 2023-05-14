@@ -19,7 +19,7 @@
           <label for="target" class="text-xs font-semibold">Target</label>
           <select id="target" name="target"
             class="px-2 text-stone-50 mb-2 bg-transparent w-full rounded-md border-stone-400 disabled:border-stone-700 focus:outline-0 active:outline-0"
-            required :disabled="record.sourceID === null" v-model="record.targetID">
+            required :disabled="record.sourceID === ''" v-model="record.targetID">
             <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="fund in fundStore.funds"
               :key="fund._id" :value="fund._id" :disabled="fund._id === record.sourceID">
               {{ fund.name }} (${{ fund.balance }})
@@ -32,7 +32,8 @@
           <button v-for="picker, i in amountPickers" :key="i"
             class="text-xs font-bold rounded-xl w-20 m-1 py-1 transition-colors disabled:text-opacity-50"
             :class="pickerIsApplied(picker) ? 'bg-yellow-500 hover:bg-yellow-400 text-stone-900' : 'bg-stone-900 text-white hover:bg-stone-700'"
-            @click="useAmountPicker(picker.divisor)" type="button" :disabled="record.sourceID === null">
+            @click="useAmountPicker(picker.divisor)" type="button" :disabled="record.sourceID === ''"  
+          >
             {{ picker.name }}
           </button>
         </div>
@@ -70,7 +71,7 @@
           <label for="note" class="text-xs font-semibold">Note</label>
           <textarea id="note"
             class="text-sm text-stone-200 bg-transparent w-full border-0 border-b focus:outline-0 active:outline-0 focus:ring-0 active:ring-0"
-            placeholder="A creative description" maxlength="80" v-model="record.note" />
+            placeholder="A creative description" maxlength="80" v-model="record.note" required />
         </div>
 
         <div class="h-1/3 flex items-center justify-end my-4 space-x-2">
@@ -82,7 +83,7 @@
           <button
             class="text-yellow-400 bg-stone-900 hover:bg-stone-700 focus:ring-2 focus:outline-none focus:ring-stone-600 font-bold rounded-md text-sm w-1/3 py-2 transition-colors disabled:text-stone-300 disabled:bg-stone-700"
             type="submit" @click.prevent="onSave(record, editing)"
-            :disabled="loading">
+            :disabled="loading || someFieldIsRequired">
             Save
           </button>
         </div>
@@ -138,7 +139,11 @@ const newRecord = {
   user: userID
 }
 const record = reactive(props.editing ? { ...props.originalRecord } : newRecord)
+
 const sourceFund = computed(() => findFundByID(record.sourceID))
+const someFieldIsRequired = computed(() => {
+  return record.amount <= 0 || record.note === '' || record.sourceFund === '' || record.targetID === ''
+})
 
 function pickerIsApplied({ divisor }) {
   if (sourceFund.value === undefined) return false
@@ -158,9 +163,7 @@ function onSave(record, editing) {
   loading.value = true;
   const actions = defineActions(record, editing);
   const unbalancedFund = actions.onFund.find(action => action.data.body.balance < 0);
-  if (unbalancedFund !== undefined) return alert(
-    `Cannot update, "${unbalancedFund.data.name}" would have a negative balance.`
-  );
+  if (unbalancedFund !== undefined) return alert('Cannot update. A fund would result in a negative balance.');
   const makePromises = (actions) => Array.from(actions, ({ action, data }) => action(data));
   Promise.all(makePromises([...actions.onRecord, ...actions.onFund]))
     .then((responses) => {
@@ -168,9 +171,8 @@ function onSave(record, editing) {
       alert(message);
       emit('close-form');
     })
-    .catch((responses) => {
-      const message = responses.join('\n');
-      alert(message);
+    .catch((response) => {
+      alert(response);
       loading.value = false;
     })
 }
@@ -180,9 +182,9 @@ function defineActions(record, editing) {
 
   actions.onRecord.push({
     action: (editing) ? recordStore.updateRecord : recordStore.createRecord,
-    data: record
+    data: (editing) ? { userID, _id: record._id, body: updatesInRecord() } : record 
   });
-  
+
   const fundsToUpdate = defineFundsToUpdate(record, editing)
   for (const fundToUpdate of fundsToUpdate) {
     const { _id, balance } = fundToUpdate;
@@ -192,7 +194,7 @@ function defineActions(record, editing) {
 }
 
 function defineFundsToUpdate(record, editing) {
-  const fundsToUpdate = editing ? reversedFunds : [];
+  const fundsToUpdate = editing ? reversedFunds() : [];
   const sourceFund = findFundByID(record.sourceID);
   const targetFund = findFundByID(record.targetID);
   
@@ -214,7 +216,15 @@ const reversedFunds = () => {
   const originalTarget = findFundByID(props.originalRecord.targetID)
   const reversedSource = { ...originalSource, balance: originalSource.balance + props.originalRecord.amount }
   const reversedTarget = { ...originalTarget, balance: originalTarget.balance - props.originalRecord.amount }
-  return [{ reversedSource, reversedTarget }]
+  return [reversedSource, reversedTarget]
+}
+
+function updatesInRecord() {
+  const keys = Object.keys(record);
+  const entries = [];
+  for (const key of keys) if (props.originalRecord[key] !== record[key]) entries.push([key, record[key]])
+  const updates = Object.fromEntries(entries);
+  return updates
 }
   
 </script>

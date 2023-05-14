@@ -1,23 +1,24 @@
 <script setup>
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useUserStore } from '../../stores/userStore';
-import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue'
-import { Bars3Icon } from '@heroicons/vue/24/outline'
+import { useSessionStore } from '../../stores/sessionStore';
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
+import { Bars3Icon } from '@heroicons/vue/24/outline';
 
-const route = useRoute()
-const router = useRouter()
-const userStore = useUserStore()
-const atHome = computed(() => route.fullPath === '/')
+const route = useRoute();
+const router = useRouter();
+const sessionStore = useSessionStore();
+const atHome = computed(() => route.fullPath === '/');
 
 function logout() {
-  userStore.logout()
+  sessionStore.logout()
   router.replace('/')
 }
 </script>
 
 <template>
-  <div v-if="!atHome" class="flex justify-end items-center px-4 rounded-md bg-stone-900 w-full fixed left-0 top-0 h-16">
+  <div v-if="!atHome" class="flex justify-between items-center px-4 rounded-md bg-stone-900 w-full fixed left-0 top-0 h-16">
+    <router-link to="/dashboard" class="font-bold">Wallance</router-link>
     <Menu as="div" class="relative inline-block text-left">
         <MenuButton class="inline-flex justify-center rounded-full bg-stone-800 p-2 text-sm font-semibold text-white shadow-sm hover:bg-stone-700">
           <Bars3Icon class="w-8" />

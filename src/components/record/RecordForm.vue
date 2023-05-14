@@ -205,7 +205,7 @@ const record = (props.editing)
   });
 
 const loading = ref(false);
-const sourceList = computed(() => (record.type === 1) ? userStore.session.user.creditSources : fundStore.funds);
+const sourceList = computed(() => (record.type === 1) ? userStore.user.creditSources : fundStore.funds);
 const sourceFund = computed(() => findFundByID(record.sourceID));
 const fundUpdateIsRequired = computed(() => {
   if (!props.editing) return true
@@ -252,7 +252,7 @@ function defineActions(record, editing) {
     const body = Object.fromEntries(entries);
     return body
   }
-  
+
   actions.onRecord.push({
     action: (editing) ? recordStore.updateRecord : recordStore.createRecord,
     data: (editing) ? { userID, _id: record._id, body: updatedRecordBody() } : record

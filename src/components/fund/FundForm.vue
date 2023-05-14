@@ -45,7 +45,7 @@ const emit = defineEmits(['close-form'])
 const fundStore = useFundStore()
 const userStore = useUserStore()
 
-const userID = userStore.session.user._id;
+const userID = userStore.userID;
 const fund = ref({
   name: '',
   description: '',

@@ -34,14 +34,15 @@
           class="block my-2 p-3 w-72 mx-auto rounded-sm text-stone-800"
           placeholder="Validation"
           required
-          v-model="token"
+          v-model.number="OTP"
           >
         </fieldset>
         <button
         v-if="validatingEmail"
         class="block rounded-sm px-3 py-1 mx-auto w-72 bg-yellow-400 hover:bg-yellow-500 text-stone-900 font-bold disabled:bg-stone-700"
-        @click="completeRegistration(form, token)"
+        @click="sign(OTP, form)"
         :disabled="missingValidation"
+        type="button"
         >
           Create my account
         </button>
@@ -50,6 +51,7 @@
         class="block rounded-sm px-3 py-1 mx-auto w-72 bg-yellow-400 hover:bg-yellow-500 text-stone-900 font-bold disabled:bg-stone-700"
         @click="validateEmail(form.email)"
         :disabled="loading || passwordMismatch || someFieldIsEmpty"
+        type="button"
         >
           Validate My Email
         </button>
@@ -63,24 +65,24 @@ import { computed, ref } from 'vue'
 import { useUserStore } from '../../stores/userStore';
 import Dialog from '../helper/Dialog.vue';
 
-const userStore = useUserStore()
+const userStore = useUserStore();
 const emit = defineEmits(['close-form'])
-const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
+const props = defineProps({ formIsOpen: { type: Boolean, required: true } });
 
-const form = ref({ email: '', password: '', creditSources: [] })
-const reEnteredPassword = ref('')
-const loading = ref(false)
-const token = ref('')
-const validatingEmail = ref(false)
+const form = ref({ email: '', password: '' });
+const reEnteredPassword = ref('');
+const loading = ref(false);
+const OTP = ref(0);
+const validatingEmail = ref(false);
 
-const passwordMismatch = computed(() => form.value.password !== reEnteredPassword.value)
-const someFieldIsEmpty = computed(() => form.value.password === '' || form.value.email === '')
-const missingValidation = computed(() => token.value === '')
+const passwordMismatch = computed(() => form.value.password !== reEnteredPassword.value);
+const someFieldIsEmpty = computed(() => form.value.password === '' || form.value.email === '');
+const missingValidation = computed(() => OTP.value === '');
 
 function validateFormat(email) {
   const emailformat = new RegExp(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/);
-  const emailIsValid = emailformat.test(email)
-  return emailIsValid
+  const emailIsValid = emailformat.test(email);
+  return emailIsValid;
 }
 
 function validateForm() {
@@ -97,7 +99,7 @@ function validateForm() {
 
 function validateEmail(email) {
   loading.value = true
-  userStore.requestOTP(email)
+  userStore.preValidate({ email, mustBeNew: true })
     .then((response) => {
       alert(response)
       validatingEmail.value = true
@@ -106,14 +108,14 @@ function validateEmail(email) {
     .finally(() => loading.value = false)
 }
 
-function completeRegistration(user, token) {
+function sign(OTP, form) {
   const formValidation = validateForm()
   if(formValidation.failed) return alert(formValidation.feedback)
   loading.value = true
-  userStore.sign({ user, token })
+  userStore.create({ OTP, ...form })
     .then((response) => {
-      alert(response)
-      emit('close-form')
+      alert(response);
+      emit('close-form');
     })
     .catch((error) => alert(error))
     .finally(() => loading.value = false)
