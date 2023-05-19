@@ -49,15 +49,14 @@ const userID = userStore.userID;
 const fund = ref({
   name: '',
   description: '',
-  isDefault: false,
-  owner: userID
+  isDefault: false
 });
 const loading = ref(false);
 
 const editing = props.editingFund !== null
 if (editing) {
-  const { name, description, owner } = props.editingFund;
-  fund.value = { name, description, owner };
+  const { name, description } = props.editingFund;
+  fund.value = { name, description };
 }
 
 function handleSubmit(body) {

@@ -31,20 +31,32 @@ export const useUserStore = defineStore('user', () => {
     })
   )
 
-  const update = (data) => {
+  const updateEmail = (data) => {
     return new Promise((resolve, reject) => Update(data)
-    .then((response) => {
-      if (typeof response.data === String) resolve(response.data);
-      else user.value = { ...response.data };
-      resolve('User updated successfully');
-    })
-    .catch((error) => {
-      let feedback = `Your user could not be updated.\n`;
-      if (error.response !== undefined) feedback += error.response.data;
-      else feedback += error.message;
-      reject(feedback);
-    })
+      .then((response) => {
+        user.value = { ...response.data };
+        resolve('Email updated successfully');
+      })
+      .catch((error) => {
+        let feedback = `Your email could not be updated.\n`;
+        if (error.response !== undefined) feedback += error.response.data;
+        else feedback += error.message;
+        reject(feedback);
+      })
   )}
+
+  const updatePassword = (data) => {
+    return new Promise((resolve, reject) => Update(data)
+      .then(() => {
+        resolve('Password updated successfully');
+      })
+      .catch((error) => {
+        let feedback = `Your password could not be updated.\n`;
+        if (error.response !== undefined) feedback += error.response.data;
+        else feedback += error.message;
+        reject(feedback);
+      })
+    )}
 
   const erase = (data) => new Promise((resolve, reject) => Delete(data)
     .then(() => {
@@ -59,5 +71,5 @@ export const useUserStore = defineStore('user', () => {
     })
   )
 
-  return { user, userID, preValidate, create, update, erase };
+  return { user, userID, preValidate, create, updateEmail, updatePassword, erase };
 });

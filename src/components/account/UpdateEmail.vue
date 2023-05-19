@@ -72,7 +72,7 @@ const emailFormatIsValid = computed(() => {
 function updateEmail(userID, OTP, email) {
   if (currentEqualsNew.value) return alert('The email you entered is already your current address.')
   loading.value = true
-  userStore.update({ userID, OTP, body: { email } })
+  userStore.updateEmail({ userID, OTP, body: { email } })
     .then((response) => {
       alert(response)
       emit('close-form')

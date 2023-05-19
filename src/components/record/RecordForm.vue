@@ -68,7 +68,7 @@
           name="sourceID"
           class="w-1/2 bg-transparent border-transparent border-b-stone-300 text-stone-700 dark:text-stone-300 border-stone-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
           required
-          v-model="record.sourceID"
+          v-model.number="record.sourceID"
           >
             <option
             class="text-white bg-stone-800 disabled:text-opacity-50"
@@ -198,8 +198,8 @@ const record = (props.editing)
     amount: 0,
     date: new Date().toISOString().slice(0, 10),
     note: '',
-    sourceID: '',
-    targetID: '',
+    sourceID: 0,
+    targetID: 0,
     type: 2,
     user: userID
   });
@@ -295,7 +295,7 @@ function defineFundToReverse(record) {
 watch(
   () => record.type,
   () => {
-    record.sourceID = ''
+    record.sourceID = 0
     record.amount = 0
   }
 )
@@ -303,8 +303,8 @@ watch(
   () => record.sourceID,
   (sourceID) => {
     if (record.type === 1) record.targetID = fundStore.defaultFund._id
-    else if (record.sourceID !== '') record.targetID = sourceID
-    else record.targetID = ''
+    else if (record.sourceID !== 0) record.targetID = sourceID
+    else record.targetID = 0
   }
 )
 </script>

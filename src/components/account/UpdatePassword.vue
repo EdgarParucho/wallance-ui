@@ -63,7 +63,7 @@ const someFieldIsEmpty = computed(() => {
 
 function onSubmit({ OTP, newPassword }) {
   loading.value = true
-  userStore.update({ OTP, userID, body: { password: newPassword } })
+  userStore.updatePassword({ OTP, userID, body: { password: newPassword } })
     .then((response) => {
       alert(response)
       emit('close-form')

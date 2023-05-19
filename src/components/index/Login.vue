@@ -60,7 +60,7 @@ const emit = defineEmits(['close-form']);
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } });
 
 const forgotPassword = ref(false);
-const form = ref({ email: 'edpn@gmail.com', password: '12345678' });
+const form = ref({ email: 'example@email.com', password: 'password' });
 let loading = ref(false);
 
 function handlePassRecovery() {
