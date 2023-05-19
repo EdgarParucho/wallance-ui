@@ -1,9 +1,9 @@
-import { defineStore } from 'pinia'
-import { ref } from 'vue'
-import { Find, Create, Update, Delete } from '../services/recordAPI'
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
+import { Find, Create, Update, Delete } from '../services/recordAPI';
 
 export const useRecordStore = defineStore('records', () => {
-  const records = ref([])
+  const records = ref([]);
 
   const mutations = {
     getRecords: (data) => {
@@ -11,24 +11,21 @@ export const useRecordStore = defineStore('records', () => {
       return 'Your records were loaded.'
     },
     createRecord: (data) => {
-      const [createdRecord] = data
-      records.value.push(createdRecord)
+      records.value.push(data)
       return 'Your record was created.'
     },
     updateRecord: (data) => {
-      const [updatedRecord] = data
-      const index = records.value.findIndex(record => record._id === updatedRecord._id)
-      records.value.splice(index, 1, updatedRecord)
+      const index = records.value.findIndex(record => record._id === data._id)
+      records.value.splice(index, 1, data)
       return 'Your record was updated.'
     },
     deleteRecord: (data) => {
-      const [deletedRecord] = data
-      const index = records.value.findIndex(f => f._id === deletedRecord._id)
+      const index = records.value.findIndex(record => record._id === data)
       records.value.splice(index, 1)
       return 'Your record was deleted.'
     }
-  }
-  
+  };
+
   const useService = ({ service, data, mutation }) => new Promise((resolve, reject) => service(data)
     .then((response) => resolve(
       mutation(response.data)
@@ -36,34 +33,35 @@ export const useRecordStore = defineStore('records', () => {
     .catch((error) => {
       let feedback = 'An error was detected while operating your records.\n'
       if (error.response !== undefined) feedback += error.response.data
-      else feedback += error.message
+      else if (error.message !== undefined) feedback += error.message
+      else feedback += error
       reject(feedback)
     })
-  )
+  );
 
-  const getRecords = (fundsIDs) => useService({
+  const getRecords = (data) => useService({
     service: Find,
-    data: fundsIDs,
+    data,
     mutation: mutations.getRecords
-  })
+  });
 
-  const createRecord = (record) => useService({
+  const createRecord = (data) => useService({
     service: Create,
-    data: record,
+    data,
     mutation: mutations.createRecord
-  })
+  });
 
-  const updateRecord = (record) => useService({
+  const updateRecord = (data) => useService({
     service: Update,
-    data: record,
+    data,
     mutation: mutations.updateRecord
-  })
-  
-  const deleteRecord = (recordID) => useService ({
+  });
+
+  const deleteRecord = (data) => useService({
     service: Delete,
-    data: recordID,
+    data,
     mutation: mutations.deleteRecord
-  })
-  
-  return { records, getRecords, createRecord, updateRecord, deleteRecord }
+  });
+
+  return { records, getRecords, createRecord, updateRecord, deleteRecord };
 })

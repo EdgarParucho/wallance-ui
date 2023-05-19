@@ -10,7 +10,7 @@
     </div>
     <div class="h-1/3 w-full text-end first-letter:mr-1 mt-2">
       <span class="text-3xl text-white">
-        ${{ fund.savings }}
+        ${{ fund.balance }}
       </span>
       <p class="text-xs text-stone-300">
         {{ fund.lastUpdated }}
@@ -46,7 +46,7 @@ const fund = computed(() => fundStore.funds.find(f => f._id === props.id))
 
 function validateDeletion(fund) {
   if(fund.isDefault) return alert('Cannot delete the default fund.')
-  else if(fund.savings > 0) return alert('Cannot delete a fund containing savings. First, you must move the savings to another fund')
+  else if(fund.balance > 0) return alert('Cannot delete a fund with positive balance. First, you must move the balance to another fund.');
   emit('confirm-deletion', fund)
 }
 </script>

@@ -15,22 +15,22 @@ export const useFundStore = defineStore('fund', () => {
       return 'Your funds were loaded.'
     },
     createFund: (data) => {
-      const [createdFund] = data
-      funds.value.push(createdFund)
+      funds.value.push(data)
       return 'Your fund was created.'
     },
     updateFund: (data) => {
-      const [updatedFund] = data
-      const index = funds.value.findIndex(fund => fund._id === updatedFund._id)
-      funds.value.splice(index, 1, updatedFund)
+      const index = funds.value.findIndex(fund => fund._id === data._id);
+      funds.value.splice(index, 1, data);
       return 'Your fund was updated.'
     },
     deleteFund: (data) => {
-      const { deletedFund, deletedRecords, updatedRecords } = data
-      const index = funds.value.findIndex(fund => fund._id === deletedFund._id)
-      funds.value.splice(index, 1)
-      if (recordStore.records.length > 0) fixRelatedRecords(updatedRecords, deletedRecords)
-      return 'Your fund was deleted.'
+      const index = funds.value.findIndex(fund => fund._id === data);
+      funds.value.splice(index, 1);
+      if (recordStore.records.length > 0) {
+        const fundsIDs = funds.value.map(fund => fund._id);
+        recordStore.getRecords(fundsIDs);
+      }
+      return 'Your fund was deleted.';
     }
   }
   
@@ -46,40 +46,29 @@ export const useFundStore = defineStore('fund', () => {
     })
   )
 
-  const getFunds = (userID) => useService({
+  const getFunds = (data) => useService({
     service: Find,
-    data: userID,
+    data,
     mutation: mutations.getFunds
   })
 
-  const createFund = (fund) => useService({
+  const createFund = (data) => useService({
     service: Create,
-    data: fund,
+    data,
     mutation: mutations.createFund
   })
 
-  const updateFund = (fund) => useService({
+  const updateFund = (data) => useService({
     service: Update,
-    data: fund,
+    data,
     mutation: mutations.updateFund
   })
 
-  const deleteFund = (fundID) => useService ({
+  const deleteFund = (data) => useService({
     service: Delete,
-    data: fundID,
+    data,
     mutation: mutations.deleteFund
   })
-
-  function fixRelatedRecords(updatedRecords, deletedRecords) {
-    for (const updatedRecord of updatedRecords) {
-      const index = recordStore.records.findIndex(record => record._id === updatedRecord._id)
-      if (index !== -1) recordStore.records.splice(index, 1, updatedRecord)
-    }
-    for (const deletedRecord of deletedRecords) {
-      const index = recordStore.records.findIndex(record => record._id === deletedRecord._id)
-      if (index !== -1) recordStore.records.splice(index, 1)
-    }
-  }
 
   return { funds, defaultFund, getFunds, createFund, updateFund, deleteFund }
 })

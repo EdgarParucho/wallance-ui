@@ -50,18 +50,18 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router';
 import { useFundStore } from '../../stores/fundStore';
-import { useUserStore } from '../../stores/userStore';
+import { useSessionStore } from '../../stores/sessionStore';
 import Dialog from '../helper/Dialog.vue';
 
-const userStore = useUserStore()
-const fundStore = useFundStore()
-const router = useRouter()
-const emit = defineEmits(['close-form'])
-const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
+const sessionStore = useSessionStore();
+const fundStore = useFundStore();
+const router = useRouter();
+const emit = defineEmits(['close-form']);
+const props = defineProps({ formIsOpen: { type: Boolean, required: true } });
 
-const forgotPassword = ref(false)
-const form = ref({ email: 'edpn@gmail.com', password: 'anepicsong' })
-let loading = ref(false)
+const forgotPassword = ref(false);
+const form = ref({ email: 'example@email.com', password: 'password' });
+let loading = ref(false);
 
 function handlePassRecovery() {
   const recoveryIsConfirmed = confirm('The "Forgot password" field is checked. Confirm to recover your password or cancel to uncheck the field')
@@ -90,7 +90,7 @@ function validateForm() {
 }
 
 function postLogin() {
-  const userID = userStore.session.user._id
+  const userID = sessionStore.session.user._id
   fundStore.getFunds(userID)
     .then((message) => {
       alert(message)
@@ -103,7 +103,7 @@ function handleSubmit() {
   const formValidation = validateForm()
   if(formValidation.failed) return alert(formValidation.feedback)
   loading.value = true
-  userStore.login(form.value)
+  sessionStore.login(form.value)
     .then((message) => {
       alert(message)
       postLogin()

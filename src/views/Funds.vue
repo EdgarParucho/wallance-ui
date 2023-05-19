@@ -4,9 +4,9 @@
       Dashboard
     </router-link>
     <h1 class="text-white text-4xl font-bold">
-      Saving Funds
+      Balance Funds
     </h1>
-    <p class="mt-2 mb-8">From here you can manage your savings into funds according to your needs.</p>
+    <p class="mt-2 mb-8">From here you can manage your balance into funds according to your needs.</p>
 
     <div class="flex rounded-md bg-stone-900 md:relative w-full fixed left-0 bottom-0 h-8">
       <button class="font-bold text-yellow-500 bg-stone-800 hover:bg-stone-700 transition-colors w-1/2 md:w-40 py-1"
@@ -36,27 +36,31 @@
 
 <script setup>
 import { ref, defineAsyncComponent } from 'vue';
-import { useFundStore } from '../stores/fundStore'
-import FundCard from '../components/fund/FundCard.vue'
 import { ArrowsRightLeftIcon, PlusIcon } from '@heroicons/vue/24/outline'
+import { useFundStore } from '../stores/fundStore'
+import { useUserStore } from '../stores/userStore'
+import FundCard from '../components/fund/FundCard.vue'
 
 const FundForm = defineAsyncComponent(() => import('../components/fund/FundForm.vue'))
 const BalanceForm = defineAsyncComponent(() => import('../components/fund/BalanceForm.vue'))
 
-const fundStore = useFundStore()
+const fundStore = useFundStore();
+const userStore = useUserStore();
 let fundFormIsOpen = ref(false)
 let balanceFormIsOpen = ref(false)
 let editingFund = null
-const queryInProgress = ref(false)
+const loading = ref(false)
+const userID = userStore.userID;
+const defaultFundID = fundStore.defaultFund._id;
 
 function confirmDeletion(fund) {
-  queryInProgress.value = true
+  loading.value = true
   const deleteIsConfirmed = confirm(`Please confirm if you want to delete "${fund.name}". The action is irreversible.`)
   if(!deleteIsConfirmed) return
-  fundStore.deleteFund(fund._id)
+  fundStore.deleteFund({ userID, _id: fund._id, defaultFundID })
     .then((message) => alert(message))
     .catch((message) => alert(message))
-    .finally(() => queryInProgress.value = false)
+    .finally(() => loading.value = false)
 }
 
 function editFund(fund) {

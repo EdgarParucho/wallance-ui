@@ -68,17 +68,17 @@
           name="sourceID"
           class="w-1/2 bg-transparent border-transparent border-b-stone-300 text-stone-700 dark:text-stone-300 border-stone-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
           required
-          v-model="record.sourceID"
+          v-model.number="record.sourceID"
           >
             <option
             class="text-white bg-stone-800 disabled:text-opacity-50"
             v-for="source in sourceList" :key="source._id"
-            :disabled="(record.type !== 1 && source.savings < 1)"
+            :disabled="(record.type === 2 && source.balance < 1)"
             :value="source._id"
             >
             <span>{{ source.name }}</span>
-            <span v-if="record.type !== 1">
-              (${{ source.savings }})
+            <span v-if="record.type === 2">
+              (${{ source.balance }})
             </span>
             </option>
           </select>
@@ -96,13 +96,13 @@
               type="number"
               :disabled="record.type === 2 && sourceFund === undefined"
               :min="0"
-              :max="(record.type === 1) ? false : sourceFund?.savings || 0"
+              :max="(record.type === 1) ? false : sourceFund?.balance || 0"
               name="amount"
               id="amount"
               class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-white dark:disabled:text-stone-400 pl-6 text-right"
               placeholder="0.0"
-              v-model.number="record.amount"
               required
+              v-model.number="record.amount"
             >
           </div>
         </div>
@@ -116,14 +116,14 @@
             name="date"
             id="date"
             class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white"
-            v-model="record.date"
             required
+            v-model="record.date"
           >
         </div>
                 
         <div class="my-4">
           <label for="note" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
-            Note (Optional)
+            Note
           </label>
           <textarea
             type="text"
@@ -132,6 +132,7 @@
             class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white"
             maxlength="40"
             placeholder="Car fuel"
+            required
             v-model="record.note"
           ></textarea>
         </div>
@@ -190,87 +191,111 @@ const recordStore = useRecordStore()
 const userStore = useUserStore()
 const fundStore = useFundStore()
 
-const newRecord = {
-  amount: 0,
-  date: new Date().toISOString().slice(0, 10),
-  note: '',
-  sourceID: '',
-  targetID: '',
-  type: 2,
-  user: userStore.session.user._id
-}
-const record = reactive(props.editing ? { ...props.originalRecord } : newRecord)
-const loading = ref(false)
-const sourceList = computed(() => (record.type === 1) ? userStore.session.user.creditSources : fundStore.funds)
-const sourceFund = computed(() => findFundByID(record.sourceID))
+const userID = userStore.userID;
+const record = (props.editing)
+  ? reactive({ ...props.originalRecord })
+  : reactive({
+    amount: 0,
+    date: new Date().toISOString().slice(0, 10),
+    note: '',
+    sourceID: 0,
+    targetID: 0,
+    type: 2,
+    user: userID
+  });
+
+const loading = ref(false);
+const sourceList = computed(() => (record.type === 1) ? userStore.user.creditSources : fundStore.funds);
+const sourceFund = computed(() => findFundByID(record.sourceID));
 const fundUpdateIsRequired = computed(() => {
   if (!props.editing) return true
   if (props.originalRecord.type !== record.type) return true
   if (props.originalRecord.amount !== record.amount) return true
   if (props.originalRecord.targetID !== record.targetID) return true
   return false
-})
+});
 
 function findFundByID(fundID) {
   return fundStore.funds.find(fund => fund._id === fundID)
 }
 
 function onSave(record, editing) {
+  loading.value = true;
   const actions = defineActions(record, editing)
-  const makePromises = (actions) => Array.from(actions, ({ action, arg }) => action(arg))
-  const unbalancedFund = actions.find(action => action.arg.savings < 0)
+  const unbalancedFund = actions.onFund.find(action => action.data.body.balance < 0);
   if (unbalancedFund !== undefined) return alert(
-    `Cannot update, "${unbalancedFund.arg.name}" would have a negative balance.`
+    `Cannot update, "${unbalancedFund.data.name}" would have a negative balance.`
   )
-  Promise.all(makePromises(actions))
+  const makePromises = (actions) => Array.from(actions, ({ action, data }) => action(data));
+  Promise.all(makePromises([...actions.onRecord, ...actions.onFund]))
     .then((responses) => {
-      const message = responses.join('\n')
-      alert(message)
-      emit('close-form')
+      const message = responses.join('\n');
+      alert(message);
+      emit('close-form');
     })
-    .catch((responses) => {
-      const message = responses.join('\n')
-      alert(message)
-      loading.value = true
+    .catch((message) => {
+      alert(message);
+      loading.value = false;
     })
-}
+};
 
 function defineActions(record, editing) {
-  const actions = []
+  const actions = { onRecord: [], onFund: [] };
 
-  const actionOnRecord = (editing) ? recordStore.updateRecord : recordStore.createRecord
-  actions.push({ action: actionOnRecord, arg: record })
+  const updatedRecordBody = () => {
+    const recordKeys = Object.keys(record);
+    const entries = [];
+
+    const valueChanged = (key) => record[key] !== props.originalRecord[key]
+    for (const key of recordKeys) if (valueChanged(key)) entries.push([key, record[key]])
+
+    const body = Object.fromEntries(entries);
+    return body
+  }
+
+  actions.onRecord.push({
+    action: (editing) ? recordStore.updateRecord : recordStore.createRecord,
+    data: (editing) ? { userID, _id: record._id, body: updatedRecordBody() } : record
+  });
 
   if (fundUpdateIsRequired.value) {
-    const actionOnFund = fundStore.updateFund
-    const relationRemains = editing ? (props.originalRecord.targetID === record.targetID) : false
-    const fundToUpdate = defineFundToUpdate(record, relationRemains)
-    actions.push({ action: actionOnFund, arg: fundToUpdate })
-    if (editing && !relationRemains) actions.push({ action: actionOnFund, arg: defineFundToReverse(props.originalRecord) })
+    const actionOnFund = fundStore.updateFund;
+    const relationRemains = editing ? (props.originalRecord.targetID === record.targetID) : false;
+    const fundToUpdate = defineFundToUpdate(record, relationRemains);
+    actions.onFund.push({
+      action: actionOnFund,
+      data: { userID, _id: fundToUpdate._id, body: { balance: fundToUpdate.balance } } });
+    if (editing && !relationRemains) {
+      const fundToReverse = defineFundToReverse(props.originalRecord);
+      actions.onFund.push({
+        action: actionOnFund,
+        data: { userID, _id: fundToReverse._id, body: { balance: fundToReverse.balance } }
+      });
+    };
   }
-  return actions
+  return actions;
 }
 
 function defineFundToUpdate(record, relationRemains) {
   const originalFund = relationRemains ? defineFundToReverse(props.originalRecord) : findFundByID(record.targetID)
   const fundToUpdate = { ...originalFund }
-  if (record.type === 1) fundToUpdate.savings += record.amount
-  else  fundToUpdate.savings -= record.amount
+  if (record.type === 1) fundToUpdate.balance += record.amount
+  else  fundToUpdate.balance -= record.amount
   return fundToUpdate
 }
 
 function defineFundToReverse(record) {
   const originalFund = findFundByID(record.targetID)
   const fundToReverse = { ...originalFund }
-  if (record.type === 1) fundToReverse.savings -= record.amount
-  else fundToReverse.savings += record.amount
+  if (record.type === 1) fundToReverse.balance -= record.amount
+  else fundToReverse.balance += record.amount
   return fundToReverse
 }
 
 watch(
   () => record.type,
   () => {
-    record.sourceID = ''
+    record.sourceID = 0
     record.amount = 0
   }
 )
@@ -278,8 +303,8 @@ watch(
   () => record.sourceID,
   (sourceID) => {
     if (record.type === 1) record.targetID = fundStore.defaultFund._id
-    else if (record.sourceID !== '') record.targetID = sourceID
-    else record.targetID = ''
+    else if (record.sourceID !== 0) record.targetID = sourceID
+    else record.targetID = 0
   }
 )
 </script>
@@ -293,6 +318,7 @@ input::-webkit-inner-spin-button {
 }
 input[type=number] {
   -moz-appearance: textfield;
+  appearance: inherit;
 }
 
 /* Invert the default white color from input date fields icon */

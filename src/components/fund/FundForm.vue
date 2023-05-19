@@ -1,6 +1,6 @@
 <template>
   <Dialog :form-is-open="formIsOpen" @close-form="$emit('close-form')">
-    <form @submit.prevent="handleSubmit">
+    <form @submit.prevent="handleSubmit(fund)">
       <div class="p-4">
         <div class="h-1/3">
           <label for="fund-name" class="text-xs font-semibold">Name</label>
@@ -25,7 +25,6 @@
           <button
           class="text-yellow-400 bg-stone-900 hover:bg-stone-700 focus:ring-2 focus:outline-none focus:ring-stone-600 font-bold rounded-md text-sm w-1/3 py-2 transition-colors disabled:text-stone-300 disabled:bg-stone-700"
           type="submit"
-          @click.prevent="handleSubmit"
           >
             Save
           </button>
@@ -46,27 +45,41 @@ const emit = defineEmits(['close-form'])
 const fundStore = useFundStore()
 const userStore = useUserStore()
 
-const queryInProgress = ref(false)
+const userID = userStore.userID;
 const fund = ref({
-  users: [userStore.session.user._id],
   name: '',
   description: '',
-  lastUpdated: new Date().toISOString().slice(0, 10),
-  createdAt: new Date().toISOString().slice(0, 10),
-  savings: 0,
-  isDefault: false,
-  disabled: false,
-  createdBy: userStore.session.user._id
-})
+  isDefault: false
+});
+const loading = ref(false);
 
 const editing = props.editingFund !== null
-if(editing) fund.value = { ...props.editingFund };
+if (editing) {
+  const { name, description } = props.editingFund;
+  fund.value = { name, description };
+}
 
-function handleSubmit() {
-  queryInProgress.value = true
-  const saveFund = editing ? fundStore.updateFund : fundStore.createFund
-  saveFund(fund.value)
+function handleSubmit(body) {
+  if (!editing) return createFund(body);
+  const { _id } = props.editingFund;
+  updateFund(userID, _id, body);
+}
+
+function createFund(fund) {
+  loading.value = true
+  fundStore.createFund(fund)
     .then((message) => alert(message))
     .then(() => emit('close-form'))
+    .catch((message) => alert(message))
+    .finally(() => loading.value = false)
+}
+
+function updateFund(userID, _id, body) {
+  loading.value = true
+  fundStore.updateFund({ userID, _id, body })
+    .then((message) => alert(message))
+    .then(() => emit('close-form'))
+    .catch((message) => alert(message))
+    .finally(() => loading.value = false)
 }
  </script>

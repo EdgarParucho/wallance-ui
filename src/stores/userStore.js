@@ -1,89 +1,75 @@
 import { defineStore } from 'pinia'
-import { Login, GetOTP, Create, UpdateEmail, UpdatePassword, DeleteAccount } from '../services/userAPI'
+import { PreValidate, Create, Update, Delete } from '../services/userAPI'
 import { useLocalStorage } from '@vueuse/core'
-import { useFundStore } from './fundStore';
+import { useSessionStore } from './sessionStore';
+import { computed } from 'vue';
 
 export const useUserStore = defineStore('user', () => {
-  const session = useLocalStorage('vueUseUser', { user: {}, token: null })
-  const fundStore = useFundStore()
+  const user = useLocalStorage('vueUseUser', {});
+  const userID = computed(() => user.value._id);
 
-  const mutations = {
-    login: (data) => {
-      const [user] = data
-      session.value.user = user
-      return 'Welcome'
-    },
-    logout: () => {
-      session.value = { user: {}, token: null }
-      fundStore.funds = []
-      return 'Your session finished.'
-    },
-    sign: (data) => {
-      const { user, token } = data
-      session.value.user = user
-      session.value.token = token
-    },
-    updateEmail: (data) => {
-      const { email } = data
-      session.value.user.email = email
-    }
-  }
-
-  const useService = ({ service, data, mutation }) => new Promise((resolve, reject) => service(data)
-    .then((response) => resolve(
-      mutation(response.data)
-    ))
+  const sessionStore = useSessionStore();
+  
+  const preValidate = (body) => new Promise((resolve, reject) => PreValidate(body)
+    .then(({ data }) => {
+      resolve(data)})
     .catch((error) => {
-      let feedback = 'An error was detected while operating your account.\n'
+      let feedback = `Your code could not be generated.\n`
       if (error.response !== undefined) feedback += error.response.data
       else feedback += error.message
       reject(feedback)
     })
   )
 
-  const login = (data) => useService({
-    service: Login,
-    data,
-    mutation: mutations.login
-  })
-
-  const logout = () => mutations.logout()
-
-  const sign = (data) => useService( {
-    service: Create,
-    data,
-    mutation: mutations.sign
-  })
-
-  const updateEmail = (data) => useService({
-    service: UpdateEmail,
-    data,
-    mutation: mutations.updateEmail
-  })
-
-  const updatePassword = (data) => UpdatePassword(data)
-    .then(() => 'Your password was updated')
+  const create = (data) => new Promise((resolve, reject) => Create(data)
+    .then((response) => resolve(response.data))
     .catch((error) => {
-      let feedback = 'Your password could not be updated.\n'
-      if (error.response !== undefined) feedback += error.response.data
-      else feedback += error.message
-      return feedback
+      let feedback = `Your user could not be created.\n`;
+      if (error.response !== undefined) feedback += error.response.data;
+      else feedback += error.message;
+      reject(feedback);
     })
+  )
 
-  const deleteAccount = (data) => useService({
-    service: DeleteAccount,
-    data,
-    mutation: mutations.logout
-  })
+  const updateEmail = (data) => {
+    return new Promise((resolve, reject) => Update(data)
+      .then((response) => {
+        user.value = { ...response.data };
+        resolve('Email updated successfully');
+      })
+      .catch((error) => {
+        let feedback = `Your email could not be updated.\n`;
+        if (error.response !== undefined) feedback += error.response.data;
+        else feedback += error.message;
+        reject(feedback);
+      })
+  )}
 
-  const requestOTP = (email) => GetOTP(email)
-    .then(() => 'A code was generated and sent to the provided email.')
+  const updatePassword = (data) => {
+    return new Promise((resolve, reject) => Update(data)
+      .then(() => {
+        resolve('Password updated successfully');
+      })
+      .catch((error) => {
+        let feedback = `Your password could not be updated.\n`;
+        if (error.response !== undefined) feedback += error.response.data;
+        else feedback += error.message;
+        reject(feedback);
+      })
+    )}
+
+  const erase = (data) => new Promise((resolve, reject) => Delete(data)
+    .then(() => {
+      sessionStore.logout();
+      resolve('Your account was deleted.');
+    })
     .catch((error) => {
-      let feedback = `Your code could not be generated.\n`
-      if (error.response !== undefined) feedback += error.response.data
-      else feedback += error.message
-      return feedback
+      let feedback = `Your user could not be deleted.\n`;
+      if (error.response !== undefined) feedback += error.response.data;
+      else feedback += error.message;
+      reject(feedback);
     })
+  )
 
-  return { session, login, requestOTP, sign, updatePassword, updateEmail, logout, deleteAccount };
+  return { user, userID, preValidate, create, updateEmail, updatePassword, erase };
 });

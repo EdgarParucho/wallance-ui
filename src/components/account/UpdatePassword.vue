@@ -7,22 +7,24 @@
       <form @submit.prevent="onSubmit(form)">
         <fieldset class="my-6">
           <input
-          type="password"
-          class="block my-2 p-3 w-72 mx-auto rounded-sm text-stone-800"
-          placeholder="Password"
+          type="number"
+          min="1000"
+          max="9999"
+          class="block my-2 p-3 w-72 mx-auto rounded-sm bg-transparent text-white"
+          placeholder="OTP"
           required
-          v-model="form.currentPassword"
+          v-model.number="form.OTP"
           >
           <input
           type="password"
-          class="block my-2 p-3 w-72 mx-auto rounded-sm text-stone-800"
+          class="block my-2 p-3 w-72 mx-auto rounded-sm bg-transparent text-white"
           placeholder="Password"
           required
           v-model="form.newPassword"
           >
           <input
           type="password"
-          class="block my-2 p-3 w-72 mx-auto rounded-sm text-stone-800"
+          class="block my-2 p-3 w-72 mx-auto rounded-sm bg-transparent text-white"
           placeholder="Password"
           required
           v-model="reEnteredPassword"
@@ -49,18 +51,19 @@ const userStore = useUserStore()
 const emit = defineEmits(['close-form'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
 
-const form = ref({ currentPassword: '', newPassword: '' })
+const form = ref({ OTP: 0, newPassword: '' })
 const reEnteredPassword = ref('')
 const loading = ref(false)
+const userID = userStore.userID;
 
 const passwordMismatch = computed(() => form.value.newPassword !== reEnteredPassword.value)
 const someFieldIsEmpty = computed(() => {
-  return form.value.currentPassword === '' || form.value.newPassword === '' || reEnteredPassword.value === ''
+  return form.value.OTP === '' || form.value.newPassword === '' || reEnteredPassword.value === ''
 })
 
-function onSubmit({ currentPassword, newPassword }) {
+function onSubmit({ OTP, newPassword }) {
   loading.value = true
-  userStore.updatePassword({ currentPassword, newPassword, userID: userStore.session.user._id })
+  userStore.updatePassword({ OTP, userID, body: { password: newPassword } })
     .then((response) => {
       alert(response)
       emit('close-form')
@@ -69,3 +72,16 @@ function onSubmit({ currentPassword, newPassword }) {
     .finally(() => loading.value = false)
 }
 </script>
+
+<style scoped>
+/* Remove the default arrows from input number fields */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: inherit;
+}
+</style>

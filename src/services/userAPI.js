@@ -1,8 +1,6 @@
 import API from './API'
 
-export const Login = (credentials) => API.post('/login', credentials)
-export const GetOTP = (email) => API.post('/otp', email)
-export const Create = (credentials) => API.post('/user', credentials)
-export const UpdatePassword = (data) => API.put('/password', data)
-export const UpdateEmail = (data) => API.put('/email', data)
-export const DeleteAccount = (data) => API.delete(`/user/${data.userID}`, { headers: { 'OTP': data.token } })
+export const PreValidate = ({ email, mustBeNew }) => API.post(`/users/pre-validate?mustBeNew=${mustBeNew}`, { email });
+export const Create = (body) => API.post('/users', body);
+export const Update = ({ userID, OTP, body }) => API.patch(`/users/${userID}`, body, { headers: { OTP } });
+export const Delete = ({ OTP, userID }) => API.delete(`/users/${userID}`, { headers: { OTP } });
