@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { computed } from 'vue'
-import { Find, Create, Update, Delete } from '../services/fundAPI'
+import { Create, Update, Delete } from '../services/fundAPI'
 import { useLocalStorage } from '@vueuse/core'
 import { useRecordStore } from './recordStore'
 
@@ -10,7 +10,7 @@ export const useFundStore = defineStore('fund', () => {
   const defaultFund = computed(() => funds.value.find(fund => fund.isDefault))
   
   const mutations = {
-    getFunds: (data) => {
+    setFunds: (data) => {
       funds.value = [...data]
       return 'Your funds were loaded.'
     },
@@ -21,7 +21,7 @@ export const useFundStore = defineStore('fund', () => {
     updateFund: (data) => {
       const index = funds.value.findIndex(fund => fund._id === data._id);
       funds.value.splice(index, 1, data);
-      return 'Your fund was updated.'
+      return `Fund updated: ${data.name}.`
     },
     deleteFund: (data) => {
       const index = funds.value.findIndex(fund => fund._id === data);
@@ -46,12 +46,6 @@ export const useFundStore = defineStore('fund', () => {
     })
   )
 
-  const getFunds = (data) => useService({
-    service: Find,
-    data,
-    mutation: mutations.getFunds
-  })
-
   const createFund = (data) => useService({
     service: Create,
     data,
@@ -70,5 +64,5 @@ export const useFundStore = defineStore('fund', () => {
     mutation: mutations.deleteFund
   })
 
-  return { funds, defaultFund, getFunds, createFund, updateFund, deleteFund }
+  return { funds, defaultFund, setFunds: mutations.setFunds, createFund, updateFund, deleteFund }
 })

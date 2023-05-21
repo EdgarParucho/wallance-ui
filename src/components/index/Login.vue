@@ -4,7 +4,7 @@
       <h3 class="text-2xl text-center">
         Time is priceless, let's log!
       </h3>
-      <form @submit.prevent="handleSubmit">
+      <form @submit.prevent="handleSubmit(form)">
         <div class="mt-6">
           <input
           type="email"
@@ -27,7 +27,7 @@
           >
           <button
           class="block rounded-sm px-3 py-1 mx-auto w-72 bg-yellow-400 hover:bg-yellow-500 text-stone-900 font-bold disabled:bg-stone-700"
-          @submit="handleSubmit"
+          type="submit"
           :disabled="loading"
           >
             {{ forgotPassword ? 'Recover my password' : 'Log In' }}
@@ -64,15 +64,17 @@ const form = ref({ email: 'example@email.com', password: 'password' });
 let loading = ref(false);
 
 function handlePassRecovery() {
-  const recoveryIsConfirmed = confirm('The "Forgot password" field is checked. Confirm to recover your password or cancel to uncheck the field')
+  const recoveryIsConfirmed = confirm(
+    'The "Forgot password" field is checked. Confirm to recover your password or cancel to uncheck the field'
+  );
   if(recoveryIsConfirmed) alert('You will receive an email to recover your password.')
   else forgotPassword.value = false
 }
 
 function validateFormat(email) {
   const emailformat = new RegExp(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/);
-  const emailIsValid = emailformat.test(email)
-  return emailIsValid
+  const emailIsValid = emailformat.test(email);
+  return emailIsValid;
 }
 
 function validateForm() {
@@ -89,26 +91,19 @@ function validateForm() {
   return formValidation
 }
 
-function postLogin() {
-  const userID = sessionStore.session.user._id
-  fundStore.getFunds(userID)
+function handleSubmit(data) {
+  const formValidation = validateForm();
+  if(formValidation.failed) return alert(formValidation.feedback);
+  loading.value = true;
+  sessionStore.login(data)
     .then((message) => {
-      alert(message)
-      router.push('/dashboard')
+      alert(message);
+      router.push('/dashboard');
     })
-    .catch((message) => alert(message))
-}
-
-function handleSubmit() {
-  const formValidation = validateForm()
-  if(formValidation.failed) return alert(formValidation.feedback)
-  loading.value = true
-  sessionStore.login(form.value)
-    .then((message) => {
-      alert(message)
-      postLogin()
+    .catch((message) => {
+      alert(message);
+      loading.value = false;
     })
-    .catch((message) => alert(message))
-    .finally(() => loading.value = false)
+    
 }
 </script>

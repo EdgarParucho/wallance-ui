@@ -49,7 +49,8 @@ const userID = userStore.userID;
 const fund = ref({
   name: '',
   description: '',
-  isDefault: false
+  isDefault: false,
+  owner: userID
 });
 const loading = ref(false);
 

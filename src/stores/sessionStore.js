@@ -8,13 +8,13 @@ export const useSessionStore = defineStore('session', () => {
   const session = useLocalStorage('vueUseSession', { user: {}, token: null });
   const fundStore = useFundStore();
   const userStore = useUserStore();
-  const userID = session.value.user._id;
 
   const mutations = {
-    login: (data) => {
-      session.value.user = data;
-      userStore.user = data;
-      return 'Welcome';
+    login: ({ _id, email, creditSources, funds }) => {
+      const user = { _id, email, creditSources };
+      userStore.setUser(user);
+      fundStore.setFunds(funds);
+      return 'Good to have you. Get the most and enjoy.';
     },
     logout: () => {
       session.value = { user: {}, token: null };
@@ -43,5 +43,5 @@ export const useSessionStore = defineStore('session', () => {
 
   const logout = () => mutations.logout();
 
-  return { session, login, logout, userID };
+  return { session, login, logout };
 });

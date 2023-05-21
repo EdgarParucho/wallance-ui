@@ -10,6 +10,8 @@ export const useUserStore = defineStore('user', () => {
 
   const sessionStore = useSessionStore();
   
+  const setUser = (data) => user.value = data;
+
   const preValidate = (body) => new Promise((resolve, reject) => PreValidate(body)
     .then(({ data }) => {
       resolve(data)})
@@ -71,5 +73,5 @@ export const useUserStore = defineStore('user', () => {
     })
   )
 
-  return { user, userID, preValidate, create, updateEmail, updatePassword, erase };
+  return { user, userID, setUser, preValidate, create, updateEmail, updatePassword, erase };
 });
