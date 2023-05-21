@@ -196,7 +196,7 @@ const record = (props.editing)
   ? reactive({ ...props.originalRecord })
   : reactive({
     amount: 0,
-    date: new Date().toISOString().slice(0, 10),
+    date: `${new Date().toISOString().slice(0, 10)}`,
     note: '',
     sourceID: 0,
     targetID: 0,

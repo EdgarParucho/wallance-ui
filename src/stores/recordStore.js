@@ -31,7 +31,7 @@ export const useRecordStore = defineStore('records', () => {
       mutation(response.data)
     ))
     .catch((error) => {
-      let feedback = 'An error was detected while operating your records.\n'
+      let feedback = 'Could not complete the action on your records.\n'
       if (error.response !== undefined) feedback += error.response.data
       else if (error.message !== undefined) feedback += error.message
       else feedback += error
