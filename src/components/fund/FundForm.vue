@@ -37,15 +37,15 @@
 <script setup>
 import { ref } from 'vue'
 import { useFundStore } from '../../stores/fundStore';
-import { useUserStore } from '../../stores/userStore';
+import { useAccountStore } from '../../stores/accountStore';
 import Dialog from '../helper/Dialog.vue';
 
 const props = defineProps(['form-is-open', 'editing-fund'])
 const emit = defineEmits(['close-form'])
 const fundStore = useFundStore()
-const userStore = useUserStore()
+const accountStore = useAccountStore()
 
-const userID = userStore.userID;
+const userID = accountStore.userID;
 const fund = ref({
   name: '',
   description: '',

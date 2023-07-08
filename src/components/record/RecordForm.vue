@@ -165,7 +165,7 @@
 import { ref, watch, computed, reactive } from 'vue'
 import { DocumentPlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
 import { useRecordStore } from '../../stores/recordStore';
-import { useUserStore } from '../../stores/userStore';
+import { useAccountStore } from '../../stores/accountStore';
 import { useFundStore } from '../../stores/fundStore';
 import Dialog from '../helper/Dialog.vue';
 
@@ -188,10 +188,10 @@ const props = defineProps({
 })
 const emit = defineEmits(['close-form'])
 const recordStore = useRecordStore()
-const userStore = useUserStore()
+const accountStore = useAccountStore()
 const fundStore = useFundStore()
 
-const userID = userStore.userID;
+const userID = accountStore.userID;
 const record = (props.editing)
   ? reactive({ ...props.originalRecord })
   : reactive({
@@ -205,7 +205,7 @@ const record = (props.editing)
   });
 
 const loading = ref(false);
-const sourceList = computed(() => (record.type === 1) ? userStore.user.creditSources : fundStore.funds);
+const sourceList = computed(() => (record.type === 1) ? accountStore.user.creditSources : fundStore.funds);
 const sourceFund = computed(() => findFundByID(record.sourceID));
 const fundUpdateIsRequired = computed(() => {
   if (!props.editing) return true

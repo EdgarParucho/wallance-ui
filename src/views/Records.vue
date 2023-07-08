@@ -52,7 +52,7 @@
 
 <script setup>
 import { useRecordStore } from '../stores/recordStore';
-import { useUserStore } from '../stores/userStore';
+import { useAccountStore } from '../stores/accountStore';
 import { useFundStore } from '../stores/fundStore';
 import { ref, computed, watch, defineAsyncComponent } from 'vue'
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
@@ -62,10 +62,10 @@ import RecordCard from '../components/record/RecordCard.vue';
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'))
 const recordStore = useRecordStore()
 const fundStore = useFundStore()
-const userStore = useUserStore();
+const accountStore = useAccountStore();
 let originalRecord = null
 
-const userID = userStore.userID;
+const userID = accountStore.userID;
 const loading = ref(false);
 const records = computed(() => recordStore.records);
 const recordFormIsOpen = ref(false);

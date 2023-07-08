@@ -38,19 +38,19 @@
 import { ref, defineAsyncComponent } from 'vue';
 import { ArrowsRightLeftIcon, PlusIcon } from '@heroicons/vue/24/outline'
 import { useFundStore } from '../stores/fundStore'
-import { useUserStore } from '../stores/userStore'
+import { useAccountStore } from '../stores/accountStore'
 import FundCard from '../components/fund/FundCard.vue'
 
 const FundForm = defineAsyncComponent(() => import('../components/fund/FundForm.vue'))
 const BalanceForm = defineAsyncComponent(() => import('../components/fund/BalanceForm.vue'))
 
 const fundStore = useFundStore();
-const userStore = useUserStore();
+const accountStore = useAccountStore();
 let fundFormIsOpen = ref(false)
 let balanceFormIsOpen = ref(false)
 let editingFund = null
 const loading = ref(false)
-const userID = userStore.userID;
+const userID = accountStore.userID;
 const defaultFundID = fundStore.defaultFund._id;
 
 function confirmDeletion(fund) {

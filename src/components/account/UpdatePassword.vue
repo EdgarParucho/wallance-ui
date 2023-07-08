@@ -4,30 +4,31 @@
       <h3 class="text-2xl text-center">
         Updating my password
       </h3>
-      <form @submit.prevent="onSubmit(form)">
+      <form @submit.prevent="onSubmit({ OTP, newPassword })">
         <fieldset class="my-6">
           <input
-          type="number"
-          min="1000"
-          max="9999"
+          type="text"
           class="block my-2 p-3 w-72 mx-auto rounded-sm bg-transparent text-white"
-          placeholder="OTP"
+          placeholder="Code"
           required
-          v-model.number="form.OTP"
+          autocomplete="ignore"
+          v-model="OTP"
           >
           <input
           type="password"
           class="block my-2 p-3 w-72 mx-auto rounded-sm bg-transparent text-white"
-          placeholder="Password"
+          placeholder="New password"
           required
-          v-model="form.newPassword"
+          v-model="newPassword"
+          autocomplete="ignore"
           >
           <input
           type="password"
           class="block my-2 p-3 w-72 mx-auto rounded-sm bg-transparent text-white"
-          placeholder="Password"
+          placeholder="New password confirmation"
           required
           v-model="reEnteredPassword"
+          autocomplete="ignore"
           >
         </fieldset>
         <button
@@ -37,51 +38,69 @@
         >
           Update Now
         </button>
+        <button
+        class="block rounded-sm my-2 px-3 mx-auto w-72 text-sm text-cyan-300 hover:text-cyan-100 bg-stone-800 disabled:text-stone-400 disabled:hover:bg-stone-800"
+        @click="reSendOTP()"
+        :disabled="loading || countDown > 0"
+        type="button"
+        >
+          Request code again
+          <span v-if="countDown > 0">
+            ({{ countDown }})
+          </span>
+        </button>
       </form>
     </div>
   </Dialog>
 </template>
 
 <script setup>
+
 import { computed, ref } from 'vue'
-import { useUserStore } from '../../stores/userStore';
+import { useAccountStore } from '../../stores/accountStore';
 import Dialog from '../helper/Dialog.vue';
 
-const userStore = useUserStore()
-const emit = defineEmits(['close-form'])
+const accountStore = useAccountStore()
+const emit = defineEmits(['close-form', 'request-otp'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
 
-const form = ref({ OTP: 0, newPassword: '' })
+const OTP = ref("");
+const newPassword = ref("");
 const reEnteredPassword = ref('')
-const loading = ref(false)
-const userID = userStore.userID;
 
-const passwordMismatch = computed(() => form.value.newPassword !== reEnteredPassword.value)
+const loading = ref(false)
+const countDown = ref(0);
+
+const passwordMismatch = computed(() => newPassword.value !== reEnteredPassword.value)
 const someFieldIsEmpty = computed(() => {
-  return form.value.OTP === '' || form.value.newPassword === '' || reEnteredPassword.value === ''
+  return OTP.value === '' || newPassword.value === '' || reEnteredPassword.value === ''
 })
+
+startCountDown();
+
+function reSendOTP() {
+  emit("request-otp");  
+  startCountDown();
+}
 
 function onSubmit({ OTP, newPassword }) {
   loading.value = true
-  userStore.updatePassword({ OTP, userID, body: { password: newPassword } })
+  accountStore.updatePassword({ OTP, updateEntries: { password: newPassword } })
     .then((response) => {
       alert(response)
       emit('close-form')
+      startCountDown()
     })
     .catch((error) => alert(error))
     .finally(() => loading.value = false)
 }
-</script>
 
-<style scoped>
-/* Remove the default arrows from input number fields */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-input[type=number] {
-  -moz-appearance: textfield;
-  appearance: inherit;
-}
-</style>
+function startCountDown() {
+  countDown.value = 30;
+  const counting = setInterval(function() {
+    if (countDown.value === 0) clearInterval(counting)
+    else countDown.value -= 1
+  }, 1000);
+};
+
+</script>

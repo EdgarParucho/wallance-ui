@@ -32,16 +32,16 @@
           v-if="validatingEmail"
           type="text"
           class="block my-2 p-3 w-72 mx-auto rounded-sm text-stone-800"
-          placeholder="Validation"
+          placeholder="Code"
           required
-          v-model.number="OTP"
+          v-model="OTP"
           >
         </fieldset>
         <button
         v-if="validatingEmail"
         class="block rounded-sm px-3 py-1 mx-auto w-72 bg-yellow-400 hover:bg-yellow-500 text-stone-900 font-bold disabled:bg-stone-700"
         @click="sign(OTP, form)"
-        :disabled="missingValidation"
+        :disabled="loading || missingValidation"
         type="button"
         >
           Create my account
@@ -55,6 +55,18 @@
         >
           Validate My Email
         </button>
+        <button
+        v-if="validatingEmail"
+        class="block rounded-sm my-2 px-3 mx-auto w-72 text-sm text-cyan-300 hover:text-cyan-100 bg-stone-800 disabled:text-stone-400 disabled:hover:bg-stone-800"
+        @click="validateEmail(form.email)"
+        :disabled="loading || countDown > 0"
+        type="button"
+        >
+          Request code again
+          <span v-if="countDown > 0">
+            ({{ countDown }})
+          </span>
+        </button>
       </form>
     </div>
   </Dialog>
@@ -62,22 +74,32 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useUserStore } from '../../stores/userStore';
+import { useCredentialStore } from '../../stores/credentialStore';
 import Dialog from '../helper/Dialog.vue';
 
-const userStore = useUserStore();
+const credentialStore = useCredentialStore();
 const emit = defineEmits(['close-form'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } });
 
 const form = ref({ email: '', password: '' });
 const reEnteredPassword = ref('');
 const loading = ref(false);
-const OTP = ref(0);
+const OTP = ref("");
 const validatingEmail = ref(false);
 
 const passwordMismatch = computed(() => form.value.password !== reEnteredPassword.value);
 const someFieldIsEmpty = computed(() => form.value.password === '' || form.value.email === '');
 const missingValidation = computed(() => OTP.value === '');
+
+const countDown = ref(0);
+
+function startCountDown() {
+  countDown.value = 30;
+  const counting = setInterval(function() {
+    if (countDown.value === 0) clearInterval(counting)
+    else countDown.value -= 1
+  }, 1000);
+};
 
 function validateFormat(email) {
   const emailformat = new RegExp(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/);
@@ -99,10 +121,11 @@ function validateForm() {
 
 function validateEmail(email) {
   loading.value = true
-  userStore.preValidate({ email, mustBeNew: true })
+  credentialStore.requestOTPValidation({ email, emailShouldBeStored: false, action: "sign" })
     .then((response) => {
       alert(response)
       validatingEmail.value = true
+      startCountDown()
     })
     .catch((error) => alert(error))
     .finally(() => loading.value = false)
@@ -112,7 +135,7 @@ function sign(OTP, form) {
   const formValidation = validateForm()
   if(formValidation.failed) return alert(formValidation.feedback)
   loading.value = true
-  userStore.create({ OTP, ...form })
+  credentialStore.sign({ OTP, body: { ...form } })
     .then((response) => {
       alert(response);
       emit('close-form');

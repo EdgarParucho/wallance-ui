@@ -98,7 +98,7 @@ import { useFundStore } from '../../stores/fundStore';
 import { ChartPieIcon } from '@heroicons/vue/24/outline'
 import Dialog from '../helper/Dialog.vue';
 import { useRecordStore } from '../../stores/recordStore';
-import { useUserStore } from '../../stores/userStore';
+import { useAccountStore } from '../../stores/accountStore';
 
 const props = defineProps({
   formIsOpen: {
@@ -119,9 +119,9 @@ const props = defineProps({
 const emit = defineEmits(['close-form'])
 const recordStore = useRecordStore()
 const fundStore = useFundStore()
-const userStore = useUserStore()
+const accountStore = useAccountStore()
 
-const userID = userStore.userID;
+const userID = accountStore.userID;
 const loading = ref(false)
 const amountPickers = [
   { name: 'All', divisor: 1 },

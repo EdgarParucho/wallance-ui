@@ -49,18 +49,16 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router';
-import { useFundStore } from '../../stores/fundStore';
-import { useSessionStore } from '../../stores/sessionStore';
+import { useCredentialStore } from '../../stores/credentialStore';
 import Dialog from '../helper/Dialog.vue';
 
-const sessionStore = useSessionStore();
-const fundStore = useFundStore();
+const credentialStore = useCredentialStore();
 const router = useRouter();
 const emit = defineEmits(['close-form']);
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } });
 
 const forgotPassword = ref(false);
-const form = ref({ email: 'example@email.com', password: 'password' });
+const form = ref({ email: '', password: '' });
 let loading = ref(false);
 
 function handlePassRecovery() {
@@ -87,7 +85,7 @@ function validateForm() {
   if(!emailIsValid) return formValidation = { failed: true, feedback: 'The email format seems to be wrong, please check and try again' }
 
   if(forgotPassword.value) return handlePassRecovery()
-  
+
   return formValidation
 }
 
@@ -95,10 +93,10 @@ function handleSubmit(data) {
   const formValidation = validateForm();
   if(formValidation.failed) return alert(formValidation.feedback);
   loading.value = true;
-  sessionStore.login(data)
+  credentialStore.login(data)
     .then((message) => {
       alert(message);
-      router.push('/dashboard');
+      router.replace('/dashboard');
     })
     .catch((message) => {
       alert(message);

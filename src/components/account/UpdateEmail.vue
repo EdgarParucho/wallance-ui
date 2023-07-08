@@ -16,11 +16,11 @@
           >
           <input
           v-if="validatingEmail"
-          type="number"
+          type="text"
           class="block my-2 p-3 w-72 mx-auto rounded-sm text-stone-800"
           placeholder="OTP"
           required
-          v-model.number="OTP"
+          v-model="OTP"
           >
         </fieldset>
         <button
@@ -30,6 +30,18 @@
         >
           {{ validatingEmail ? 'Update Now': 'Validate My Email' }}
         </button>
+        <button
+        v-if="validatingEmail"
+        class="block rounded-sm my-2 px-3 mx-auto w-72 text-sm text-cyan-300 hover:text-cyan-100 bg-stone-800 disabled:text-stone-400 disabled:hover:bg-stone-800"
+        @click="validateEmail"
+        :disabled="loading || countDown > 0"
+        type="button"
+        >
+          Request code again
+          <span v-if="countDown > 0">
+            ({{ countDown }})
+          </span>
+        </button>
       </form>
     </div>
   </Dialog>
@@ -37,29 +49,31 @@
 
 <script setup>
 import { computed, ref } from 'vue'
-import { useUserStore } from '../../stores/userStore';
+import { useAccountStore } from '../../stores/accountStore';
+import { useCredentialStore } from '../../stores/credentialStore';
 import Dialog from '../helper/Dialog.vue';
 
-const userStore = useUserStore();
+const accountStore = useAccountStore();
+const credentialStore = useCredentialStore();
 const emit = defineEmits(['close-form'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
 
 const loading = ref(false)
+const countDown = ref(0);
 
-const userID = userStore.userID;
 const email = ref('');
 const someFieldIsEmpty = computed(() => {
   const emailFieldEmpty = email.value === ''
   const tokenFieldEmpty = validatingEmail.value && OTP.value === ''
   return emailFieldEmpty || tokenFieldEmpty
 })
-const currentEmail = computed(() => userStore.user.email)
+const currentEmail = computed(() => accountStore.account.email)
 const currentEqualsNew = computed(() => email.value === currentEmail.value)
 const validatingEmail = ref(false)
 const OTP = ref('');
 
 function onSubmit() {
-  if (validatingEmail.value) updateEmail(userID, OTP.value, email.value);
+  if (validatingEmail.value) updateEmail(OTP.value, email.value);
   else validateEmail({ email: email.value })
 }
 
@@ -69,25 +83,34 @@ const emailFormatIsValid = computed(() => {
   return emailIsValid
 })
 
-function updateEmail(userID, OTP, email) {
+function updateEmail(OTP, email) {
   if (currentEqualsNew.value) return alert('The email you entered is already your current address.')
   loading.value = true
-  userStore.updateEmail({ userID, OTP, body: { email } })
-    .then((response) => {
-      alert(response)
-      emit('close-form')
-    })
-    .catch((error) => alert(error))
-    .finally(() => loading.value = false)
+  accountStore.updateEmail({ OTP, updateEntries: { email } })
+  .then((response) => {
+    alert(response)
+    emit('close-form')
+  })
+  .catch((error) => alert(error))
+  .finally(() => loading.value = false)
 }
 
 function validateEmail({ email }) {
   loading.value = true
-  userStore.preValidate({ email, mustBeNew: true })
+  credentialStore.requestOTPValidation({ email, emailShouldBeStored: false, action: "update" })
     .then((response) => alert(response))
     .then(() => validatingEmail.value = true)
+    .then(() => startCountDown())
     .catch((error) => alert(error))
     .finally(() => loading.value = false)
+}
+
+function startCountDown() {
+  countDown.value = 30;
+  const counting = setInterval(function() {
+    if (countDown.value === 0) clearInterval(counting)
+    else countDown.value -= 1
+  }, 1000);
 }
 
 </script>

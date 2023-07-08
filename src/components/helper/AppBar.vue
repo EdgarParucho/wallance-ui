@@ -1,17 +1,17 @@
 <script setup>
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useSessionStore } from '../../stores/sessionStore';
+import { useCredentialStore } from '../../stores/credentialStore';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 import { Bars3Icon } from '@heroicons/vue/24/outline';
 
 const route = useRoute();
 const router = useRouter();
-const sessionStore = useSessionStore();
+const credentialStore = useCredentialStore();
 const atHome = computed(() => route.fullPath === '/');
 
 function logout() {
-  sessionStore.logout()
+  credentialStore.logout()
   router.replace('/')
 }
 </script>
