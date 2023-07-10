@@ -22,9 +22,9 @@
     </div>
 
     <FundCard
-    v-for="fund in fundStore.funds"
-    :key="fund._id"
-    :id="fund._id"
+    v-for="fund in funds"
+    :key="fund.id"
+    :fund="fund"
     @edit-fund="(fund) => editFund(fund)"
     @confirm-deletion="(fund) => confirmDeletion(fund)"
     />
@@ -38,26 +38,24 @@
 import { ref, defineAsyncComponent } from 'vue';
 import { ArrowsRightLeftIcon, PlusIcon } from '@heroicons/vue/24/outline'
 import { useFundStore } from '../stores/fundStore'
-import { useAccountStore } from '../stores/accountStore'
 import FundCard from '../components/fund/FundCard.vue'
+import { storeToRefs } from 'pinia';
 
 const FundForm = defineAsyncComponent(() => import('../components/fund/FundForm.vue'))
 const BalanceForm = defineAsyncComponent(() => import('../components/fund/BalanceForm.vue'))
 
 const fundStore = useFundStore();
-const accountStore = useAccountStore();
+const { funds } = storeToRefs(fundStore)
 let fundFormIsOpen = ref(false)
 let balanceFormIsOpen = ref(false)
 let editingFund = null
 const loading = ref(false)
-const userID = accountStore.userID;
-const defaultFundID = fundStore.defaultFund._id;
 
 function confirmDeletion(fund) {
   loading.value = true
-  const deleteIsConfirmed = confirm(`Please confirm if you want to delete "${fund.name}". The action is irreversible.`)
-  if(!deleteIsConfirmed) return
-  fundStore.deleteFund({ userID, _id: fund._id, defaultFundID })
+  const deleteIsConfirmed = confirm(`Please confirm to delete "${fund.name}". The action is irreversible.`);
+  if(!deleteIsConfirmed) return loading.value = false;
+  fundStore.deleteFund(fund.id)
     .then((message) => alert(message))
     .catch((message) => alert(message))
     .finally(() => loading.value = false)

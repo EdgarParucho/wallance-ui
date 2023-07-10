@@ -10,6 +10,11 @@ export const useRecordStore = defineStore('records', () => {
       records.value = [...data]
       return 'Your records were loaded.'
     },
+    setRecords: (data) => {
+      console.log(data);
+      records.value = [...data]
+      return 'Your records were loaded.'
+    },
     createRecord: (data) => {
       records.value.push(data)
       return 'Your record was created.'
@@ -63,5 +68,5 @@ export const useRecordStore = defineStore('records', () => {
     mutation: mutations.deleteRecord
   });
 
-  return { records, getRecords, createRecord, updateRecord, deleteRecord };
+  return { records, getRecords, setRecords: mutations.setRecords, createRecord, updateRecord, deleteRecord };
 })

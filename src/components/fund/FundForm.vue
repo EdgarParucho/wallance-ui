@@ -37,20 +37,15 @@
 <script setup>
 import { ref } from 'vue'
 import { useFundStore } from '../../stores/fundStore';
-import { useAccountStore } from '../../stores/accountStore';
 import Dialog from '../helper/Dialog.vue';
 
 const props = defineProps(['form-is-open', 'editing-fund'])
 const emit = defineEmits(['close-form'])
 const fundStore = useFundStore()
-const accountStore = useAccountStore()
 
-const userID = accountStore.userID;
 const fund = ref({
   name: '',
   description: '',
-  isDefault: false,
-  owner: userID
 });
 const loading = ref(false);
 
@@ -62,8 +57,8 @@ if (editing) {
 
 function handleSubmit(body) {
   if (!editing) return createFund(body);
-  const { _id } = props.editingFund;
-  updateFund(userID, _id, body);
+  const { id } = props.editingFund;
+  updateFund(id, body);
 }
 
 function createFund(fund) {
@@ -75,9 +70,9 @@ function createFund(fund) {
     .finally(() => loading.value = false)
 }
 
-function updateFund(userID, _id, body) {
+function updateFund(id, body) {
   loading.value = true
-  fundStore.updateFund({ userID, _id, body })
+  fundStore.updateFund({ id, body })
     .then((message) => alert(message))
     .then(() => emit('close-form'))
     .catch((message) => alert(message))

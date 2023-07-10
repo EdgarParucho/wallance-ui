@@ -35,18 +35,15 @@
 
 <script setup>
 import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
-import { useFundStore } from '../../stores/fundStore';
-import { computed } from 'vue'
 
 const emit = defineEmits(['edit-fund', 'confirm-deletion'])
-const props = defineProps(['id'])
-const fundStore = useFundStore()
-
-const fund = computed(() => fundStore.funds.find(f => f._id === props.id))
+const props = defineProps(['fund'])
 
 function validateDeletion(fund) {
   if(fund.isDefault) return alert('Cannot delete the default fund.')
-  else if(fund.balance > 0) return alert('Cannot delete a fund with positive balance. First, you must move the balance to another fund.');
+  else if(fund.balance > 0) return alert(
+    'Cannot delete a fund with positive balance. You can move the balance to another fund, then retry this action.'
+  );
   emit('confirm-deletion', fund)
 }
 </script>

@@ -32,8 +32,8 @@
 </template>
 
 <script setup>
-import Login from '../components/index/Login.vue';
-import Sign from '../components/index/Sign.vue';
+import Login from '../components/credential/Login.vue';
+import Sign from '../components/credential/Sign.vue';
 import { ref } from 'vue'
 const signFormIsOpen = ref(false)
 const loginFormIsOpen = ref(false)
