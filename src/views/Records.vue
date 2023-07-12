@@ -18,17 +18,9 @@
         {{ filter.name }}
       </button>
     </div>
-    <button
-    class="bg-yellow-500 hover:bg-yellow-400 rounded-md w-20 m-1 py-1 transition-colors disabled:bg-stone-700"
-    @click="findRecords"
-    :disabled="loading"
-    >
-      <MagnifyingGlassIcon class="w-5 h-5 text-stone-900 mx-auto" aria-hidden="true" />
-    </button>
-
     <RecordCard
     v-for="record in filteredRecords"
-    :key="record._id"
+    :key="record.id"
     :record="record"
     @edit-record="(record) => editRecord(record)"
     @delete-record="(record) => deleteRecord(record)"
@@ -40,9 +32,9 @@
     :editing="true"
     :original-record="originalRecord"
     />
-    <BalanceForm
-    v-if="balanceFormIsOpen"
-    :form-is-open="balanceFormIsOpen"
+    <AssignmentForm
+    v-if="assignmentFormIsOpen"
+    :form-is-open="assignmentFormIsOpen"
     @close-form="closeForm"
     :editing="true"
     :original-record="originalRecord"
@@ -52,24 +44,18 @@
 
 <script setup>
 import { useRecordStore } from '../stores/recordStore';
-import { useAccountStore } from '../stores/accountStore';
-import { useFundStore } from '../stores/fundStore';
 import { ref, computed, watch, defineAsyncComponent } from 'vue'
-import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline'
-import BalanceForm from '../components/fund/BalanceForm.vue';
+import AssignmentForm from '../components/record/AssignmentForm.vue';
 import RecordCard from '../components/record/RecordCard.vue';
 
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'))
 const recordStore = useRecordStore()
-const fundStore = useFundStore()
-const accountStore = useAccountStore();
 let originalRecord = null
 
-const userID = accountStore.userID;
 const loading = ref(false);
 const records = computed(() => recordStore.records);
 const recordFormIsOpen = ref(false);
-const balanceFormIsOpen = ref(false);
+const assignmentFormIsOpen = ref(false);
 const filteredRecords = ref([]);
 const appliedFilters = computed(() => filters.value.filter(filter => filter.isApplied));
 const filters = ref([
@@ -98,26 +84,30 @@ const filters = ref([
     isApplied: false
   },
 ]);
+const sortOptions = ref([
+{
+    name: 'Date',
+    targetProperty: 'date',
+    fn: (a, b) => a.date - b.date,
+    isApplied: true
+  },
+  {
+    name: 'Amount',
+    targetProperty: 'amount',
+    fn: (a, b) => a.amount - b.amount,
+    isApplied: false
+  },
+]);
 
-function findRecords() {
-  loading.value = true;
-  const userFunds = fundStore.funds.map(fund => fund._id);
-  recordStore.getRecords(userFunds)
-    .then((message) => alert(message))
-    .catch((error) => alert(error))
-    .finally(() => loading.value = false)
-}
-
-function editRecord(record) {
-  originalRecord = { ...record };
-  delete originalRecord.user;
-  if (record.type === 0) balanceFormIsOpen.value = true;
+function editRecord({ id }) {
+  originalRecord = records.value.find(r => r.id === id);
+  if (originalRecord.type === 0) assignmentFormIsOpen.value = true;
   else recordFormIsOpen.value = true;
 }
 
 function closeForm() {
   originalRecord = null;
-  if (balanceFormIsOpen.value) balanceFormIsOpen.value = false;
+  if (assignmentFormIsOpen.value) assignmentFormIsOpen.value = false;
   else recordFormIsOpen.value = false;
 }
 
@@ -130,46 +120,31 @@ function applyFilter(newFilter) {
   newFilter.isApplied = true;
 }
 
-function deleteRecord(record) {
-  const actions = [];
-  const subtractionIsRequired = record.type !== 2;
-
-  if (!subtractionIsRequired) return executeActions(record, actions);
-
-  const fundToUpdate = defineFundToUpdate(record.targetID, -record.amount);
-  if (fundToUpdate.balance < 0) return alert(
-    `The record cannot be deleted since "${fundToUpdate.name}" would have a negative balance.\nYou can re-balance the fund first, then retry this action.`
+function applySortOption(newOption) {
+  if (newOption.isApplied) return newOption.isApplied = false;
+  const conflictFilter = filters.value.find(
+    filter => filter.isApplied && filter.targetProperty === newOption.targetProperty
   );
-  actions.push({ action: fundStore.updateFund, data: { userID, _id: fundToUpdate._id, body: { balance: fundToUpdate.balance } } });
-  executeActions(record, actions);
+  if (conflictFilter !== undefined) conflictFilter.isApplied = false;
+  newOption.isApplied = true;
 }
 
-function defineFundToUpdate(fundID, difference) {
-  const relatedFund = fundStore.funds.find(fund => fund._id === fundID);
-  const fundToUpdate = { ...relatedFund };
-  fundToUpdate.balance += difference;
-  return fundToUpdate;
-}
-
-function executeActions(record, actions) {
-  const additionIsRequired = record.type !== 1;
-  if (additionIsRequired) {
-    const fundToUpdate = defineFundToUpdate(record.sourceID, record.amount)
-    actions.push({ action: fundStore.updateFund, data: { userID, _id: fundToUpdate._id, body: { balance: fundToUpdate.balance } } });
-  }
-  actions.push({ action: recordStore.deleteRecord, data: { userID, _id: record._id } });
-
-  const makePromises = (actions) => Array.from(actions, ({ action, data }) => action(data));
-  Promise.all(makePromises(actions))
-    .then((responses) => {
-      const message = responses.join('\n')
+function deleteRecord(record) {
+  loading.value = true;
+  recordStore.deleteRecord({ id: record.id })
+    .then((message) => {
       alert(message)
       recordFormIsOpen.value = false
     })
+    .catch((message) => alert(message))
+    .finally(() => loading.value = false)
 }
 
 watch([records, appliedFilters], ([records, appliedFilters]) => {
-  filteredRecords.value = records
-  for(const filter of appliedFilters) filteredRecords.value = filteredRecords.value.filter(filter.fn)
+  filteredRecords.value = appliedFilters.reduce((resultingArray, filter) => {
+    return resultingArray.filter(filter.fn)
+  }, JSON.parse(JSON.stringify(records)));
+  filteredRecords.value.forEach(r => r.date = new Date(r.date))
+  filteredRecords.value.sort((a, b) => a.date - b.date);
 }, { immediate: true })
 </script>

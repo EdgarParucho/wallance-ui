@@ -3,15 +3,16 @@ import { computed } from 'vue';
 import { Create, Update, Delete } from '../services/fundAPI';
 import { useLocalStorage } from '@vueuse/core';
 import { useRecordStore } from './recordStore';
+import { useCredentialStore } from "./credentialStore";
 
 export const useFundStore = defineStore('fund', () => {
   const recordStore = useRecordStore();
   const funds = useLocalStorage('vueUseFunds', []);
   const defaultFund = computed(() => funds.value.find(fund => fund.isDefault));
-  
+  const credentialStore = useCredentialStore();
+
   const mutations = {
     setFunds: (data) => {
-      for (const fund of data) fund.balance = defineBalance(fund.id);
       funds.value = [...data]
       return 'Your funds were loaded.'
     },
@@ -31,15 +32,7 @@ export const useFundStore = defineStore('fund', () => {
       return 'Your fund was deleted.';
     }
   };
-  
-  function defineBalance(fundID) {
-    const fundRecords = recordStore.records.filter(record => record.fundID === fundID);
-    const balance = fundRecords.reduce((acc, record) => {
-        return acc + record.amount
-      }, 0);
-    return balance;
-  }
-  
+
   const useService = ({ service, data, mutation }) => new Promise((resolve, reject) => service(data)
     .then((response) => resolve(
       mutation(response.data)
@@ -54,19 +47,19 @@ export const useFundStore = defineStore('fund', () => {
 
   const createFund = (data) => useService({
     service: Create,
-    data,
+    data: { ...data, token: credentialStore.sessionToken },
     mutation: mutations.createFund
   });
 
   const updateFund = (data) => useService({
     service: Update,
-    data,
+    data: { ...data, token: credentialStore.sessionToken },
     mutation: mutations.updateFund
   });
 
   const deleteFund = (data) => useService({
     service: Delete,
-    data,
+    data: { ...data, token: credentialStore.sessionToken },
     mutation: mutations.deleteFund
   });
 

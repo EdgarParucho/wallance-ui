@@ -30,7 +30,7 @@
     />
 
     <FundForm v-if="fundFormIsOpen" :form-is-open="fundFormIsOpen" @close-form="closeForm" :editing-fund="editingFund" />
-    <BalanceForm v-if="balanceFormIsOpen" :form-is-open="balanceFormIsOpen" @close-form="balanceFormIsOpen = false" />
+    <AssignmentForm v-if="balanceFormIsOpen" :form-is-open="balanceFormIsOpen" @close-form="balanceFormIsOpen = false" />
   </div>
 </template>
 
@@ -42,7 +42,7 @@ import FundCard from '../components/fund/FundCard.vue'
 import { storeToRefs } from 'pinia';
 
 const FundForm = defineAsyncComponent(() => import('../components/fund/FundForm.vue'))
-const BalanceForm = defineAsyncComponent(() => import('../components/fund/BalanceForm.vue'))
+const AssignmentForm = defineAsyncComponent(() => import('../components/record/AssignmentForm.vue'))
 
 const fundStore = useFundStore();
 const { funds } = storeToRefs(fundStore)

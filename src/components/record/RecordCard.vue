@@ -1,13 +1,13 @@
 <template>
   <div class="bg-stone-800 text-white font-sans rounded-md md:w-3/6 lg:w-2/6 mt-5">
     <div class="flex justify-between">
-      <p class="ml-2 text-stone-300">{{ record.date }}</p>
+      <p class="ml-2 text-stone-300">{{ recordDate }}</p>
       <span :class="[recordType(record.type).textClass, 'flex items-center justify-center h-6 w-16 text-sm rounded-sm']">
         {{ recordType(record.type).name }}
       </span>
     </div>
     <div class="justify-end flex items-baseline my-2 mr-3">
-      <span class="text-3xl">${{ record.amount }}</span>
+      <span class="text-3xl">{{ recordAmount }}</span>
     </div>
     <p class="ml-2 text-md">{{ record.note }}</p>
     <div class="flex mt-4">
@@ -15,13 +15,13 @@
       class="w-1/2 py-1 text-yellow-500 bg-stone-800 active:bg-stone-800 hover:bg-stone-700 focus:bg-stone-700 focus:outline-none transition-colors"
       @click="$emit('edit-record', record)"
       >
-        <PencilSquareIcon class="w-6 mx-auto" aria-hidden="true" />
+        <PencilSquareIcon class="w-4 mx-auto" aria-hidden="true" />
       </button>
       <button
       class="w-1/2 py-1 text-red-500 bg-stone-800 active:bg-red-800 hover:bg-red-900 focus:bg-red-900 focus:outline-none transition-colors"
       @click="confirmDeletion(record)"
       >
-        <TrashIcon class="w-6 mx-auto" aria-hidden="true" />
+        <TrashIcon class="w-4 mx-auto" aria-hidden="true" />
       </button>
     </div>
   </div>
@@ -29,10 +29,18 @@
 
 <script setup>
 import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { computed } from 'vue';
 
 const props = defineProps(['record'])
 const emit = defineEmits(['edit-record', 'delete-record'])
 
+const recordDate = computed(() => new Date(props.record.date).toDateString());
+const recordAmount = computed(() => new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  maximumFractionDigits: 2,
+  roundingIncrement: 5,
+}).format(props.record.amount));
 // bind the class
 function recordType(recordType) {
   switch (recordType) {

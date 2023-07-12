@@ -59,29 +59,32 @@
           </div>
         </div>
                   
-        <div class="my-4 flex items-center">
-          <label for="sourceID" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
-            Source
+        <div class="mt-4 mb-1 flex items-center">
+          <label for="fundID" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
+            Fund
           </label>
           <select
-          id="sourceID"
-          name="sourceID"
+          id="fundID"
+          name="fundID"
           class="w-1/2 bg-transparent border-transparent border-b-stone-300 text-stone-700 dark:text-stone-300 border-stone-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
           required
-          v-model.number="record.sourceID"
+          :disabled="recordIsCredit"
+          v-model="record.fundID"
           >
             <option
             class="text-white bg-stone-800 disabled:text-opacity-50"
-            v-for="source in sourceList" :key="source._id"
-            :disabled="(record.type === 2 && source.balance < 1)"
-            :value="source._id"
+            v-for="fund in fundStore.funds" :key="fund.id"
+            :value="fund.id"
             >
-            <span>{{ source.name }}</span>
-            <span v-if="record.type === 2">
-              (${{ source.balance }})
-            </span>
+              <span>{{ fund.name }}</span>
             </option>
           </select>
+          
+        </div>
+
+        <div class="flex justify-end space-x-2" v-if="record.fundID !== ''">
+          <small>Balance on date:</small>
+          <span class="bg-stone-600 text-sm font-bold rounded-sm px-1">{{ fundBalanceOnDate }}</span>
         </div>
 
         <div class="my-4 flex items-center">
@@ -94,9 +97,9 @@
             </div>
             <input
               type="number"
-              :disabled="record.type === 2 && sourceFund === undefined"
-              :min="0"
-              :max="(record.type === 1) ? false : sourceFund?.balance || 0"
+              :disabled="!recordIsCredit && record.fundID === ''"
+              :min="recordIsCredit ? 0 : false"
+              :max="(recordIsCredit) ? false : 0"
               name="amount"
               id="amount"
               class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-white dark:disabled:text-stone-400 pl-6 text-right"
@@ -107,20 +110,64 @@
           </div>
         </div>
 
-        <div class="my-4 flex items-center">
-          <label for="date" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
-            Date
-          </label>
-          <input
+        <div class="my-4">
+          <div class="w-full text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
+            <label for="date">
+              Date
+            </label>
+          </div>
+          <div class="flex items-center">
+            <input
             type="date"
             name="date"
             id="date"
             class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white"
             required
-            v-model="record.date"
-          >
+            v-model="formDate"
+            >
+            <input
+            type="time"
+            name="time"
+            id="time"
+            class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white"
+            required
+            v-model="formTime"
+            >
+          </div>
         </div>
                 
+        <div class="my-4 px-1">
+          <div>
+            <label for="tag" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
+              Tag
+            </label>
+          </div>
+          <div class="flex justify-between">
+            <select
+            id="tag"
+            name="tag"
+            class="w-6/12 bg-transparent border-transparent border-b-stone-300 text-stone-700 dark:text-stone-300 border-stone-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+            required
+            v-model="tagFields.option"
+            >
+              <option class="text-white font-bold italic bg-stone-800 disabled:text-opacity-50">
+                <span>Add new</span>
+              </option>
+              <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="tag, i in tags" :key="i">
+                {{ tag }}
+              </option>
+            </select>
+            <input
+              type="text"
+              :disabled="tagFields.option !== 'Add new'"
+              class="w-5/12 bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-white disabled:text-stone-600 disabled:border-b-stone-600"
+              placeholder="New tag"
+              required
+              v-model="tagFields.input"
+            >
+          </div>
+        </div>
+
         <div class="my-4">
           <label for="note" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
             Note
@@ -136,6 +183,7 @@
             v-model="record.note"
           ></textarea>
         </div>
+
       </fieldset>
 
       <div class="bg-stone-50 dark:bg-stone-800 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
@@ -162,10 +210,9 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, reactive } from 'vue'
-import { DocumentPlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
+import { ref, watch, computed, reactive } from 'vue';
+import { DocumentPlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline';
 import { useRecordStore } from '../../stores/recordStore';
-import { useAccountStore } from '../../stores/accountStore';
 import { useFundStore } from '../../stores/fundStore';
 import Dialog from '../helper/Dialog.vue';
 
@@ -185,51 +232,57 @@ const props = defineProps({
     required: false,
     default: false
   }
-})
-const emit = defineEmits(['close-form'])
-const recordStore = useRecordStore()
-const accountStore = useAccountStore()
-const fundStore = useFundStore()
+});
+const emit = defineEmits(['close-form']);
+const recordStore = useRecordStore();
+const fundStore = useFundStore();
 
-const userID = accountStore.userID;
+const formDate = (props.editing)
+  ? ref(props.originalRecord.date.slice(0, 10))
+  : ref(new Date().toISOString().slice(0, 10));
+const formTime = (props.editing)
+  ? ref(new Date(props.originalRecord.date).toTimeString().slice(0, 5))
+  : ref(new Date().toTimeString().slice(0, 5));
+
+const datetime = computed(() => `${formDate.value}T${formTime.value}:01`);
+
+const tagFields = reactive({
+  option: props.editing ? props.originalRecord.tag : "Add new",
+  input: null
+});
+const tags = new Set(recordStore.records.map(record => record.tag));
+
 const record = (props.editing)
   ? reactive({ ...props.originalRecord })
   : reactive({
     amount: 0,
-    date: `${new Date().toISOString().slice(0, 10)}`,
-    note: '',
-    sourceID: 0,
-    targetID: 0,
+    date: null,
+    note: null,
+    tag: null,
+    fundID: null,
     type: 2,
-    user: userID
   });
 
 const loading = ref(false);
-const sourceList = computed(() => (record.type === 1) ? accountStore.user.creditSources : fundStore.funds);
-const sourceFund = computed(() => findFundByID(record.sourceID));
-const fundUpdateIsRequired = computed(() => {
-  if (!props.editing) return true
-  if (props.originalRecord.type !== record.type) return true
-  if (props.originalRecord.amount !== record.amount) return true
-  if (props.originalRecord.targetID !== record.targetID) return true
-  return false
-});
+const recordIsCredit = computed(() => record.type === 1);
 
-function findFundByID(fundID) {
-  return fundStore.funds.find(fund => fund._id === fundID)
-}
+const fundBalanceOnDate = computed(() => {
+  const fundRecordsUntilDate = recordStore.records.filter(r => r.date < datetime.value && r.fundID === record.fundID);
+  const fundBalanceOnDate = fundRecordsUntilDate.reduce((balance, record) => balance + record.amount, 0);
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 2,
+    roundingIncrement: 5,
+  }).format(fundBalanceOnDate);
+});
 
 function onSave(record, editing) {
   loading.value = true;
-  const actions = defineActions(record, editing)
-  const unbalancedFund = actions.onFund.find(action => action.data.body.balance < 0);
-  if (unbalancedFund !== undefined) return alert(
-    `Cannot update, "${unbalancedFund.data.name}" would have a negative balance.`
-  )
-  const makePromises = (actions) => Array.from(actions, ({ action, data }) => action(data));
-  Promise.all(makePromises([...actions.onRecord, ...actions.onFund]))
-    .then((responses) => {
-      const message = responses.join('\n');
+  const action = editing ? recordStore.updateRecord : recordStore.createRecord;
+  const body = defineBody(record, editing);
+  action(body)
+    .then((message) => {
       alert(message);
       emit('close-form');
     })
@@ -239,74 +292,36 @@ function onSave(record, editing) {
     })
 };
 
-function defineActions(record, editing) {
-  const actions = { onRecord: [], onFund: [] };
+function defineBody(record, editing) {
+  record.date = new Date(datetime.value).toISOString();
+  if (record.note === null) delete record.note;
+  if (tagFields.option === "Add new" && tagFields.input === null) delete record.tag;
+  else record.tag = tagFields.input || tagFields.option;
+  if (!editing) return { body: record };
 
-  const updatedRecordBody = () => {
-    const recordKeys = Object.keys(record);
-    const entries = [];
-
-    const valueChanged = (key) => record[key] !== props.originalRecord[key]
-    for (const key of recordKeys) if (valueChanged(key)) entries.push([key, record[key]])
-
-    const body = Object.fromEntries(entries);
-    return body
-  }
-
-  actions.onRecord.push({
-    action: (editing) ? recordStore.updateRecord : recordStore.createRecord,
-    data: (editing) ? { userID, _id: record._id, body: updatedRecordBody() } : record
-  });
-
-  if (fundUpdateIsRequired.value) {
-    const actionOnFund = fundStore.updateFund;
-    const relationRemains = editing ? (props.originalRecord.targetID === record.targetID) : false;
-    const fundToUpdate = defineFundToUpdate(record, relationRemains);
-    actions.onFund.push({
-      action: actionOnFund,
-      data: { userID, _id: fundToUpdate._id, body: { balance: fundToUpdate.balance } } });
-    if (editing && !relationRemains) {
-      const fundToReverse = defineFundToReverse(props.originalRecord);
-      actions.onFund.push({
-        action: actionOnFund,
-        data: { userID, _id: fundToReverse._id, body: { balance: fundToReverse.balance } }
-      });
-    };
-  }
-  return actions;
-}
-
-function defineFundToUpdate(record, relationRemains) {
-  const originalFund = relationRemains ? defineFundToReverse(props.originalRecord) : findFundByID(record.targetID)
-  const fundToUpdate = { ...originalFund }
-  if (record.type === 1) fundToUpdate.balance += record.amount
-  else  fundToUpdate.balance -= record.amount
-  return fundToUpdate
-}
-
-function defineFundToReverse(record) {
-  const originalFund = findFundByID(record.targetID)
-  const fundToReverse = { ...originalFund }
-  if (record.type === 1) fundToReverse.balance -= record.amount
-  else fundToReverse.balance += record.amount
-  return fundToReverse
+  const keys = Object.keys(record);
+  const entries = [];
+  const valueUpdated = (key) => record[key] !== props.originalRecord[key]
+  for (const key of keys) if (valueUpdated(key)) entries.push([key, record[key]])
+  const body = Object.fromEntries(entries);
+  const { id } = props.originalRecord;
+  return { id, body };
 }
 
 watch(
   () => record.type,
-  () => {
-    record.sourceID = 0
+  (recordType) => {
+    record.fundID = recordType === 1 ? fundStore.defaultFund.id : "";
     record.amount = 0
   }
 )
 watch(
-  () => record.sourceID,
-  (sourceID) => {
-    if (record.type === 1) record.targetID = fundStore.defaultFund._id
-    else if (record.sourceID !== 0) record.targetID = sourceID
-    else record.targetID = 0
+  () => tagFields.option,
+  (tagOption) => {
+    if (tagOption !== "Add new") tagFields.input = null;
   }
 )
+
 </script>
 
 <style scoped>
@@ -319,10 +334,5 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
   appearance: inherit;
-}
-
-/* Invert the default white color from input date fields icon */
-::-webkit-calendar-picker-indicator {
-    filter: invert(1);
 }
 </style>
