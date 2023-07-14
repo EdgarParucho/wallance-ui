@@ -141,7 +141,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from 'vue'
+import { ref, reactive, computed, watch, inject } from 'vue'
 import { useFundStore } from '../../stores/fundStore';
 import { ChartPieIcon } from '@heroicons/vue/24/outline'
 import Dialog from '../helper/Dialog.vue';
@@ -164,6 +164,7 @@ const props = defineProps({
   }
 });
 const emit = defineEmits(['close-form']);
+const displayAlert = inject("alert");
 const recordStore = useRecordStore();
 const fundStore = useFundStore();
 
@@ -176,7 +177,7 @@ const amountPickers = [
 
 const formDate = (props.editing)
   ? ref(props.originalRecord.date.slice(0, 10))
-  : ref(new Date().toISOString().slice(0, 10));
+  : ref(new Intl.DateTimeFormat("en-UK").format(new Date()).split("/").reverse().join("-"));
 const formTime = (props.editing)
   ? ref(new Date(props.originalRecord.date).toTimeString().slice(0, 5))
   : ref(new Date().toTimeString().slice(0, 5));
@@ -206,6 +207,7 @@ const someFieldIsRequired = computed(() => {
 
 const fundBalanceOnDate = computed(() => {
   const fundRecordsUntilDate = recordStore.records.filter(r => r.date < datetime.value && r.fundID === record.fundID);
+  console.log(fundRecordsUntilDate);
   const fundBalanceOnDate = fundRecordsUntilDate.reduce((balance, record) => balance + record.amount, 0);
   return fundBalanceOnDate;
 });
@@ -225,7 +227,6 @@ function divisorIsApplied({ divisor }) {
 }
 
 function divideAmount(divisor) {
-  console.log(fundBalanceOnDate.value);
   record.amount = -Math.floor(Number(fundBalanceOnDate.value) / divisor)
 }
 
@@ -235,13 +236,11 @@ function onSave(record, editing) {
   const body = defineBody(record, editing);
   action(body)
     .then((message) => {
-      alert(message);
+      displayAlert({ title: "Done", type: "success", text: message });
       emit('close-form');
     })
-    .catch((message) => {
-      alert(message);
-      loading.value = false;
-    })
+    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .finally(() => loading.value = false)
 }
 
 function defineBody(record, editing) {

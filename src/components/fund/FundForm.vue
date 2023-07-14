@@ -35,13 +35,14 @@
 </template>
  
 <script setup>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { useFundStore } from '../../stores/fundStore';
 import Dialog from '../helper/Dialog.vue';
 
-const props = defineProps(['form-is-open', 'editing-fund'])
-const emit = defineEmits(['close-form'])
-const fundStore = useFundStore()
+const props = defineProps(['form-is-open', 'editing-fund']);
+const emit = defineEmits(['close-form']);
+const displayAlert = inject("alert");
+const fundStore = useFundStore();
 
 const fund = ref({
   name: '',
@@ -64,18 +65,22 @@ function handleSubmit(body) {
 function createFund(fund) {
   loading.value = true
   fundStore.createFund(fund)
-    .then((message) => alert(message))
-    .then(() => emit('close-form'))
-    .catch((message) => alert(message))
+    .then((message) => {
+      displayAlert({ type: "success", title: "Done", text: message });
+      emit('close-form');
+  })
+    .catch((message) => displayAlert({ type: "error", title: "Something went wrong", text: message }))
     .finally(() => loading.value = false)
 }
 
 function updateFund(id, body) {
   loading.value = true
   fundStore.updateFund({ id, body })
-    .then((message) => alert(message))
-    .then(() => emit('close-form'))
-    .catch((message) => alert(message))
+    .then((message) => {
+      displayAlert({ type: "success", title: "Done", text: message });
+      emit('close-form');
+    })
+    .catch((message) => displayAlert({ type: "error", title: "Something went wrong", text: message }))
     .finally(() => loading.value = false)
 }
  </script>

@@ -42,9 +42,7 @@ export const useCredentialStore = defineStore('credential', () => {
       )
     })
     .catch((error) => {
-      let feedback = 'An error was detected while operating your account.\n';
-      if (error.response !== undefined) feedback += error.response.data;
-      else feedback += error.message;
+      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
       reject(feedback);
     })
   );
@@ -53,19 +51,15 @@ export const useCredentialStore = defineStore('credential', () => {
     .then(({ data }) => {
       resolve(data)})
     .catch((error) => {
-      let feedback = `Your code could not be generated.\n`
-      if (error.response !== undefined) feedback += error.response.data
-      else feedback += error.message
-      reject(feedback)
+      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
+      reject(feedback);
     })
   );
 
   const sign = (data) => new Promise((resolve, reject) => Sign(data)
     .then((response) => resolve(response.data))
     .catch((error) => {
-      let feedback = `Your user could not be created.\n`;
-      if (error.response !== undefined) feedback += error.response.data;
-      else feedback += error.message;
+      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
       reject(feedback);
     })
   );

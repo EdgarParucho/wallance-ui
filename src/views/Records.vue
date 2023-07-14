@@ -44,14 +44,15 @@
 
 <script setup>
 import { useRecordStore } from '../stores/recordStore';
-import { ref, computed, watch, defineAsyncComponent } from 'vue'
+import { ref, computed, watch, defineAsyncComponent, inject } from 'vue'
 import AssignmentForm from '../components/record/AssignmentForm.vue';
 import RecordCard from '../components/record/RecordCard.vue';
 
-const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'))
-const recordStore = useRecordStore()
-let originalRecord = null
+const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
+const recordStore = useRecordStore();
+const displayAlert = inject("alert");
 
+let originalRecord = null;
 const loading = ref(false);
 const records = computed(() => recordStore.records);
 const recordFormIsOpen = ref(false);
@@ -84,20 +85,6 @@ const filters = ref([
     isApplied: false
   },
 ]);
-const sortOptions = ref([
-{
-    name: 'Date',
-    targetProperty: 'date',
-    fn: (a, b) => a.date - b.date,
-    isApplied: true
-  },
-  {
-    name: 'Amount',
-    targetProperty: 'amount',
-    fn: (a, b) => a.amount - b.amount,
-    isApplied: false
-  },
-]);
 
 function editRecord({ id }) {
   originalRecord = records.value.find(r => r.id === id);
@@ -120,23 +107,14 @@ function applyFilter(newFilter) {
   newFilter.isApplied = true;
 }
 
-function applySortOption(newOption) {
-  if (newOption.isApplied) return newOption.isApplied = false;
-  const conflictFilter = filters.value.find(
-    filter => filter.isApplied && filter.targetProperty === newOption.targetProperty
-  );
-  if (conflictFilter !== undefined) conflictFilter.isApplied = false;
-  newOption.isApplied = true;
-}
-
 function deleteRecord(record) {
   loading.value = true;
   recordStore.deleteRecord({ id: record.id })
     .then((message) => {
-      alert(message)
-      recordFormIsOpen.value = false
+      displayAlert({ type: "success", title: "Done", text: message });
+      recordFormIsOpen.value = false;
     })
-    .catch((message) => alert(message))
+    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 

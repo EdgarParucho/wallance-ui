@@ -56,13 +56,14 @@
 
 <script setup>
 
-import { computed, ref } from 'vue'
+import { computed, ref, inject } from 'vue'
 import { useAccountStore } from '../../stores/accountStore';
 import Dialog from '../helper/Dialog.vue';
 
-const accountStore = useAccountStore()
 const emit = defineEmits(['close-form', 'request-otp'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
+const displayAlert = inject("alert");
+const accountStore = useAccountStore()
 
 const OTP = ref("");
 const newPassword = ref("");
@@ -86,12 +87,12 @@ function reSendOTP() {
 function onSubmit({ OTP, newPassword }) {
   loading.value = true
   accountStore.updatePassword({ OTP, updateEntries: { password: newPassword } })
-    .then((response) => {
-      alert(response)
+    .then((message) => {
+      displayAlert({ title: "Done", type: "success", text: message });
       emit('close-form')
       startCountDown()
     })
-    .catch((error) => alert(error))
+    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 

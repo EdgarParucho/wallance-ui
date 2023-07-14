@@ -39,9 +39,8 @@ export const useRecordStore = defineStore('records', () => {
       mutation(response.data)
     ))
     .catch((error) => {
-      const feedback = 'Could not complete the action on your records.\n'
-        + (error.response?.data?.message || error.response?.data || error.message || error);
-      reject(feedback)
+      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
+      reject(feedback);
     })
   );
 

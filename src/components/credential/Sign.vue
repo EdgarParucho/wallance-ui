@@ -73,25 +73,26 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, inject } from 'vue'
 import { useCredentialStore } from '../../stores/credentialStore';
 import Dialog from '../helper/Dialog.vue';
 
-const credentialStore = useCredentialStore();
-const emit = defineEmits(['close-form'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } });
+const emit = defineEmits(['close-form'])
+const displayAlert = inject("alert");
+const credentialStore = useCredentialStore();
 
 const form = ref({ email: '', password: '' });
 const reEnteredPassword = ref('');
 const loading = ref(false);
 const OTP = ref("");
 const validatingEmail = ref(false);
+const countDown = ref(0);
 
 const passwordMismatch = computed(() => form.value.password !== reEnteredPassword.value);
 const someFieldIsEmpty = computed(() => form.value.password === '' || form.value.email === '');
 const missingValidation = computed(() => OTP.value === '');
 
-const countDown = ref(0);
 
 function startCountDown() {
   countDown.value = 30;
@@ -122,12 +123,12 @@ function validateForm() {
 function validateEmail(email) {
   loading.value = true
   credentialStore.requestOTPValidation({ email, emailShouldBeStored: false, action: "sign" })
-    .then((response) => {
-      alert(response)
+    .then((message) => {
+      displayAlert({ title: "Check your inbox", type: "info", text: message });
       validatingEmail.value = true
       startCountDown()
     })
-    .catch((error) => alert(error))
+    .catch((message) => displayAlert({ title: "Couldn't sign in", type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 
@@ -136,11 +137,11 @@ function sign(OTP, form) {
   if(formValidation.failed) return alert(formValidation.feedback)
   loading.value = true
   credentialStore.sign({ OTP, body: { ...form } })
-    .then((response) => {
-      alert(response);
+    .then((message) => {
+      displayAlert({ title: "You're in", type: "success", text: message });
       emit('close-form');
     })
-    .catch((error) => alert(error))
+    .catch((message) => displayAlert({ title: "Couldn't sign in", type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 </script>

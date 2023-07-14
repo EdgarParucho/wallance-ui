@@ -210,7 +210,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, reactive } from 'vue';
+import { ref, watch, computed, reactive, inject } from 'vue';
 import { DocumentPlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline';
 import { useRecordStore } from '../../stores/recordStore';
 import { useFundStore } from '../../stores/fundStore';
@@ -234,17 +234,16 @@ const props = defineProps({
   }
 });
 const emit = defineEmits(['close-form']);
+const displayAlert = inject("alert");
 const recordStore = useRecordStore();
 const fundStore = useFundStore();
 
 const formDate = (props.editing)
   ? ref(props.originalRecord.date.slice(0, 10))
-  : ref(new Date().toISOString().slice(0, 10));
+  : ref(new Intl.DateTimeFormat("en-UK").format(new Date()).split("/").reverse().join("-"));
 const formTime = (props.editing)
   ? ref(new Date(props.originalRecord.date).toTimeString().slice(0, 5))
   : ref(new Date().toTimeString().slice(0, 5));
-
-const datetime = computed(() => `${formDate.value}T${formTime.value}:01`);
 
 const tagFields = reactive({
   option: props.editing ? props.originalRecord.tag : "Add new",
@@ -265,6 +264,7 @@ const record = (props.editing)
 
 const loading = ref(false);
 const recordIsCredit = computed(() => record.type === 1);
+const datetime = computed(() => `${formDate.value}T${formTime.value}:01`);
 
 const fundBalanceOnDate = computed(() => {
   const fundRecordsUntilDate = recordStore.records.filter(r => r.date < datetime.value && r.fundID === record.fundID);
@@ -283,13 +283,11 @@ function onSave(record, editing) {
   const body = defineBody(record, editing);
   action(body)
     .then((message) => {
-      alert(message);
+      displayAlert({ title: "Done", type: "success", text: message });
       emit('close-form');
     })
-    .catch((message) => {
-      alert(message);
-      loading.value = false;
-    })
+    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .finally(() => loading.value = false)
 };
 
 function defineBody(record, editing) {

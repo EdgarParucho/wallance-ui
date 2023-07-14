@@ -14,8 +14,9 @@
         <PlusIcon class="w-6 mx-auto" />
       </button>
       <button
-      class="font-bold text-stone-900 bg-yellow-500 hover:bg-yellow-400 transition-colors w-1/2 md:w-40 py-1"
+      class="font-bold text-stone-900 bg-yellow-500 hover:bg-yellow-400 transition-colors w-1/2 md:w-40 py-1 disabled:bg-stone-800"
       @click="balanceFormIsOpen = true"
+      :disabled="funds.length < 2"
       >
         <ArrowsRightLeftIcon class="w-6 mx-auto" />
       </button>
@@ -35,29 +36,37 @@
 </template>
 
 <script setup>
-import { ref, defineAsyncComponent } from 'vue';
-import { ArrowsRightLeftIcon, PlusIcon } from '@heroicons/vue/24/outline'
-import { useFundStore } from '../stores/fundStore'
-import FundCard from '../components/fund/FundCard.vue'
+import { ref, defineAsyncComponent, inject } from 'vue';
+import { ArrowsRightLeftIcon, PlusIcon } from '@heroicons/vue/24/outline';
+import { useFundStore } from '../stores/fundStore';
 import { storeToRefs } from 'pinia';
+import FundCard from '../components/fund/FundCard.vue';
+import swal from "sweetalert";
 
 const FundForm = defineAsyncComponent(() => import('../components/fund/FundForm.vue'))
 const AssignmentForm = defineAsyncComponent(() => import('../components/record/AssignmentForm.vue'))
-
+const displayAlert = inject("alert");
 const fundStore = useFundStore();
-const { funds } = storeToRefs(fundStore)
-let fundFormIsOpen = ref(false)
-let balanceFormIsOpen = ref(false)
-let editingFund = null
-const loading = ref(false)
 
-function confirmDeletion(fund) {
+const { funds } = storeToRefs(fundStore);
+let fundFormIsOpen = ref(false);
+let balanceFormIsOpen = ref(false);
+let editingFund = null;
+const loading = ref(false);
+
+async function confirmDeletion(fund) {
   loading.value = true
-  const deleteIsConfirmed = confirm(`Please confirm to delete "${fund.name}". The action is irreversible.`);
+  const deleteIsConfirmed = await swal({
+    icon: "info",
+    title: "Caution",
+    text: `Please confirm to delete "${fund.name}". The action is irreversible.`,
+    buttons: true,
+    timer: null,
+  });
   if(!deleteIsConfirmed) return loading.value = false;
-  fundStore.deleteFund(fund.id)
-    .then((message) => alert(message))
-    .catch((message) => alert(message))
+  fundStore.deleteFund({ id: fund.id })
+    .then((message) => displayAlert({ title: "Done", type: "success", text: message }))
+    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 
@@ -65,6 +74,7 @@ function editFund(fund) {
   editingFund = fund
   fundFormIsOpen.value = true
 }
+
 function closeForm() {
   editingFund = null
   fundFormIsOpen.value = false

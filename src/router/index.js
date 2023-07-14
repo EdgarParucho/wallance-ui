@@ -4,6 +4,7 @@ import Index from '../views/Index.vue'
 import Records from '../views/Records.vue'
 import Funds from '../views/Funds.vue'
 import Account from '../views/Account.vue'
+import NotFound from '../views/NotFound.vue'
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/account',
     name: 'Account',
     component: Account
+  },
+  {
+    path: '/:catchAll(.*)',
+    name: 'NotFound',
+    component: NotFound
   }
 ]
 

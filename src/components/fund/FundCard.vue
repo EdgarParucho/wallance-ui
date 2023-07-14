@@ -10,7 +10,7 @@
     </div>
     <div class="h-1/3 w-full text-end first-letter:mr-1 mt-2">
       <span class="text-3xl text-white">
-        {{ fundBalance }}
+        {{ fundBalance.inCurrencyFormat }}
       </span>
       <p class="text-xs text-stone-300">
         {{ fund.lastUpdated }}
@@ -34,31 +34,39 @@
 </template>
 
 <script setup>
+import { computed, inject } from "vue";
 import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import { useRecordStore } from '../../stores/recordStore';
-import { computed } from "vue";
 
-const emit = defineEmits(['edit-fund', 'confirm-deletion'])
-const props = defineProps(['fund'])
+const emit = defineEmits(['edit-fund', 'confirm-deletion']);
+const props = defineProps(['fund']);
+const displayAlert = inject("alert");
 const recordStore = useRecordStore();
 
 const fundBalance = computed(() => {
   const fundRecords = recordStore.records.filter(record => record.fundID === props.fund.id);
-  const balance = fundRecords.reduce((acc, record) => acc + record.amount, 0);
-  return new Intl.NumberFormat("en-US", {
+  const numeric = fundRecords.reduce((acc, record) => acc + record.amount, 0);
+  const inCurrencyFormat = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 2,
     roundingIncrement: 5,
-  }).format(balance);
+  }).format(numeric);
+  return { inCurrencyFormat, numeric };
 });
 
 function validateDeletion(fund) {
-  if(fund.isDefault) return alert('Cannot delete the default fund.')
-  else if(fundBalance > 0) return alert(
-    'Cannot delete a fund with positive balance. You can move the balance to another fund, then retry this action.'
-  );
-  emit('confirm-deletion', fund)
+  if(fund.isDefault) return displayAlert({
+    type: "info",
+    title: "Can't complete the action",
+    text: 'Cannot delete the default fund.'
+  });
+  else if(fundBalance.value.numeric > 0)  return displayAlert({
+    type: "info",
+    title: "Can't complete the action",
+    text: 'The fund has a positive balance. You can move the balance to another fund, then retry this action.'
+  });
+  emit('confirm-deletion', fund);
 }
 
 </script>

@@ -35,7 +35,7 @@
       <div class="my-4">
         <h6 class="font-semibold">My Password</h6>
         <button
-        @click="onUpdatePassword"
+        @click="requestOTP('update')"
         class="flex w-full justify-center rounded-md bg-stone-800 mt-2 p-2 text-sm text-white shadow-sm hover:bg-stone-700 font-semibold disabled:text-stone-500"
         :disabled="requestingOTP"
         >
@@ -51,7 +51,7 @@
       <div class="my-4">
         <h6 class="font-semibold">My Account</h6>
         <button
-        @click="onDelete"
+        @click="requestOTP('delete')"
         class="flex w-full justify-center rounded-md bg-stone-800 mt-2 p-2 text-sm text-white shadow-sm hover:bg-stone-700 font-semibold disabled:text-stone-500"
         :disabled="requestingOTP"
         >
@@ -71,7 +71,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { Cog6ToothIcon, PencilIcon, KeyIcon } from '@heroicons/vue/24/outline'
 import { useAccountStore } from '../stores/accountStore';
 import { useCredentialStore } from '../stores/credentialStore';
@@ -82,6 +82,7 @@ import { storeToRefs } from 'pinia';
 
 const accountStore = useAccountStore();
 const credentialStore = useCredentialStore();
+const displayAlert = inject("alert");
 
 const { account } = storeToRefs(accountStore);
 const emailFormIsOpen = ref(false)
@@ -89,35 +90,27 @@ const passwordFormIsOpen = ref(false)
 const deleteFormIsOpen = ref(false)
 const requestingOTP = ref(false);
 
-function onDelete() {
-  requestingOTP.value = true;
-  requestOTP("delete")
-    .then(() => requestingOTP.value = false)
-    .then(() => deleteFormIsOpen.value = true)
-    .catch((error) => {
-      requestingOTP.value = false;
-      alert(error);
-    })
-}
-
 async function requestOTP(action) {
-  const feedback = await credentialStore.requestOTPValidation({
+  const deletionIsConfirmed = await swal({
+    icon: "warning",
+    title: "Caution",
+    text: 'Please confirm if you want to delete your account. The action is irreversible.',
+    buttons: true,
+    timer: null,
+  });
+  if (!deletionIsConfirmed) return
+  requestingOTP.value = true;
+  credentialStore.requestOTPValidation({
     email: account.value.email,
     action,
     emailShouldBeStored: true
   })
-  alert(feedback);
-}
-
-function onUpdatePassword() {
-  requestingOTP.value = true;
-  requestOTP("update")
-    .then(() => requestingOTP.value = false)
-    .then(() => passwordFormIsOpen.value = true)
-    .catch((error) => {
-      requestingOTP.value = false;
-      alert(error);
+    .then((message) => {
+      displayAlert({ title: "Check your inbox", type: "info", text: message });
+      if (action === "delete") deleteFormIsOpen.value = true;
+      else passwordFormIsOpen.value = true;
     })
+    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .finally(() => requestingOTP.value = false)
 }
-
 </script>

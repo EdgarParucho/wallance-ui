@@ -30,6 +30,7 @@
 <script setup>
 import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import { computed } from 'vue';
+import swal from "sweetalert";
 
 const props = defineProps(['record'])
 const emit = defineEmits(['edit-record', 'delete-record'])
@@ -55,8 +56,14 @@ function recordType(recordType) {
       break;
   }
 }
-function confirmDeletion(record) {
-  const deletionIsConfirmed = confirm('Please confirm if you want to delete the record. The action is irreversible.')
+async function confirmDeletion(record) {
+  const deletionIsConfirmed = await swal({
+    icon: "info",
+    title: "Caution",
+    text: 'Please confirm if you want to delete the record. The action is irreversible.',
+    buttons: true,
+    timer: null,
+  });
   if (deletionIsConfirmed) emit('delete-record', record) 
 }
 </script>

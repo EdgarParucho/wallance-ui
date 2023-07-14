@@ -48,15 +48,16 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, inject } from 'vue';
 import { useAccountStore } from '../../stores/accountStore';
 import { useCredentialStore } from '../../stores/credentialStore';
 import Dialog from '../helper/Dialog.vue';
 
-const accountStore = useAccountStore();
-const credentialStore = useCredentialStore();
 const emit = defineEmits(['close-form'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
+const displayAlert = inject("alert");
+const accountStore = useAccountStore();
+const credentialStore = useCredentialStore();
 
 const loading = ref(false)
 const countDown = ref(0);
@@ -87,21 +88,23 @@ function updateEmail(OTP, email) {
   if (currentEqualsNew.value) return alert('The email you entered is already your current address.')
   loading.value = true
   accountStore.updateEmail({ OTP, updateEntries: { email } })
-  .then((response) => {
-    alert(response)
-    emit('close-form')
+  .then((message) => {
+    displayAlert({ title: "Done", type: "success", text: message });
+    emit('close-form');
   })
-  .catch((error) => alert(error))
+  .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
   .finally(() => loading.value = false)
 }
 
 function validateEmail({ email }) {
   loading.value = true
   credentialStore.requestOTPValidation({ email, emailShouldBeStored: false, action: "update" })
-    .then((response) => alert(response))
-    .then(() => validatingEmail.value = true)
-    .then(() => startCountDown())
-    .catch((error) => alert(error))
+    .then((message) => {
+      displayAlert({ title: "Check your inbox", type: "info", text: message });
+      validatingEmail.value = true;
+      startCountDown();
+    })
+    .catch((message) => displayAlert({ title: "Couldn't sign in", type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 

@@ -39,16 +39,17 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { computed, ref } from 'vue'
+import { computed, ref, inject } from 'vue'
 import { useAccountStore } from '../../stores/accountStore';
 import { useCredentialStore } from '../../stores/credentialStore';
 import Dialog from '../helper/Dialog.vue';
 
 
-const accountStore = useAccountStore();
-const credentialStore = useCredentialStore();
 const emit = defineEmits(['close-form', 'request-otp'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
+const displayAlert = inject("alert");
+const accountStore = useAccountStore();
+const credentialStore = useCredentialStore();
 const router = useRouter()
 
 const OTP = ref('')
@@ -66,11 +67,11 @@ function reSendOTP() {
 function onSubmit(OTP) {
   loading.value = true
   accountStore.erase({ OTP })
-    .then((response) => {
-      alert(response)
+    .then((message) => {
+      displayAlert({ title: "Done", type: "success", text: message });
       logout()
     })
-    .catch((error) => alert(error))
+    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 

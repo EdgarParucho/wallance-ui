@@ -16,9 +16,7 @@ export const useAccountStore = defineStore('account', () => {
         resolve('Email updated successfully');
       })
       .catch((error) => {
-        let feedback = `Your email could not be updated.\n`;
-        if (error.response !== undefined) feedback += error.response.data;
-        else feedback += error.message;
+        const feedback = error.response?.data?.message || error.response?.data || error.message || error;
         reject(feedback);
       })
   )}
@@ -29,9 +27,7 @@ export const useAccountStore = defineStore('account', () => {
         resolve('Password updated successfully');
       })
       .catch((error) => {
-        let feedback = `Your password could not be updated.\n`;
-        if (error.response !== undefined) feedback += error.response.data;
-        else feedback += error.message;
+        const feedback = error.response?.data?.message || error.response?.data || error.message || error;
         reject(feedback);
       })
     )}
@@ -42,9 +38,7 @@ export const useAccountStore = defineStore('account', () => {
       resolve('Your account was deleted.');
     })
     .catch((error) => {
-      let feedback = `Your account could not be deleted.\n`;
-      if (error.response !== undefined) feedback += error.response.data;
-      else feedback += error.message;
+      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
       reject(feedback);
     })
   )

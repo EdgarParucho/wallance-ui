@@ -47,15 +47,17 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { useRouter } from 'vue-router';
 import { useCredentialStore } from '../../stores/credentialStore';
 import Dialog from '../helper/Dialog.vue';
 
-const credentialStore = useCredentialStore();
-const router = useRouter();
-const emit = defineEmits(['close-form']);
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } });
+const emit = defineEmits(['close-form']);
+const displayAlert = inject("alert");
+const credentialStore = useCredentialStore();
+
+const router = useRouter();
 
 const forgotPassword = ref(false);
 const form = ref({ email: '', password: '' });
@@ -95,13 +97,11 @@ function handleSubmit(data) {
   loading.value = true;
   credentialStore.login(data)
     .then((message) => {
-      alert(message);
+      displayAlert({ title: "You're in", type: "success", text: message });
       router.replace('/dashboard');
     })
-    .catch((message) => {
-      alert(message);
-      loading.value = false;
-    })
+    .catch((message) => displayAlert({ title: "Couldn't authenticate you", type: "error", text: message }))
+    .finally(() => loading.value = false)
     
 }
 </script>

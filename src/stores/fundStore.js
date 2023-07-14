@@ -38,10 +38,8 @@ export const useFundStore = defineStore('fund', () => {
       mutation(response.data)
     ))
     .catch((error) => {
-      let feedback = 'An error was detected while operating your funds.\n'
-      if (error.response !== undefined) feedback += error.response.data
-      else feedback += error.message
-      reject(feedback)
+      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
+      reject(feedback);
     })
   );
 
