@@ -46,25 +46,25 @@ export const useRecordStore = defineStore('records', () => {
 
   const getRecords = () => useService({
     service: Find,
-    data: { token: credentialStore.sessionToken },
+    data: { token: credentialStore.credential.token },
     mutation: mutations.getRecords,
   });
 
   const createRecord = (data) => useService({
     service: Create,
-    data: { ...data, token: credentialStore.sessionToken },
+    data: { ...data, token: credentialStore.credential.token },
     mutation: mutations.createRecord
   });
 
   const updateRecord = (data) => useService({
     service: Update,
-    data: { ...data, token: credentialStore.sessionToken },
+    data: { ...data, token: credentialStore.credential.token },
     mutation: mutations.updateRecord
   });
 
   const deleteRecord = (data) => useService({
     service: Delete,
-    data: { ...data, token: credentialStore.sessionToken  },
+    data: { ...data, token: credentialStore.credential.token  },
     mutation: mutations.deleteRecord
   });
 

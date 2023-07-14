@@ -45,19 +45,19 @@ export const useFundStore = defineStore('fund', () => {
 
   const createFund = (data) => useService({
     service: Create,
-    data: { ...data, token: credentialStore.sessionToken },
+    data: { ...data, token: credentialStore.credential.token },
     mutation: mutations.createFund
   });
 
   const updateFund = (data) => useService({
     service: Update,
-    data: { ...data, token: credentialStore.sessionToken },
+    data: { ...data, token: credentialStore.credential.token },
     mutation: mutations.updateFund
   });
 
   const deleteFund = (data) => useService({
     service: Delete,
-    data: { ...data, token: credentialStore.sessionToken },
+    data: { ...data, token: credentialStore.credential.token },
     mutation: mutations.deleteFund
   });
 
