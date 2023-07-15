@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import API from '../services/API';
-import { RequestOTP, Sign, Login } from '../services/credentialAPI';
+import { RequestOTP, Sign, Login, ResetPassword } from '../services/credentialAPI';
 import { useLocalStorage } from '@vueuse/core';
 
 import { useFundStore } from './fundStore';
@@ -72,6 +72,14 @@ export const useCredentialStore = defineStore('credential', () => {
   });
 
   const logout = () => mutations.logout();
+  
+  const resetPassword = (body) => new Promise((resolve, reject) => ResetPassword(body)
+    .then((response) => resolve(response.data))
+    .catch((error) => {
+      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
+      reject(feedback);
+    })
+  )
 
-  return { requestOTPValidation, sign, login, logout, credential };
+  return { credential, requestOTPValidation, sign, login, logout, resetPassword };
 });

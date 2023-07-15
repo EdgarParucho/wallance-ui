@@ -58,12 +58,12 @@ function recordType(recordType) {
 }
 async function confirmDeletion(record) {
   const deletionIsConfirmed = await swal({
-    icon: "info",
+    icon: "warning",
     title: "Caution",
     text: 'Please confirm if you want to delete the record. The action is irreversible.',
     buttons: true,
     timer: null,
   });
-  if (deletionIsConfirmed) emit('delete-record', record) 
+  if (deletionIsConfirmed) emit('delete-record', record)
 }
 </script>

@@ -57,7 +57,7 @@ const loading = ref(false);
 async function confirmDeletion(fund) {
   loading.value = true
   const deleteIsConfirmed = await swal({
-    icon: "info",
+    icon: "warning",
     title: "Caution",
     text: `Please confirm to delete "${fund.name}". The action is irreversible.`,
     buttons: true,

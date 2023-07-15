@@ -90,7 +90,6 @@ function onSubmit({ OTP, newPassword }) {
     .then((message) => {
       displayAlert({ title: "Done", type: "success", text: message });
       emit('close-form')
-      startCountDown()
     })
     .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
     .finally(() => loading.value = false)
