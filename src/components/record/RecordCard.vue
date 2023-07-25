@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-stone-800 text-white font-sans rounded-md md:w-3/6 lg:w-2/6 mt-5">
+  <div class="bg-stone-800 text-white font-sans rounded-md lg:block h-32 my-4 lg:w-2/3 mx-auto">
     <div class="flex justify-between">
       <p class="ml-2 text-stone-300">{{ recordDate }}</p>
       <span :class="[recordType(record.type).textClass, 'flex items-center justify-center h-6 w-16 text-sm rounded-sm']">
@@ -9,8 +9,8 @@
     <div class="justify-end flex items-baseline my-2 mr-3">
       <span class="text-3xl">{{ recordAmount }}</span>
     </div>
-    <p class="ml-2 text-md">{{ record.note }}</p>
-    <div class="flex mt-4">
+    <p class="ml-2 text-md h-10">{{ record.note }}</p>
+    <div class="flex align-bottom">
       <button
       class="w-1/2 py-1 text-yellow-500 bg-stone-800 active:bg-stone-800 hover:bg-stone-700 focus:bg-stone-700 focus:outline-none transition-colors"
       @click="$emit('edit-record', record)"

@@ -28,8 +28,10 @@ export const useRecordStore = defineStore('records', () => {
       return 'Your record was updated.'
     },
     deleteRecord: (data) => {
-      const index = records.value.findIndex(record => record.id === data)
-      records.value.splice(index, 1)
+      data.forEach(dataValue => {
+        const index = records.value.findIndex(record => record.id === dataValue);
+        records.value.splice(index, 1)
+      })
       return 'Your record was deleted.'
     }
   };

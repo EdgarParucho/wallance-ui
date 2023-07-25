@@ -6,25 +6,35 @@
     <h1 class="dark:text-white text-4xl font-bold">
       Records History
     </h1>
+    
+    <div class="lg:flex mt-5 space-x-1">
+      <div class="lg:w-1/3">
+        <PieChart id="tags-records" :labels="recordsTags" :data-values="tagsRecords" data-label=" %" />
+      </div>
+      <div class="lg:w-2/3">
+        <LineChart id="month-balance" :labels="months" :data-values="monthsBalance" data-label="Balance (Credits - Debits)" />
+      </div>
+    </div>
+    
     <small class="font-bold">Filters</small>
-
-    <div class="grid-flow-col p-2 bg-stone-800 flex-wrap">
+    <div class="p-2 bg-stone-800 flex-wrap flex justify-center">
       <button
       v-for="filter, i in filters"
       :key="i"
-      :class="[filter.isApplied ? 'bg-stone-300 text-stone-900' : 'bg-stone-900 text-white','text-xs font-bold rounded-xl w-20 m-1 py-1 transition-colors']"
+      :class="[filter.isApplied ? 'bg-yellow-400 text-stone-900' : 'bg-stone-900 text-white','text-xs font-bold rounded-xl w-24 m-1 py-1 px-2 transition-colors']"
       @click="applyFilter(filter)"
       >
         {{ filter.name }}
       </button>
     </div>
     <RecordCard
-    v-for="record in filteredRecords"
-    :key="record.id"
-    :record="record"
-    @edit-record="(record) => editRecord(record)"
-    @delete-record="(record) => deleteRecord(record)"
+      v-for="record in filteredRecords"
+      :key="record.id"
+      :record="record"
+      @edit-record="(record) => editRecord(record)"
+      @delete-record="(record) => deleteRecord(record)"
     />
+    
     <RecordForm
     v-if="recordFormIsOpen"
     :form-is-open="recordFormIsOpen"
@@ -43,10 +53,14 @@
 </template>
 
 <script setup>
+
 import { useRecordStore } from '../stores/recordStore';
 import { ref, computed, watch, defineAsyncComponent, inject } from 'vue'
 import AssignmentForm from '../components/record/AssignmentForm.vue';
 import RecordCard from '../components/record/RecordCard.vue';
+import PieChart from '../components/chart/PieChart.vue';
+import LineChart from '../components/chart/LineChart.vue';
+import { storeToRefs } from 'pinia';
 
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
 const recordStore = useRecordStore();
@@ -54,7 +68,7 @@ const displayAlert = inject("alert");
 
 let originalRecord = null;
 const loading = ref(false);
-const records = computed(() => recordStore.records);
+const { records } = storeToRefs(recordStore);
 const recordFormIsOpen = ref(false);
 const assignmentFormIsOpen = ref(false);
 const filteredRecords = ref([]);
@@ -73,6 +87,12 @@ const filters = ref([
     isApplied: false
   },
   {
+    name: 'Assignments',
+    targetProperty: 'type',
+    fn: (r) => r.type === 0,
+    isApplied: false
+  },
+  {
     name: 'This month',
     targetProperty: 'date',
     fn: (r) => r.date.slice(0, 7) === new Date().toISOString().slice(0, 7),
@@ -85,6 +105,33 @@ const filters = ref([
     isApplied: false
   },
 ]);
+
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+const monthsBalance = computed(() => {
+  const result = [];
+  months.forEach(month => {
+    console.log(month);
+    const monthMatch = (date) => new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date) === month;
+    const monthRecords = records.value.filter(record => monthMatch(new Date(record.date)));
+    const monthBalance = monthRecords.reduce((acc, record) => acc + record.amount, 0);
+    result.push(monthBalance);
+  })
+  return result;
+});
+
+const date = new Date().getMonth()
+const recordsTags = computed(() => Array.from(new Set([...records.value.map(record => record.tag)])))
+const tagsRecords = computed(() => {
+  const tagTotal = [];
+  const debitRecords = records.value.filter(record => record.type === 2);
+  recordsTags.value.forEach(tag => {
+    const debitTagRecords = debitRecords.filter(record => record.tag === tag && record.type === 2);
+    const tagRecordsTotal = debitTagRecords.length / debitRecords.length * 100;
+    tagTotal.push(tagRecordsTotal);
+  })
+  return tagTotal;
+});
 
 function editRecord({ id }) {
   originalRecord = records.value.find(r => r.id === id);

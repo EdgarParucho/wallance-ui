@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-stone-800 rounded-lg w-full lg:w-2/3 lg:inline-block xl:w-1/3 p-2 h-56 my-2 xl:mx-2 xl:inline-block">
+  <div class="bg-stone-800 rounded-lg lg:w-2/3 lg:inline-block p-2 h-42 mb-1">
     <div class="h-1/3 w-full">
       <h5 class="text-xl font-bold text-stone-50 mb-2">
         {{ fund.name }}

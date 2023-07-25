@@ -50,9 +50,13 @@
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
               <span class="text-stone-500 dark:text-white sm:text-md">$</span>
             </div>
-            <input type="number" name="amount" id="amount"
+            <input
+              type="number" name="amount" id="amount"
               class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white pl-6 text-right"
-              placeholder="0.00" v-model.number="record.amount" required :disabled="record.fundID  === null || record.otherFundID === null"
+              placeholder="0.00"
+              v-model.number="record.amount"
+              required
+              :disabled="record.fundID  === null || record.otherFundID === null"
               :max="0">
           </div>
         </div>
@@ -206,8 +210,7 @@ const someFieldIsRequired = computed(() => {
 });
 
 const fundBalanceOnDate = computed(() => {
-  const fundRecordsUntilDate = recordStore.records.filter(r => r.date < datetime.value && r.fundID === record.fundID);
-  console.log(fundRecordsUntilDate);
+  const fundRecordsUntilDate = recordStore.records.filter(r => new Date(r.date) < new Date(datetime.value) && r.fundID === record.fundID);
   const fundBalanceOnDate = fundRecordsUntilDate.reduce((balance, record) => balance + record.amount, 0);
   return fundBalanceOnDate;
 });
@@ -220,14 +223,15 @@ function formatToCurrency(amount) {
     roundingIncrement: 5,
   }).format(amount)
 }
+
 function divisorIsApplied({ divisor }) {
-  if (record.fundID === "") return false
-  const divisorIsApplied = record.amount === -Math.floor(fundBalanceOnDate.value / divisor);
+  if (record.fundID === "" || record.amount === 0) return false
+  const divisorIsApplied = Number(record.amount) === -(fundBalanceOnDate.value / divisor).toFixed(2);
   return divisorIsApplied;
 }
 
 function divideAmount(divisor) {
-  record.amount = -Math.floor(Number(fundBalanceOnDate.value) / divisor)
+  record.amount = -(fundBalanceOnDate.value / divisor)
 }
 
 function onSave(record, editing) {
@@ -263,6 +267,13 @@ watch(
   () => tagFields.option,
   (tagOption) => {
     if (tagOption !== "Add new") tagFields.input = null;
+  }
+)
+
+watch(
+  () => record.amount,
+  (recordAmount) => {
+    record.amount = Number(recordAmount).toFixed(2);
   }
 )
 
