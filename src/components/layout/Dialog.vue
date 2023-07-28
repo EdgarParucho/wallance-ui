@@ -11,7 +11,7 @@
         leave-from="opacity-100"
         leave-to="opacity-0"
         >
-          <div class="fixed inset-0 bg-stone-500 dark:bg-stone-900 bg-opacity-25 transition-opacity"></div>
+          <div class="fixed inset-0 bg-stone-500 bg-opacity-25 transition-opacity"></div>
         </TransitionChild>
 
         <div class="fixed inset-0 z-10 overflow-y-auto">
@@ -25,7 +25,7 @@
             leave-from="opacity-100 translate-y-0 sm:scale-100"
             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <DialogPanel class="relative transform overflow-hidden rounded-lg bg- dark:bg-stone-800 text-left shadow-xl transition-all sm:my-8 p-2">
+              <DialogPanel class="relative transform overflow-hidden rounded-lg bg-stone-900 text-white text-left shadow-xl transition-all sm:my-8 p-2">
                 <slot></slot>
               </DialogPanel>
             </TransitionChild>

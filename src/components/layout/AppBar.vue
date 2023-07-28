@@ -17,7 +17,7 @@ function logout() {
 </script>
 
 <template>
-  <div v-if="!atHome" class="flex justify-between items-center px-4 rounded-md bg-stone-900 w-full fixed left-0 top-0 h-16">
+  <div v-if="!atHome" class="flex justify-between items-center px-4 py-1 w-full text-white bg-stone-800">
     <router-link to="/dashboard" class="font-bold">Wallance</router-link>
     <Menu as="div" class="relative inline-block text-left">
         <MenuButton class="inline-flex justify-center rounded-full bg-stone-800 p-2 text-sm font-semibold text-white shadow-sm hover:bg-stone-700">

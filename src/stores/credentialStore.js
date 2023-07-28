@@ -19,7 +19,7 @@ export const useCredentialStore = defineStore('credential', () => {
       recordStore.setRecords(records);
       fundStore.setFunds(funds);
       credential.value = token;
-      API.defaults.headers.common['Authorization'] = "bearer " + token;
+      API.defaults.headers.common['Authorization'] = "bearer " + credential.value.token;
       return 'Good to have you. Get the most and enjoy.';
     },
     logout: () => {
@@ -48,7 +48,7 @@ export const useCredentialStore = defineStore('credential', () => {
     })
   );
 
-  const requestOTPValidation = (body) => new Promise((resolve, reject) => RequestOTP(body)
+  const requestOTPValidation = (body) => new Promise((resolve, reject) => RequestOTP({ body, token: credential.value.token })
     .then(({ data }) => {
       resolve(data)})
     .catch((error) => {

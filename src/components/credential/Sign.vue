@@ -1,14 +1,23 @@
 <template>
   <Dialog :form-is-open="formIsOpen" @close-form="$emit('close-form')">
-    <div class="py-4 px-8">
-      <h3 class="text-2xl text-center">
+    <div class="rounded-md p-8">
+      <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full mx-auto sm:h-10 sm:w-10 mb-2 bg-stone-700 text-yellow-400">
+        <IdentificationIcon class="h-6 w-6-400" aria-hidden="true" />
+      </div>
+      <h3 class="text-lg font-medium text-white text-center mt-4">
         {{ title }}
       </h3>
+      <div aria-hidden="true">
+        <div class="py-5">
+          <div class="border-t border-white" />
+        </div>
+      </div>
+
       <form @submit.prevent="onSubmit(OTPSent, action)">
         <fieldset class="my-6">
           <input
           type="email"
-          class="block my-2 p-3 w-72 mx-auto rounded-sm text-stone-800"
+          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
           placeholder="email@example.com"
           autofocus
           required
@@ -17,7 +26,7 @@
           <input
           v-if="OTPSent"
           type="password"
-          class="block my-2 p-3 w-72 mx-auto rounded-sm text-stone-800"
+          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
           placeholder="Password"
           required
           v-model="form.password"
@@ -25,7 +34,7 @@
           <input
           v-if="OTPSent"
           type="password"
-          class="block my-2 p-3 w-72 mx-auto rounded-sm text-stone-800"
+          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
           placeholder="Password"
           required
           v-model="reEnteredPassword"
@@ -33,7 +42,7 @@
           <input
           v-if="OTPSent"
           type="text"
-          class="block my-2 p-3 w-72 mx-auto rounded-sm text-stone-800"
+          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
           placeholder="Code"
           required
           v-model="OTP"
@@ -67,7 +76,8 @@
 <script setup>
 import { computed, ref, inject } from 'vue';
 import { useCredentialStore } from '../../stores/credentialStore';
-import Dialog from '../helper/Dialog.vue';
+import { IdentificationIcon } from '@heroicons/vue/24/outline';
+import Dialog from '../layout/Dialog.vue';
 
 const props = defineProps({
   formIsOpen: {
@@ -109,7 +119,7 @@ function startCountDown() {
 
 function requestOTP(email, action) {
   loading.value = true
-  const emailShouldBeStored = action === "recovery";
+  const emailShouldBeStored = (action === "recovery");
   credentialStore.requestOTPValidation({ email, emailShouldBeStored, action })
     .then((message) => {
       displayAlert({ title: "Check your inbox", type: "info", text: message });

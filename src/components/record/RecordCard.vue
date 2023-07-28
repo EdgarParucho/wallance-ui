@@ -1,18 +1,26 @@
 <template>
-  <div class="bg-stone-800 text-white font-sans rounded-md lg:block h-32 my-4 lg:w-2/3 mx-auto">
+  <div class="bg-stone-800 text-white font-sans rounded-md lg:block h-38 my-4 lg:w-2/3 mx-auto">
     <div class="flex justify-between">
-      <p class="ml-2 text-stone-300">{{ recordDate }}</p>
-      <span :class="[recordType(record.type).textClass, 'flex items-center justify-center h-6 w-16 text-sm rounded-sm']">
-        {{ recordType(record.type).name }}
+      <span class="text-white ml-2">{{ recordDate }}</span>
+      <span class="bg-stone-700 rounded-sm font-bold flex items-center justify-center h-6 px-3 text-sm">
+        {{ fundName }}
       </span>
     </div>
-    <div class="justify-end flex items-baseline my-2 mr-3">
+    <div class="justify-end flex items-center my-2 mr-3 space-x-2">
       <span class="text-3xl">{{ recordAmount }}</span>
+      <div :class="[recordType(record.type).textClass, 'p-1 rounded-full']">
+        <component class="h-5 w-5" :is="typeIcon" />
+      </div>
     </div>
-    <p class="ml-2 text-md h-10">{{ record.note }}</p>
+    <p class="ml-2 text-md h-8">{{ record.note }}</p>
+    <p class="text-small text-white flex text-sm">
+        <TagIcon class="w-4 mx-2 text-yellow-400" aria-hidden="true" />
+      {{ record.tag }}
+    </p>
+
     <div class="flex align-bottom">
       <button
-      class="w-1/2 py-1 text-yellow-500 bg-stone-800 active:bg-stone-800 hover:bg-stone-700 focus:bg-stone-700 focus:outline-none transition-colors"
+      class="w-1/2 py-1 text-white bg-stone-800 active:bg-stone-800 hover:bg-stone-700 focus:bg-stone-700 focus:outline-none transition-colors"
       @click="$emit('edit-record', record)"
       >
         <PencilSquareIcon class="w-4 mx-auto" aria-hidden="true" />
@@ -28,12 +36,16 @@
 </template>
 
 <script setup>
-import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { ArrowsRightLeftIcon, MinusIcon, PencilSquareIcon, PlusIcon, TagIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import { computed } from 'vue';
+import { useFundStore } from '../../stores/fundStore';
 import swal from "sweetalert";
+import { storeToRefs } from 'pinia';
 
 const props = defineProps(['record'])
 const emit = defineEmits(['edit-record', 'delete-record'])
+const fundStore = useFundStore();
+const { funds } = storeToRefs(fundStore);
 
 const recordDate = computed(() => new Date(props.record.date).toDateString());
 const recordAmount = computed(() => new Intl.NumberFormat("en-US", {
@@ -42,6 +54,17 @@ const recordAmount = computed(() => new Intl.NumberFormat("en-US", {
   maximumFractionDigits: 2,
   roundingIncrement: 5,
 }).format(props.record.amount));
+
+const fundName = computed(() => funds.value
+  .find(fund => fund.id === props.record.fundID)
+  .name
+);
+
+const typeIcon = computed(() => {
+  if (props.record.type === 0) return ArrowsRightLeftIcon
+  else if (props.record.type === 1) return PlusIcon
+  else return MinusIcon
+})
 // bind the class
 function recordType(recordType) {
   switch (recordType) {
@@ -52,7 +75,7 @@ function recordType(recordType) {
       return { name: 'Debit', textClass: 'text-red-400 bg-red-900' }
       break;
     default:
-      return { name: 'Balance', textClass: 'text-white bg-stone-700' }
+      return { name: 'Assignment', textClass: 'text-white bg-stone-700' }
       break;
   }
 }

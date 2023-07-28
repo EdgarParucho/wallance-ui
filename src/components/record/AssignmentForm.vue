@@ -1,7 +1,23 @@
 <template>
   <Dialog :form-is-open="formIsOpen" @close-form="$emit('close-form')">
+    <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full mx-auto sm:h-10 sm:w-10 mb-2 bg-stone-700 text-yellow-400">
+      <PencilSquareIcon v-if="editing" class="h-6 w-6" aria-hidden="true" />
+      <PlusIcon v-else class="h-6 w-6-400" aria-hidden="true" />
+    </div>
+    <h3 class="text-lg font-medium text-white text-center mt-4">
+      Record Form
+    </h3>
+    <p class="text-sm text-white text-center">
+      You are <span class="p-1 bg-stone-700 rounded-md">{{ editing ? 'editing' : 'creating' }}</span> a record
+    </p>
+    <div aria-hidden="true">
+      <div class="py-5">
+        <div class="border-t border-white" />
+      </div>
+    </div>
+
     <form @submit.prevent="save(record)">
-      <div class="p-4 w-80">
+      <div class="p-4 w-96">
 
         <div class="h-1/3">
           <label for="source" class="text-xs font-semibold">Source</label>
@@ -128,12 +144,12 @@
 
         <div class="h-1/3 flex items-center justify-end my-4 space-x-2">
           <button
-            class="text-white bg-transparent hover:bg-stone-700 focus:ring-2 focus:outline-none focus:ring-stone-600 rounded-md text-sm w-1/3 py-2 transition-colors"
+            class="mt-3 inline-flex w-full justify-center rounded-md text-white bg-stone-800 hover:bg-stone-700 px-4 py-2 text-base font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-white sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             type="button" @click="$emit('close-form')">
             Cancel
           </button>
           <button
-            class="text-yellow-400 bg-stone-900 hover:bg-stone-700 focus:ring-2 focus:outline-none focus:ring-stone-600 font-bold rounded-md text-sm w-1/3 py-2 transition-colors disabled:text-stone-300 disabled:bg-stone-700"
+            class="mt-3 inline-flex w-full justify-center rounded-md bg-yellow-400 text-black px-4 py-2 text-base font-bold shadow-sm hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-white sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             type="submit" @click.prevent="onSave(record, editing)"
             :disabled="loading || someFieldIsRequired">
             Save
@@ -146,10 +162,10 @@
 
 <script setup>
 import { ref, reactive, computed, watch, inject } from 'vue'
+import { ChartPieIcon, PlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline';
 import { useFundStore } from '../../stores/fundStore';
-import { ChartPieIcon } from '@heroicons/vue/24/outline'
-import Dialog from '../helper/Dialog.vue';
 import { useRecordStore } from '../../stores/recordStore';
+import Dialog from '../layout/Dialog.vue';
 
 const props = defineProps({
   formIsOpen: {

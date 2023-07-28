@@ -1,32 +1,31 @@
 <template>
   <div class="mb-8 mx-auto">
-    <router-link class="hover:underline font-bold text-white" to="/dashboard">
-      Dashboard
-    </router-link>
-    <h1 class="text-white text-4xl font-bold">
-      Saving Funds
-    </h1>
-    <p class="mt-2 mb-8">From here you can manage your balance into funds according to your needs.</p>
-
-    <div class="flex rounded-md bg-stone-900 md:relative w-full fixed left-0 bottom-0 h-8">
-      <button class="font-bold text-yellow-500 bg-stone-800 hover:bg-stone-700 transition-colors w-1/2 md:w-40 py-1"
-      @click="fundFormIsOpen = true">
-        <PlusIcon class="w-6 mx-auto" />
-      </button>
-      <button
-      class="font-bold text-stone-900 bg-yellow-500 hover:bg-yellow-400 transition-colors w-1/2 md:w-40 py-1 disabled:bg-stone-800"
-      @click="balanceFormIsOpen = true"
-      :disabled="funds.length < 2"
-      >
-        <ArrowsRightLeftIcon class="w-6 mx-auto" />
-      </button>
-    </div>
+    <h1 class="text-white text-4xl font-bold">Funds</h1>
+    <p class="mt-2 mb-8 text-white">
+      Consider a fund as a dedicated management space for a specific subject.
+    </p>
 
     <div class="lg:flex lg:justify-between space-y-10 mt-10">
       <div class="sm:w-3/4 lg:w-2/4 xl:w-1/3 mx-auto">
-        <PieChart :labels="fundsNames" :data-values="fundsBalances" data-label="Balance" />
+        <BalanceByFundChart />
       </div>
-      <div class="lg:w-2/4 row-end">
+      <div class="lg:w-2/4 space-y-4 pb-6">
+        <div class="flex justify-center rounded-md bg-stone-900 md:relative w-full fixed bottom-0 h-8 space-x-4">
+          <button
+          class="rounded-sm px-3 py-1 outline-none w-52 bg-stone-800 hover:bg-stone-700 text-yellow-300 flex items-center"
+          @click="fundFormIsOpen = true">
+            <PlusIcon class="relative left-0 w-5" />
+            <span class="mx-auto">Add Fund</span>
+          </button>
+          <button
+          class="rounded-sm px-3 py-1 outline-none w-52 bg-yellow-400 hover:bg-yellow-300 text-black font-bold flex items-center"
+          @click="balanceFormIsOpen = true"
+          :disabled="funds.length < 2"
+          >
+          <ArrowsRightLeftIcon class="relative left-0 w-5" />
+          <span class="mx-auto">Move Balance</span>
+          </button>
+        </div>
         <FundCard
         v-for="fund in funds"
         :key="fund.id"
@@ -45,12 +44,12 @@
 <script setup>
 import { ref, defineAsyncComponent, inject, computed, watch } from 'vue';
 import { ArrowsRightLeftIcon, PlusIcon } from '@heroicons/vue/24/outline';
-import { useFundStore } from '../stores/fundStore';
 import { storeToRefs } from 'pinia';
+import { useFundStore } from '../stores/fundStore';
+import { useRecordStore } from '../stores/recordStore';
 import FundCard from '../components/fund/FundCard.vue';
 import swal from "sweetalert";
-import PieChart from '../components/chart/PieChart.vue';
-import { useRecordStore } from '../stores/recordStore';
+import BalanceByFundChart from '../components/chart/BalanceByFundChart.vue';
 
 const FundForm = defineAsyncComponent(() => import('../components/fund/FundForm.vue'))
 const AssignmentForm = defineAsyncComponent(() => import('../components/record/AssignmentForm.vue'))
@@ -64,9 +63,6 @@ let fundFormIsOpen = ref(false);
 let balanceFormIsOpen = ref(false);
 let editingFund = null;
 const loading = ref(false);
-
-const fundsNames = computed(() => funds.value.map(fund => fund.name));
-const fundsBalances = computed(() => funds.value.map(fund => fund.balance));
 
 async function confirmDeletion(fund) {
   loading.value = true
@@ -101,5 +97,4 @@ watch(() => records.value,
     fund.balance = fundRecordsAmounts.reduce((balance, amount) => balance + amount, 0);
   })
 }, { immediate: true });
-
 </script>

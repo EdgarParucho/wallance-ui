@@ -1,17 +1,17 @@
 <template>
-  <div class="lg:w-1/4 sm:w-11/12 bg-stone-900 mx-auto">
-    <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full mx-auto sm:h-10 sm:w-10 mb-2">
+  <div class="lg:w-1/4 sm:w-11/12 bg-stone-900 text-white mx-auto">
+    <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full mx-auto sm:h-10 sm:w-10 mb-2 bg-stone-700 text-yellow-400">
       <Cog6ToothIcon class="h-6 w-6 text-white" aria-hidden="true" />
     </div>
-    <h3 class="text-lg font-medium leading-6 text-stone-900 dark:text-white pl-2">
+    <h3 class="text-lg font-medium text-white text-center mt-4">
       Account Settings
     </h3>
-    <p class="text-sm text-stone-500 dark:text-stone-300 pl-2">
+    <p class="text-sm text-white text-center">
       Check and update what you need from the form
     </p>
     <div aria-hidden="true">
       <div class="py-5">
-        <div class="border-t border-stone-400" />
+        <div class="border-t border-white" />
       </div>
     </div>
 

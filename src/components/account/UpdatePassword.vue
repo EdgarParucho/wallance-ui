@@ -1,14 +1,23 @@
 <template>
   <Dialog :form-is-open="formIsOpen" @close-form="$emit('close-form')">
+    <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full mx-auto sm:h-10 sm:w-10 mb-2 bg-stone-700 text-yellow-400">
+      <KeyIcon class="h-6 w-6 text-white" aria-hidden="true" />
+    </div>
+    <h3 class="text-lg font-medium text-white text-center mt-4">
+      Updating my password
+    </h3>
+    <div aria-hidden="true">
+      <div class="py-5">
+        <div class="border-t border-white" />
+      </div>
+    </div>
+
     <div class="mt-12 px-8">
-      <h3 class="text-2xl text-center">
-        Updating my password
-      </h3>
-      <form @submit.prevent="onSubmit({ OTP, newPassword })">
+      <form @submit.prevent="onSubmit(OTP, newPassword)">
         <fieldset class="my-6">
           <input
           type="text"
-          class="block my-2 p-3 w-72 mx-auto rounded-sm bg-transparent text-white"
+          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
           placeholder="Code"
           required
           autocomplete="ignore"
@@ -16,7 +25,7 @@
           >
           <input
           type="password"
-          class="block my-2 p-3 w-72 mx-auto rounded-sm bg-transparent text-white"
+          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
           placeholder="New password"
           required
           v-model="newPassword"
@@ -24,7 +33,7 @@
           >
           <input
           type="password"
-          class="block my-2 p-3 w-72 mx-auto rounded-sm bg-transparent text-white"
+          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
           placeholder="New password confirmation"
           required
           v-model="reEnteredPassword"
@@ -58,7 +67,8 @@
 
 import { computed, ref, inject } from 'vue'
 import { useAccountStore } from '../../stores/accountStore';
-import Dialog from '../helper/Dialog.vue';
+import Dialog from '../layout/Dialog.vue';
+import { KeyIcon } from '@heroicons/vue/24/outline';
 
 const emit = defineEmits(['close-form', 'request-otp'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
@@ -83,8 +93,7 @@ function reSendOTP() {
   emit("request-otp");  
   startCountDown();
 }
-
-function onSubmit({ OTP, newPassword }) {
+function onSubmit(OTP, newPassword) {
   loading.value = true
   accountStore.updatePassword({ OTP, updateEntries: { password: newPassword } })
     .then((message) => {

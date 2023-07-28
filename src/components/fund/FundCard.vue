@@ -1,33 +1,28 @@
 <template>
-  <div class="bg-stone-800 rounded-lg lg:w-2/3 lg:inline-block p-2 h-42 mb-1">
-    <div class="h-1/3 w-full">
-      <h5 class="text-xl font-bold text-stone-50 mb-2">
-        {{ fund.name }}
-      </h5>
-      <p class="text-stone-200 text-sm">
-        {{ fund.description }}
-      </p>
-    </div>
-    <div class="h-1/3 w-full text-end first-letter:mr-1 mt-2">
-      <span class="text-3xl text-white">
-        {{ fundBalance.inCurrencyFormat }}
+  <div class="bg-stone-800 text-white font-sans rounded-md lg:block h-32 lg:w-2/3 mx-auto">
+    <div class="flex justify-between">
+      <p class="ml-2 text-white font-bold">{{ fund.name }}</p>
+      <span v-if="fund.isDefault" class="flex items-center justify-center h-6 w-16 text-sm rounded-sm bg-stone-900 text-yellow-400">
+        Main
       </span>
-      <p class="text-xs text-stone-300">
-        {{ fund.lastUpdated }}
-      </p>
     </div>
-    <div class="h-1/3 w-full flex items-center justify-end mt-2 space-x-1">
+    <div class="justify-end flex items-baseline my-2 mr-3">
+      <span class="text-3xl">{{ fundBalance.inCurrencyFormat }}</span>
+    </div>
+    <p class="ml-2 text-md h-10">{{ fund.description }}</p>
+    <div class="flex align-bottom">
       <button
-      class="bg-stone-900 hover:bg-stone-700 focus:ring-2 focus:outline-none focus:ring-stone-600 font-bold w-7 h-7 rounded-md"
+      class="w-1/2 py-1 text-white bg-stone-800 active:bg-stone-800 hover:bg-stone-700 focus:bg-stone-700 focus:outline-none transition-colors"
       @click="$emit('edit-fund', fund)"
       >
-        <PencilSquareIcon class="w-5 h-5 mx-auto" aria-hidden="true" />
+        <PencilSquareIcon class="w-4 mx-auto" aria-hidden="true" />
       </button>
       <button
-      class="bg-stone-900 hover:bg-stone-700 focus:ring-2 focus:outline-none focus:ring-stone-600 font-bold w-7 h-7 rounded-md"
+      class="w-1/2 py-1 text-red-500 bg-stone-800 active:bg-red-800 hover:bg-red-900 focus:bg-red-900 focus:outline-none transition-colors disabled:text-stone-600 disabled:hover:bg-stone-800"
       @click="validateDeletion(fund)"
+      :disabled="fund.isDefault"
       >
-        <TrashIcon class="w-5 h-5 mx-auto" aria-hidden="true" />
+        <TrashIcon class="w-4 mx-auto" aria-hidden="true" />
       </button>
     </div>
   </div>
