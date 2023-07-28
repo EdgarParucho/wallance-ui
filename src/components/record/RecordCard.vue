@@ -1,10 +1,20 @@
 <template>
-  <div class="bg-stone-800 text-white font-sans rounded-md lg:block h-38 my-4 lg:w-2/3 mx-auto">
+  <div v-if="!(record.type === 0 && record.amount > 0)" class="bg-stone-800 text-white font-sans rounded-md lg:block h-38 my-4 lg:w-2/3 mx-auto">
     <div class="flex justify-between">
       <span class="text-white ml-2">{{ recordDate }}</span>
-      <span class="bg-stone-700 rounded-sm font-bold flex items-center justify-center h-6 px-3 text-sm">
-        {{ fundName }}
+      <div class="flex items-center bg-stone-700">
+        <span class="rounded-sm font-bold flex items-center h-6 px-3 text-sm">
+          {{ fundName }}
+        </span>
+        <span v-if="record.type === 0" :class="[typeStyles, 'px-1']">
+          <ArrowRightIcon class="h-5 w-5" />
+        </span>
+        <span
+        v-if="record.type === 0"
+        class="rounded-sm font-bold flex items-center h-6 px-3 text-sm">
+        {{ otherFundName }}
       </span>
+    </div>
     </div>
     <div class="justify-end flex items-center my-2 mr-3 space-x-2">
       <span class="text-3xl">{{ recordAmount }}</span>
@@ -14,7 +24,7 @@
     </div>
     <p class="ml-2 text-md h-8">{{ record.note }}</p>
     <p class="text-small text-white flex text-sm">
-        <TagIcon class="w-4 mx-2 text-yellow-400" aria-hidden="true" />
+      <TagIcon class="w-4 mx-2 text-yellow-400" aria-hidden="true" />
       {{ record.tag }}
     </p>
 
@@ -36,7 +46,7 @@
 </template>
 
 <script setup>
-import { ArrowsRightLeftIcon, MinusIcon, PencilSquareIcon, PlusIcon, TagIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { ArrowsRightLeftIcon, ArrowRightIcon, MinusIcon, PencilSquareIcon, PlusIcon, TagIcon, TrashIcon } from '@heroicons/vue/24/outline'
 import { computed } from 'vue';
 import { useFundStore } from '../../stores/fundStore';
 import swal from "sweetalert";
@@ -57,6 +67,11 @@ const recordAmount = computed(() => new Intl.NumberFormat("en-US", {
 
 const fundName = computed(() => funds.value
   .find(fund => fund.id === props.record.fundID)
+  .name
+);
+
+const otherFundName = computed(() => funds.value
+  .find(fund => fund.id === props.record.otherFundID)
   .name
 );
 
