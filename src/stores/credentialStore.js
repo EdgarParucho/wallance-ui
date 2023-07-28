@@ -14,8 +14,7 @@ export const useCredentialStore = defineStore('credential', () => {
   const credential = useLocalStorage("vueUseCredential", { token: null, exp: null });
 
   const mutations = {
-    login: ({ email, token, funds, records }) => {
-      accountStore.setUser({ email });
+    login: ({ token, funds, records }) => {
       recordStore.setRecords(records);
       fundStore.setFunds(funds);
       credential.value = token;

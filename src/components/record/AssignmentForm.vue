@@ -2,7 +2,7 @@
   <Dialog :form-is-open="formIsOpen" @close-form="$emit('close-form')">
     <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full mx-auto sm:h-10 sm:w-10 mb-2 bg-stone-700 text-yellow-400">
       <PencilSquareIcon v-if="editing" class="h-6 w-6" aria-hidden="true" />
-      <PlusIcon v-else class="h-6 w-6-400" aria-hidden="true" />
+      <DocumentPlusIcon v-else class="h-6 w-6-400" aria-hidden="true" />
     </div>
     <h3 class="text-lg font-medium text-white text-center mt-4">
       Record Form
@@ -22,7 +22,7 @@
         <div class="h-1/3">
           <label for="source" class="text-xs font-semibold">Source</label>
           <select id="source" name="source"
-            class="px-2 text-stone-50 mb-2 bg-transparent w-full rounded-md border-stone-400 focus:outline-0 active:outline-0"
+            class="px-2 text-white mb-2 bg-transparent w-full rounded-md border-stone-400 focus:outline-0 active:outline-0"
             required v-model="record.fundID">
             <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="fund in fundStore.funds"
               :key="fund.id" :value="fund.id">
@@ -38,7 +38,7 @@
         <div class="h-1/3">
           <label for="target" class="text-xs font-semibold">Target</label>
           <select id="target" name="target"
-            class="px-2 text-stone-50 mb-2 bg-transparent w-full rounded-md border-stone-400 disabled:border-stone-700 focus:outline-0 active:outline-0"
+            class="px-2 text-white mb-2 bg-transparent w-full rounded-md border-stone-400 disabled:border-stone-700 focus:outline-0 active:outline-0"
             required :disabled="record.fundID === ''" v-model="record.otherFundID">
             <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="fund in fundStore.funds"
               :key="fund.id" :value="fund.id" :disabled="fund.id === record.fundID">
@@ -47,38 +47,44 @@
           </select>
         </div>
 
-        <div class="grid-flow-col p-2 bg-stone-800 flex-wrap">
+        <div class="grid-flow-col p-2 flex-wrap text-center">
           <ChartPieIcon class="w-5 h-5 text-yellow-500 mx-auto" aria-hidden="true" />
-          <button v-for="picker, i in amountPickers" :key="i"
-            class="text-xs font-bold rounded-xl w-20 m-1 py-1 transition-colors disabled:text-opacity-50"
-            :class="divisorIsApplied(picker) ? 'bg-yellow-500 hover:bg-yellow-400 text-stone-900' : 'bg-stone-900 text-white hover:bg-stone-700'"
-            @click="divideAmount(picker.divisor)" type="button" :disabled="record.fundID === ''"  
+          <button
+          v-for="picker, i in amountPickers" :key="i"
+          class="text-xs font-bold rounded-xl w-20 m-1 py-1 transition-colors disabled:bg-stone-800 disabled:text-stone-600"
+          :class="divisorIsApplied(picker) ? 'bg-yellow-500 hover:bg-yellow-400 text-stone-900' : 'bg-stone-800 text-white hover:bg-stone-700'"
+          @click="divideAmount(picker.divisor)"
+          type="button"
+          :disabled="record.fundID === '' || fundBalanceOnDate === 0"
           >
             {{ picker.name }}
           </button>
         </div>
 
         <div class="my-4 flex items-center">
-          <label for="amount" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
+          <label for="amount" class="w-1/2 text-md font-medium text-white italic font-serif">
             Amount
           </label>
           <div class="relative rounded-md w-1/2">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <span class="text-stone-500 dark:text-white sm:text-md">$</span>
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 space-x-2">
+              <div class="text-white bg-stone-700 p-1 rounded-full">
+                <ArrowsRightLeftIcon class="h-4 w-4" />
+              </div>
+              <span class="text-white sm:text-md">$</span>
             </div>
             <input
-              type="number" name="amount" id="amount"
-              class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white pl-6 text-right"
-              placeholder="0.00"
-              v-model.number="record.amount"
-              required
-              :disabled="record.fundID  === null || record.otherFundID === null"
-              :max="0">
+            type="number" name="amount" id="amount"
+            class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-yellow-500 focus:ring-yellow-500 sm:text-md text-white pl-6 text-right"
+            placeholder="0.00"
+            v-model.number="amount"
+            required
+            :disabled="record.fundID  === null || record.otherFundID === null"
+            :min="0">
           </div>
         </div>
 
         <div class="my-4">
-          <div class="w-full text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
+          <div class="w-full text-md font-medium text-white italic font-serif">
             <label for="date">
               Date
             </label>
@@ -88,7 +94,7 @@
             type="date"
             name="date"
             id="date"
-            class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white"
+            class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-yellow-500 focus:ring-yellow-500 sm:text-md text-white"
             required
             v-model="formDate"
             >
@@ -96,7 +102,7 @@
             type="time"
             name="time"
             id="time"
-            class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-stone-900 dark:text-white"
+            class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-yellow-500 focus:ring-yellow-500 sm:text-md text-white"
             required
             v-model="formTime"
             >
@@ -105,7 +111,7 @@
                 
         <div class="my-4 px-1">
           <div>
-            <label for="tag" class="w-1/2 text-md font-medium text-stone-700 dark:text-stone-300 italic font-serif">
+            <label for="tag" class="w-1/2 text-md font-medium text-white italic font-serif">
               Tag
             </label>
           </div>
@@ -113,7 +119,7 @@
             <select
             id="tag"
             name="tag"
-            class="w-6/12 bg-transparent border-transparent border-b-stone-300 text-stone-700 dark:text-stone-300 border-stone-300 py-2 px-3 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+            class="w-6/12 bg-transparent border-transparent border-b-stone-300 text-white border-stone-300 py-2 px-3 shadow-sm focus:border-yellow-500 focus:outline-none focus:ring-yellow-500 sm:text-sm"
             required
             v-model="tagFields.option"
             >
@@ -127,7 +133,7 @@
             <input
               type="text"
               :disabled="tagFields.option !== 'Add new'"
-              class="w-5/12 bg-transparent border-transparent border-b-stone-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-md text-white disabled:text-stone-600 disabled:border-b-stone-600"
+              class="w-5/12 bg-transparent border-transparent border-b-stone-300 focus:border-yellow-500 focus:ring-yellow-500 sm:text-md text-white disabled:text-stone-600 disabled:border-b-stone-600"
               placeholder="New tag"
               required
               v-model="tagFields.input"
@@ -162,7 +168,7 @@
 
 <script setup>
 import { ref, reactive, computed, watch, inject } from 'vue'
-import { ChartPieIcon, PlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline';
+import { DocumentPlusIcon, PencilSquareIcon, ChartPieIcon, ArrowsRightLeftIcon } from '@heroicons/vue/24/outline';
 import { useFundStore } from '../../stores/fundStore';
 import { useRecordStore } from '../../stores/recordStore';
 import Dialog from '../layout/Dialog.vue';
@@ -210,8 +216,9 @@ const tagFields = reactive({
 });
 
 const tags = new Set(recordStore.records.map(record => record.tag));
+const amount = ref(1);
 const newRecord = {
-  amount: 0,
+  amount: -1,
   date: null,
   note: null,
   tag: null,
@@ -221,9 +228,7 @@ const newRecord = {
 };
 const record = reactive(props.editing ? { ...props.originalRecord } : newRecord);
 
-const someFieldIsRequired = computed(() => {
-  return record.fundID === '' || record.otherFundID === ''
-});
+const someFieldIsRequired = computed(() => record.fundID === '' || record.otherFundID === '');
 
 const fundBalanceOnDate = computed(() => {
   const fundRecordsUntilDate = recordStore.records.filter(r => new Date(r.date) < new Date(datetime.value) && r.fundID === record.fundID);
@@ -292,7 +297,13 @@ watch(
     record.amount = Number(recordAmount).toFixed(2);
   }
 )
-
+watch(
+  () => amount.value,
+  (amountValue) => {
+    const multiplier = (record.type === 1) ? 1 : -1;
+    record.amount = amountValue * multiplier;
+  }
+)
 </script>
 
 <style scoped>

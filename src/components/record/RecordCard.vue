@@ -8,7 +8,7 @@
     </div>
     <div class="justify-end flex items-center my-2 mr-3 space-x-2">
       <span class="text-3xl">{{ recordAmount }}</span>
-      <div :class="[recordType(record.type).textClass, 'p-1 rounded-full']">
+      <div :class="[typeStyles, 'p-1 rounded-full']">
         <component class="h-5 w-5" :is="typeIcon" />
       </div>
     </div>
@@ -64,21 +64,14 @@ const typeIcon = computed(() => {
   if (props.record.type === 0) return ArrowsRightLeftIcon
   else if (props.record.type === 1) return PlusIcon
   else return MinusIcon
-})
-// bind the class
-function recordType(recordType) {
-  switch (recordType) {
-    case 1:
-      return { name: 'Credit', textClass: 'text-green-400 bg-green-900' }
-      break;
-    case 2:
-      return { name: 'Debit', textClass: 'text-red-400 bg-red-900' }
-      break;
-    default:
-      return { name: 'Assignment', textClass: 'text-white bg-stone-700' }
-      break;
-  }
-}
+});
+
+const typeStyles = computed(() => {
+  if (props.record.type === 0) return 'text-white bg-stone-700'
+  else if (props.record.type === 1) return 'text-green-400 bg-green-900'
+  else return 'text-red-400 bg-red-900'
+});
+
 async function confirmDeletion(record) {
   const deletionIsConfirmed = await swal({
     icon: "warning",

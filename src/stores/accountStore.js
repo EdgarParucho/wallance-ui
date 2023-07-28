@@ -1,18 +1,14 @@
 import { defineStore } from 'pinia'
 import { Update, Delete } from '../services/accountAPI'
-import { useLocalStorage } from '@vueuse/core'
 import { useCredentialStore } from './credentialStore';
 
 export const useAccountStore = defineStore('account', () => {
   
-  const account = useLocalStorage('vueUseUser', {});
   const credentialStore = useCredentialStore();
-  const setUser = (data) => account.value = data;
 
   const updateEmail = (data) => {
     return new Promise((resolve, reject) => Update(data)
-      .then((response) => {
-        account.value = { ...response.data };
+      .then(() => {
         resolve('Email updated successfully');
       })
       .catch((error) => {
@@ -43,5 +39,5 @@ export const useAccountStore = defineStore('account', () => {
     })
   )
 
-  return { account, setUser, updateEmail, updatePassword, erase };
+  return { updateEmail, updatePassword, erase };
 });

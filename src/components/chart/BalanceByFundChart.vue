@@ -48,7 +48,7 @@ const chartOptions = computed(() => {
       },
       title: {
         display: true,
-        text: "Debit by tag",
+        text: "Balance by Fund",
         color: "#fff",
       }
     }

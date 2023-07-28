@@ -19,15 +19,14 @@
 
       <div class="my-4">
         <h6 class="font-semibold">My Email</h6>
+        <button
+        @click="emailFormIsOpen = true"
+        class="flex w-full justify-center rounded-md bg-stone-800 mt-2 p-2 text-sm text-white shadow-sm hover:bg-stone-700 font-semibold disabled:text-stone-500"
+        :disabled="requestingOTP"
+        >
+          Update My E-mail
+        </button>
         <div class="flex items-center justify-between">
-          <span>{{ account.email }}</span>
-          <button
-          @click="emailFormIsOpen = true"
-          class="w-10 rounded-md bg-stone-800 p-2 text-sm font-semibold text-white shadow-sm hover:bg-stone-700 disabled:text-stone-500"
-          :disabled="requestingOTP"
-          >
-            <PencilIcon class="w-5 mx-auto text-yellow-400" aria-hidden="true" />
-          </button>
           <UpdateEmail v-if="emailFormIsOpen" :form-is-open="emailFormIsOpen" @close-form="emailFormIsOpen = false" />
         </div>
       </div>
