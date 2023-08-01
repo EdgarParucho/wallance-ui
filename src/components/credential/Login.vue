@@ -34,7 +34,7 @@
         <button
         class="block rounded-sm px-3 py-1 mx-auto w-72 bg-yellow-400 hover:bg-yellow-300 text-black font-bold disabled:bg-stone-700"
         type="submit"
-        :disabled="loading"
+        :disabled="!formIsValid || loading"
         >Log In</button>
       </form>
     </div>
@@ -63,6 +63,8 @@ const emailFormatIsValid = computed(() => {
   const emailIsValid = emailformat.test(form.value.email);
   return emailIsValid;
 });
+
+const formIsValid = computed(() => emailFormatIsValid && form.value.password !== "");
 
 function handleSubmit(data) {
   loading.value = true;

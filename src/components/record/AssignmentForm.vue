@@ -157,7 +157,7 @@
           <button
             class="mt-3 inline-flex w-full justify-center rounded-md bg-yellow-400 text-black px-4 py-2 text-base font-bold shadow-sm hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-white sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
             type="submit" @click.prevent="onSave(record, editing)"
-            :disabled="loading || someFieldIsRequired">
+            :disabled="loading || formIsValid">
             Save
           </button>
         </div>
@@ -216,7 +216,9 @@ const tagFields = reactive({
 });
 
 const tags = new Set(recordStore.records.map(record => record.tag));
-const amount = ref(1);
+const amount = (props.editing)
+  ? ref(-props.originalRecord.amount)
+  : ref(1);
 const newRecord = {
   amount: -1,
   date: null,
@@ -228,7 +230,7 @@ const newRecord = {
 };
 const record = reactive(props.editing ? { ...props.originalRecord } : newRecord);
 
-const someFieldIsRequired = computed(() => record.fundID === '' || record.otherFundID === '');
+const formIsValid = computed(() => record.fundID === '' || record.otherFundID === '');
 
 const fundBalanceOnDate = computed(() => {
   const fundRecordsUntilDate = recordStore.records.filter(r => new Date(r.date) < new Date(datetime.value) && r.fundID === record.fundID);
@@ -252,7 +254,7 @@ function divisorIsApplied({ divisor }) {
 }
 
 function divideAmount(divisor) {
-  record.amount = -(fundBalanceOnDate.value / divisor)
+  amount.value = (fundBalanceOnDate.value / divisor)
 }
 
 function onSave(record, editing) {
@@ -292,16 +294,10 @@ watch(
 )
 
 watch(
-  () => record.amount,
-  (recordAmount) => {
-    record.amount = Number(recordAmount).toFixed(2);
-  }
-)
-watch(
   () => amount.value,
   (amountValue) => {
     const multiplier = (record.type === 1) ? 1 : -1;
-    record.amount = amountValue * multiplier;
+    record.amount = (amountValue * multiplier).toFixed(2);
   }
 )
 </script>

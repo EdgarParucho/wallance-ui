@@ -13,7 +13,7 @@
     <div class="mt-10 my-2">
       <div class="flex justify-center">
         <button
-        class="rounded-sm px-3 py-1 outline-none w-52 bg-yellow-400 hover:bg-yellow-300 text-black font-bold flex items-center"
+        class="rounded-sm px-3 py-1 outline-none w-52 bg-yellow-400 hover:bg-yellow-300 text-black font-bold flex items-center focus:outline-white focus:outline-1"
         @click="formIsOpen = true"
         >
           <PlusIcon class="relative left-0 w-5" />

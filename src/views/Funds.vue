@@ -2,7 +2,7 @@
   <div class="mb-8 mx-auto">
     <h1 class="text-white text-4xl font-bold">Funds</h1>
     <p class="mt-2 mb-8 text-white">
-      Consider a fund as a dedicated management space for a specific subject.
+      Consider funds as spaces dedicated to group records as required by your management.
     </p>
 
     <div class="lg:flex lg:justify-between space-y-10 mt-10">
@@ -10,15 +10,15 @@
         <BalanceByFundChart />
       </div>
       <div class="lg:w-2/4 space-y-4 pb-6">
-        <div class="flex justify-center rounded-md bg-stone-900 md:relative w-full fixed bottom-0 h-8 space-x-4">
+        <div class="flex justify-center rounded-md bg-stone-900 md:relative w-full fixed bottom-0 h-10 space-x-4 py-2">
           <button
-          class="rounded-sm px-3 py-1 outline-none w-52 bg-stone-800 hover:bg-stone-700 text-yellow-300 flex items-center"
+          class="rounded-sm px-3 py-1 outline-none w-52 bg-stone-800 hover:bg-stone-700 text-yellow-300 flex items-center focus:outline-white focus:outline-1"
           @click="fundFormIsOpen = true">
             <PlusIcon class="relative left-0 w-5" />
             <span class="mx-auto">Add Fund</span>
           </button>
           <button
-          class="rounded-sm px-3 py-1 outline-none w-52 bg-yellow-400 hover:bg-yellow-300 text-black font-bold flex items-center"
+          class="rounded-sm px-3 py-1 outline-none w-52 bg-yellow-400 hover:bg-yellow-300 text-black font-bold flex items-center focus:outline-white focus:outline-1"
           @click="balanceFormIsOpen = true"
           :disabled="funds.length < 2"
           >

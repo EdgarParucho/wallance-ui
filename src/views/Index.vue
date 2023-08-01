@@ -9,13 +9,13 @@
     </p>
     <div class="mt-10 flex justify-center my-2 space-x-2">
       <button
-      class="rounded-sm px-3 py-1 outline-none w-52 bg-stone-800 hover:bg-stone-700 transition-colors text-white font-bold"
+      class="rounded-sm px-3 py-1 outline-none w-52 bg-stone-800 hover:bg-stone-700 transition-colors text-white font-bold focus:outline-white focus:outline-1"
       @click="loginFormIsOpen = true"
       >
         Log In
       </button>
       <button
-      class="rounded-sm px-3 py-1 outline-none w-52 bg-yellow-400 hover:bg-yellow-300 text-black font-bold"
+      class="rounded-sm px-3 py-1 outline-none w-52 bg-yellow-400 hover:bg-yellow-300 transition-colors text-black font-bold focus:outline-white focus:outline-1"
       @click="signFormIsOpen = true"
       >
         Join

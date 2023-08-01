@@ -251,9 +251,11 @@ const tagFields = reactive({
   input: null
 });
 const tags = new Set(recordStore.records.map(record => record.tag));
-const amount = ref(1);
+const amount = (props.editing)
+  ? (props.originalRecord.amount < 0) ? ref(-props.originalRecord.amount) : ref(props.originalRecord.amount)
+  : ref(1);
 
-const record = (props.editing)
+  const record = (props.editing)
   ? reactive({ ...props.originalRecord })
   : reactive({
     amount: -1,

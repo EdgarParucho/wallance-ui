@@ -48,11 +48,12 @@ const months = [
 const monthsBalance = computed(() => {
   const result = [];
   months.forEach(month => {
-    const monthMatch = (date) => new Intl.DateTimeFormat('en-US', { month: 'long' }).format(date) === month;
-    const monthRecords = records.value.filter(record => monthMatch(new Date(record.date)));
+    const monthMatch = (date) => new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(date)) === month;
+    const yearMatch = (date) => new Date(date).getFullYear() === new Date().getFullYear();
+    const monthRecords = records.value.filter(({ date }) => monthMatch(date) && yearMatch(date));
     const monthBalance = monthRecords.reduce((acc, record) => acc + record.amount, 0);
     result.push(monthBalance);
-  })
+  });
   return result;
 });
 
@@ -61,7 +62,7 @@ const chartData = computed(() => {
     labels: months,
     datasets: [
       {
-        label: "Balance (Credits - Debits)",
+        label: "Balance ($)",
         backgroundColor: '#156064',
         borderColor: "#00c49a",
         data: monthsBalance.value

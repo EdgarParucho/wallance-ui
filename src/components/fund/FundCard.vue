@@ -45,7 +45,6 @@ const fundBalance = computed(() => {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 2,
-    roundingIncrement: 5,
   }).format(numeric);
   return { inCurrencyFormat, numeric };
 });

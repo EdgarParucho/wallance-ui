@@ -12,9 +12,9 @@
         <span
         v-if="record.type === 0"
         class="rounded-sm font-bold flex items-center h-6 px-3 text-sm">
-        {{ otherFundName }}
-      </span>
-    </div>
+          {{ otherFundName }}
+        </span>
+      </div>
     </div>
     <div class="justify-end flex items-center my-2 mr-3 space-x-2">
       <span class="text-3xl">{{ recordAmount }}</span>
@@ -57,12 +57,11 @@ const emit = defineEmits(['edit-record', 'delete-record'])
 const fundStore = useFundStore();
 const { funds } = storeToRefs(fundStore);
 
-const recordDate = computed(() => new Date(props.record.date).toDateString());
+const recordDate = computed(() => new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(props.record.date));
 const recordAmount = computed(() => new Intl.NumberFormat("en-US", {
   style: "currency",
   currency: "USD",
   maximumFractionDigits: 2,
-  roundingIncrement: 5,
 }).format(props.record.amount));
 
 const fundName = computed(() => funds.value
