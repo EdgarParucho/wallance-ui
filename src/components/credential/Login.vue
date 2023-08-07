@@ -32,10 +32,19 @@
         v-model="form.password"
         >
         <button
-        class="block rounded-sm px-3 py-1 mx-auto w-72 bg-yellow-400 hover:bg-yellow-300 text-black font-bold disabled:bg-stone-700"
-        type="submit"
+        class="flex items-center w-72 px-4 py-2 font-bold leading-6 text-sm shadow rounded-sm text-black bg-yellow-400 hover:bg-yellow-300 transition ease-in-out duration-150 disabled:text-white disabled:bg-stone-800"
         :disabled="!formIsValid || loading"
-        >Log In</button>
+        type="submit"
+        >
+          <svg
+          v-if="loading"
+          class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span v-if="loading" class="mx-auto">Processing...</span>
+          <span v-else class="mx-auto">Log In</span>
+        </button>
       </form>
     </div>
   </Dialog>

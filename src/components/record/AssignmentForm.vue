@@ -233,8 +233,12 @@ const record = reactive(props.editing ? { ...props.originalRecord } : newRecord)
 const formIsValid = computed(() => record.fundID === '' || record.otherFundID === '');
 
 const fundBalanceOnDate = computed(() => {
-  const fundRecordsUntilDate = recordStore.records.filter(r => new Date(r.date) < new Date(datetime.value) && r.fundID === record.fundID);
-  const fundBalanceOnDate = fundRecordsUntilDate.reduce((balance, record) => balance + record.amount, 0);
+  if (!record.fundID) return 0
+  const fundRecordsUntilDate = recordStore.records.filter(r => new Date(r.date) < new Date(datetime.value) && (r.fundID === record.fundID || r.otherFundID === record.fundID));
+  const fundBalanceOnDate = fundRecordsUntilDate.reduce((balance, r) => {
+    const recordAmount = r.fundID === record.fundID ? r.amount : -r.amount;
+    return balance + recordAmount;
+  }, 0);
   return fundBalanceOnDate;
 });
 
@@ -243,7 +247,6 @@ function formatToCurrency(amount) {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 2,
-    roundingIncrement: 5,
   }).format(amount)
 }
 

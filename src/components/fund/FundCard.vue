@@ -39,14 +39,18 @@ const displayAlert = inject("alert");
 const recordStore = useRecordStore();
 
 const fundBalance = computed(() => {
-  const fundRecords = recordStore.records.filter(record => record.fundID === props.fund.id);
-  const numeric = fundRecords.reduce((acc, record) => acc + record.amount, 0);
+  const fundRecords = recordStore.records.filter(record => record.fundID === props.fund.id || record.otherFundID === props.fund.id);
+  const balance = fundRecords.reduce((accumulatedBalance, record) => {
+    const recordAmount = (record.fundID === props.fund.id) ? record.amount : -record.amount;
+    const resultingBalance = (accumulatedBalance + recordAmount);
+    return resultingBalance
+  }, 0);
   const inCurrencyFormat = new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 2,
-  }).format(numeric);
-  return { inCurrencyFormat, numeric };
+  }).format(balance);
+  return { inCurrencyFormat, balance };
 });
 
 function validateDeletion(fund) {
@@ -55,12 +59,11 @@ function validateDeletion(fund) {
     title: "Can't complete the action",
     text: 'Cannot delete the default fund.'
   });
-  else if(fundBalance.value.numeric > 0)  return displayAlert({
+  else if(fundBalance.value.balance > 0)  return displayAlert({
     type: "info",
     title: "Can't complete the action",
     text: 'The fund has a positive balance. You can move the balance to another fund, then retry this action.'
   });
   emit('confirm-deletion', fund);
 }
-
 </script>

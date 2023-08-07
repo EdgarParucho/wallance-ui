@@ -108,7 +108,7 @@
 
         <div class="flex justify-end space-x-2">
           <small>Balance on date:</small>
-          <span class="bg-stone-600 text-sm font-bold rounded-sm px-1">{{ fundBalanceOnDate }}</span>
+          <span class="bg-stone-600 text-sm font-bold rounded-sm px-1">{{ formatToCurrency(fundBalanceOnDate) }}</span>
         </div>
 
         <div class="my-4 flex items-center">
@@ -271,15 +271,22 @@ const recordIsCredit = computed(() => record.type === 1);
 const datetime = computed(() => `${formDate.value}T${formTime.value}:01`);
 
 const fundBalanceOnDate = computed(() => {
-  const fundRecordsUntilDate = recordStore.records.filter(r => r.date < datetime.value && r.fundID === record.fundID);
-  const fundBalanceOnDate = fundRecordsUntilDate.reduce((balance, record) => balance + record.amount, 0);
+  if (!record.fundID) return 0.00
+  const fundRecordsUntilDate = recordStore.records.filter(r => new Date(r.date) < new Date(datetime.value) && (r.fundID === record.fundID || r.otherFundID === record.fundID));
+  const fundBalanceOnDate = fundRecordsUntilDate.reduce((balance, r) => {
+    const recordAmount = r.fundID === record.fundID ? r.amount : -r.amount;
+    return balance + recordAmount;
+  }, 0);
+  return fundBalanceOnDate;
+});
+
+function formatToCurrency(amount) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 2,
-    roundingIncrement: 5,
-  }).format(fundBalanceOnDate);
-});
+  }).format(amount)
+}
 
 const typeIcon = computed(() => {
   if (record.type === 1) return PlusIcon

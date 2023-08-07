@@ -1,5 +1,5 @@
 <template>
-  <div class="p-3 shadow-md shadow-black transition-shadow rounded-md bg-stone-800 flex justify-center">
+  <div class="xl:pr-12">
     <Pie id="debits-tags-chart" :options="chartOptions" :data="chartData" />
   </div>
 </template>
@@ -30,7 +30,7 @@ const tagsRecords = computed(() => {
   recordsTags.value.forEach(tag => {
     const debitTagRecords = debitRecords.filter(record => record.tag === tag && record.type === 2);
     const tagRecordsTotal = debitTagRecords.length / debitRecords.length * 100;
-    tagTotal.push(tagRecordsTotal);
+    tagTotal.push(tagRecordsTotal.toFixed());
   })
   return tagTotal;
 });
@@ -39,7 +39,7 @@ const chartData = computed(() => {
   return {
     labels: recordsTags.value,
     datasets: [
-      { label: "%", data: tagsRecords.value, backgroundColor: colors },
+      { label: " %", data: tagsRecords.value, backgroundColor: colors },
     ],
   }
 });

@@ -6,7 +6,7 @@
     </p>
 
     <div class="lg:flex lg:justify-between space-y-10 mt-10">
-      <div class="sm:w-3/4 lg:w-2/4 xl:w-1/3 mx-auto">
+      <div class="sm:w-3/4 lg:w-2/4 xl:w-1/3 mx-auto mt-24">
         <BalanceByFundChart />
       </div>
       <div class="lg:w-2/4 space-y-4 pb-6">
@@ -93,8 +93,13 @@ function closeForm() {
 watch(() => records.value,
 (records) => {
   funds.value.forEach(fund => {
-    const fundRecordsAmounts = records.filter(record => record.fundID === fund.id).map(r => r.amount);
-    fund.balance = fundRecordsAmounts.reduce((balance, amount) => balance + amount, 0);
+    const fundRecordsAmounts = records.filter(record => record.fundID === fund.id || record.otherFundID === fund.id);
+    fund.balance = fundRecordsAmounts.reduce((balance, record) => {
+      const recordAmount = record.fundID === fund.id ? record.amount : -record.amount;
+      return balance + recordAmount;
+    }, 0);
+
+    fund.balance = fund.balance.toFixed(2)
   })
 }, { immediate: true });
 </script>

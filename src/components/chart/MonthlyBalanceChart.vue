@@ -1,5 +1,5 @@
 <template>
-  <div class="p-3 bg-stone-800 shadow-md shadow-black rounded-md flex justify-center">
+  <div>
     <Line id="monthly-balance-chart" :options="chartOptions" :data="chartData" />
   </div>
 </template>
@@ -50,7 +50,7 @@ const monthsBalance = computed(() => {
   months.forEach(month => {
     const monthMatch = (date) => new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(date)) === month;
     const yearMatch = (date) => new Date(date).getFullYear() === new Date().getFullYear();
-    const monthRecords = records.value.filter(({ date }) => monthMatch(date) && yearMatch(date));
+    const monthRecords = records.value.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type !== 0);
     const monthBalance = monthRecords.reduce((acc, record) => acc + record.amount, 0);
     result.push(monthBalance);
   });

@@ -93,7 +93,7 @@ async function requestOTP(action) {
   const deletionIsConfirmed = await swal({
     icon: "warning",
     title: "Caution",
-    text: 'Please confirm if you want to delete your account. The action is irreversible.',
+    text: 'Please confirm to continue, you will receive a code to complete this action.',
     buttons: true,
     timer: null,
   });
