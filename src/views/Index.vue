@@ -1,6 +1,6 @@
 <template>
   <div class="pt-32">
-    <Logo />
+    <Logo size="lg" />
     <h1 class="text-5xl font-bold text-center mt-16 text-white">
       Wallance
     </h1>

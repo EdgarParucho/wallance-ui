@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-44">
+  <div class="mt-20">
     <div class="md:flex items-end justify-between mb-2 mx-auto 2xl:w-2/3">
       <div class="grid">
         <small class="text-white text-xs mb-1 font-bold">Search</small>
@@ -117,7 +117,6 @@ const { funds } = storeToRefs(fundStore);
 const { records } = storeToRefs(recordStore);
 
 const headers = ["Date", "Fund", "Concept", "Amount", "Actions"];
-const data = [{}];
 
 const currentPage = ref(1);
 const maxRows = ref(10);
@@ -230,7 +229,7 @@ watch([records, appliedFilters, search], ([records, appliedFilters, search]) => 
       return recordTag.includes(searchText) || (recordNote.includes(searchText))
     });
   filteredRecords.value.forEach(r => r.date = new Date(r.date))
-  filteredRecords.value.sort((a, b) => a.date - b.date);
+  filteredRecords.value.sort((a, b) => b.date - a.date);
 }, { immediate: true })
 
 </script>

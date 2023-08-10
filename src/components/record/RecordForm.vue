@@ -20,6 +20,32 @@
       <fieldset>
         <legend class="mx-auto text-lg">Record Data</legend>
 
+        <div class="my-4">
+          <div class="w-full text-md font-medium italic font-serif">
+            <label for="date">
+              Date
+            </label>
+          </div>
+          <div class="flex items-center">
+            <input
+            type="date"
+            name="date"
+            id="date"
+            class="w-1/2 bg-transparent text-white focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
+            required
+            v-model="formDate"
+            >
+            <input
+            type="time"
+            name="time"
+            id="time"
+            class="w-1/2 bg-transparent text-white focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
+            required
+            v-model="formTime"
+            >
+          </div>
+        </div>
+        
         <div class="my-4 flex items-center space-x-6">
           <div class="flex items-center space-x-2">
             <input
@@ -56,33 +82,7 @@
             </label>
           </div>
         </div>
-                  
-        <div class="my-4">
-          <div class="w-full text-md font-medium italic font-serif">
-            <label for="date">
-              Date
-            </label>
-          </div>
-          <div class="flex items-center">
-            <input
-            type="date"
-            name="date"
-            id="date"
-            class="w-1/2 bg-transparent text-white focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
-            required
-            v-model="formDate"
-            >
-            <input
-            type="time"
-            name="time"
-            id="time"
-            class="w-1/2 bg-transparent text-white focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
-            required
-            v-model="formTime"
-            >
-          </div>
-        </div>
-                
+          
         <div class="mt-4 mb-1 flex items-center">
           <label for="fundID" class="w-1/2 text-md font-medium italic font-serif">
             Fund
@@ -203,7 +203,15 @@
       @click="onSave(record, editing)"
       :disabled="loading || formHasErrors"
       >
-        Save
+        <svg
+        v-if="loading"
+        class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+        >
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span v-if="loading" class="mx-auto">Processing...</span>
+        <span v-else>Save</span>
       </button>
       </div>
     </form>
@@ -262,7 +270,7 @@ const amount = (props.editing)
     date: null,
     note: null,
     tag: null,
-    fundID: null,
+    fundID: "",
     type: 2,
   });
 
@@ -350,6 +358,9 @@ watch(
   () => amount.value,
   (amountValue) => {
     const multiplier = (record.type === 1) ? 1 : -1;
+    amount.value = new Intl.NumberFormat(undefined, {
+      maximumFractionDigits: 2,
+    }).format(amountValue)
     record.amount = amountValue * multiplier;
   }
 )

@@ -1,11 +1,18 @@
 <template>
-  <div class="neumorphism w-40 h-40 mx-auto align-middle flex">
-    <ScaleIcon class="w-16 text-stone-400 mx-auto" />
+  <div
+  class="neumorphism mx-auto flex"
+  :class="{ 'w-40 h-40': size === 'lg', 'w-12 h-12': size === 'md', 'w-8 h-8': size === 'sm' }"
+  >
+    <ScaleIcon
+    class="flex text-stone-400 mx-auto"
+    :class="{ 'w-16': size === 'lg', 'w-7': size === 'md', 'w-5': size === 'sm' }"
+    />
   </div>
 </template>
 
 <script setup>
 import { ScaleIcon } from '@heroicons/vue/24/outline';
+const props = defineProps(['size']);
 </script>
 
 <style scoped>

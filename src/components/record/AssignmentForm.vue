@@ -19,10 +19,36 @@
     <form @submit.prevent="save(record)">
       <div class="p-4 w-96">
 
+        <div class="my-4">
+          <div class="w-full text-md font-medium text-white italic font-serif">
+            <label for="date">
+              Date
+            </label>
+          </div>
+          <div class="flex items-center">
+            <input
+            type="date"
+            name="date"
+            id="date"
+            class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-yellow-500 focus:ring-yellow-500 sm:text-md text-white"
+            required
+            v-model="formDate"
+            >
+            <input
+            type="time"
+            name="time"
+            id="time"
+            class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-yellow-500 focus:ring-yellow-500 sm:text-md text-white"
+            required
+            v-model="formTime"
+            >
+          </div>
+        </div>
+        
         <div class="h-1/3">
           <label for="source" class="text-xs font-semibold">Source</label>
           <select id="source" name="source"
-            class="px-2 text-white mb-2 bg-transparent w-full rounded-md border-stone-400 focus:outline-0 active:outline-0"
+            class="px-2 text-white mb-2 bg-transparent w-full rounded-md focus:border-transparent focus:border-yellow-300 focus:ring-0 border-white focus:bg-stone-700 transition-colors"
             required v-model="record.fundID">
             <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="fund in fundStore.funds"
               :key="fund.id" :value="fund.id">
@@ -74,41 +100,15 @@
             </div>
             <input
             type="number" name="amount" id="amount"
-            class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-yellow-500 focus:ring-yellow-500 sm:text-md text-white pl-6 text-right"
+            class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-yellow-500 focus:ring-yellow-500 sm:text-md text-white pl-6 text-right disabled:text-stone-400"
             placeholder="0.00"
             v-model.number="amount"
             required
-            :disabled="record.fundID  === null || record.otherFundID === null"
+            :disabled="record.fundID  === '' || record.otherFundID === ''"
             :min="0">
           </div>
         </div>
 
-        <div class="my-4">
-          <div class="w-full text-md font-medium text-white italic font-serif">
-            <label for="date">
-              Date
-            </label>
-          </div>
-          <div class="flex items-center">
-            <input
-            type="date"
-            name="date"
-            id="date"
-            class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-yellow-500 focus:ring-yellow-500 sm:text-md text-white"
-            required
-            v-model="formDate"
-            >
-            <input
-            type="time"
-            name="time"
-            id="time"
-            class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-yellow-500 focus:ring-yellow-500 sm:text-md text-white"
-            required
-            v-model="formTime"
-            >
-          </div>
-        </div>
-                
         <div class="my-4 px-1">
           <div>
             <label for="tag" class="w-1/2 text-md font-medium text-white italic font-serif">
@@ -155,10 +155,18 @@
             Cancel
           </button>
           <button
-            class="mt-3 inline-flex w-full justify-center rounded-md bg-yellow-400 text-black px-4 py-2 text-base font-bold shadow-sm hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-white sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-            type="submit" @click.prevent="onSave(record, editing)"
-            :disabled="loading || formIsValid">
-            Save
+          class="mt-3 inline-flex w-full justify-center rounded-md bg-yellow-400 text-black px-4 py-2 text-base font-bold shadow-sm hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-white sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-stone-800 disabled:text-stone-500"
+          type="submit" @click.prevent="onSave(record, editing)"
+          :disabled="loading || !formIsValid"
+          >
+            <svg
+            v-if="loading"
+            class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span v-if="loading" class="mx-auto">Processing...</span>
+            <span v-else>Save</span>
           </button>
         </div>
       </div>
@@ -230,7 +238,7 @@ const newRecord = {
 };
 const record = reactive(props.editing ? { ...props.originalRecord } : newRecord);
 
-const formIsValid = computed(() => record.fundID === '' || record.otherFundID === '');
+const formIsValid = computed(() => record.fundID !== '' || record.otherFundID !== '');
 
 const fundBalanceOnDate = computed(() => {
   if (!record.fundID) return 0
@@ -300,7 +308,10 @@ watch(
   () => amount.value,
   (amountValue) => {
     const multiplier = (record.type === 1) ? 1 : -1;
-    record.amount = (amountValue * multiplier).toFixed(2);
+    amount.value = new Intl.NumberFormat(undefined, {
+      maximumFractionDigits: 2,
+    }).format(amountValue)
+    record.amount = (amountValue * multiplier);
   }
 )
 </script>

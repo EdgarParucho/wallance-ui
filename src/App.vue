@@ -1,5 +1,6 @@
 <script setup>
 import AppBar from './components/layout/AppBar.vue';
+import NavBar from './components/layout/NavBar.vue';
 import swal from "sweetalert";
 import { provide } from 'vue';
 
@@ -13,11 +14,12 @@ provide("alert", ({ type = "error", title, text, button = false, timer = 2000 })
 </script>
 
 <template>
-  <router-view class="pt-20 px-2 bg-stone-900" v-slot="{ Component }">
+  <router-view class="pt-12 px-2 bg-stone-900 min-h-screen" v-slot="{ Component }">
     <AppBar />
     <transition name="fade" mode="out-in">
       <component :is="Component" />
     </transition>
+    <NavBar />
   </router-view>
 </template>
 

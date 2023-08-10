@@ -1,12 +1,10 @@
 <template>
-  <div class="p-3 shadow-md shadow-black transition-shadow rounded-md bg-stone-800 flex justify-center">
-    <Pie id="funds-balances-chart" :options="chartOptions" :data="chartData" />
-  </div>
+  <Doughnut id="funds-balances-chart" :options="chartOptions" :data="chartData" />
 </template>
 
 <script setup>
 import { computed } from 'vue';
-import { Pie } from 'vue-chartjs'
+import { Doughnut } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js'
 import { storeToRefs } from 'pinia';
 import { useFundStore } from '../../stores/fundStore';
@@ -45,11 +43,6 @@ const chartOptions = computed(() => {
         labels: {
           color: "#fff"
         }
-      },
-      title: {
-        display: true,
-        text: "Balance by Fund",
-        color: "#fff",
       }
     }
   }

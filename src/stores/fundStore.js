@@ -1,12 +1,14 @@
 import { defineStore } from 'pinia';
-import { computed } from 'vue';
+import { computed, watch } from 'vue';
 import { Create, Update, Delete } from '../services/fundAPI';
 import { useLocalStorage } from '@vueuse/core';
 import { useRecordStore } from './recordStore';
 import { useCredentialStore } from "./credentialStore";
+import { storeToRefs } from 'pinia';
 
 export const useFundStore = defineStore('fund', () => {
   const recordStore = useRecordStore();
+  const { records } = storeToRefs(recordStore);
   const funds = useLocalStorage('vueUseFunds', []);
   const defaultFund = computed(() => funds.value.find(fund => fund.isDefault));
   const credentialStore = useCredentialStore();
@@ -61,5 +63,18 @@ export const useFundStore = defineStore('fund', () => {
     mutation: mutations.deleteFund
   });
 
+  watch(() => records.value,
+  (records) => {
+    funds.value.forEach(fund => {
+      const fundRecordsAmounts = records.filter(record => record.fundID === fund.id || record.otherFundID === fund.id);
+      fund.balance = fundRecordsAmounts.reduce((balance, record) => {
+        const recordAmount = record.fundID === fund.id ? record.amount : -record.amount;
+        return balance + recordAmount;
+      }, 0);
+  
+      fund.balance = fund.balance.toFixed(2)
+    })
+  }, { immediate: true });
+  
   return { funds, defaultFund, setFunds: mutations.setFunds, createFund, updateFund, deleteFund }
 })

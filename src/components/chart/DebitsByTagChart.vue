@@ -24,22 +24,31 @@ const recordsTags = computed(() => Array.from(new Set([...records.value
   .filter(record => record.type === 2)
   .map(record => record.tag)
 ])));
-const tagsRecords = computed(() => {
-  const tagTotal = [];
+
+const debitsBalance = computed(() => records.value
+  .filter(record => record.type === 2)
+  .reduce((totalCredits, { amount }) => totalCredits + Number(amount), 0)
+);
+
+const debitsByTag = computed(() => {
+  const tagsTotal = [];
   const debitRecords = records.value.filter(record => record.type === 2);
   recordsTags.value.forEach(tag => {
-    const debitTagRecords = debitRecords.filter(record => record.tag === tag && record.type === 2);
-    const tagRecordsTotal = debitTagRecords.length / debitRecords.length * 100;
-    tagTotal.push(tagRecordsTotal.toFixed());
+    const balance = debitRecords
+      .filter(record => record.tag === tag)
+      .reduce((balance, { amount }) => balance + amount, 0)
+      .toFixed();
+    const percentage = (balance / debitsBalance.value * 100).toFixed();
+    tagsTotal.push(percentage);
   })
-  return tagTotal;
+  return tagsTotal;
 });
 
 const chartData = computed(() => {
   return {
     labels: recordsTags.value,
     datasets: [
-      { label: " %", data: tagsRecords.value, backgroundColor: colors },
+      { label: " %", data: debitsByTag.value, backgroundColor: colors },
     ],
   }
 });
