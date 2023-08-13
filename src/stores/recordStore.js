@@ -2,10 +2,30 @@ import { defineStore } from 'pinia';
 import { useCredentialStore } from "./credentialStore";
 import { Find, Create, Update, Delete } from '../services/recordAPI';
 import { useLocalStorage } from '@vueuse/core';
+import { computed, watch } from 'vue';
 
 export const useRecordStore = defineStore('records', () => {
   const records = useLocalStorage('vueUseRecords', []);
   const credentialStore = useCredentialStore();
+
+  const assignmentTags = computed(() => Array.from(new Set(records.value
+    .filter(r => r.type === 0)
+    .map(r => r.tag)))
+  );
+
+  const creditTags = computed(() => Array.from(new Set(records.value
+    .filter(r => r.type === 1)
+    .map(r => r.tag)))
+  );
+
+  const debitTags = computed(() => Array.from(new Set(records.value
+    .filter(r => r.type === 2)
+    .map(r => r.tag)))
+  );
+
+  const recordTags = computed(() => {
+    return { 0: assignmentTags.value, 1: creditTags.value, 2: debitTags.value }
+  })
 
   const mutations = {
     getRecords: (data) => {
@@ -70,5 +90,18 @@ export const useRecordStore = defineStore('records', () => {
     mutation: mutations.deleteRecord
   });
 
-  return { records, getRecords, setRecords: mutations.setRecords, createRecord, updateRecord, deleteRecord };
+  // watch(records, (recordsValue) => {
+  //   assignmentTags.value = new Set(...recordsValue
+  //     .filter(r => r.type === 0)
+  //     .map(r => r.tag))
+  // }, { immediate: true })
+  return {
+    records,
+    recordTags,
+    getRecords,
+    setRecords: mutations.setRecords,
+    createRecord,
+    updateRecord,
+    deleteRecord
+  };
 })

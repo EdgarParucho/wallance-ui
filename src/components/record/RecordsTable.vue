@@ -1,26 +1,5 @@
 <template>
-  <div class="mt-20">
-    <div class="md:flex items-end justify-between mb-2 mx-auto 2xl:w-2/3">
-      <div class="grid">
-        <small class="text-white text-xs mb-1 font-bold">Search</small>
-        <input
-        placeholder="Tag / Note"
-        type="text"
-        class="bg-transparent text-white focus:border-transparent focus:border-yellow-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
-        v-model="search"
-        >
-      </div>
-      <div class="p-2 flex-wrap flex justify-center">
-        <button
-        v-for="filter, i in filters"
-        :key="i"
-        :class="[filter.isApplied ? 'bg-yellow-400 text-black hover:bg-yellow-300' : 'bg-stone-700 hover:bg-stone-800 text-white','text-xs font-bold rounded-xl w-24 m-1 py-1 px-2 transition-colors']"
-        @click="applyFilter(filter)"
-        >
-          {{ filter.name }}
-        </button>
-      </div>
-    </div>
+  <div class="my-4">
     <table class="border-separate border-spacing-2 border border-stone-500 text-white mx-auto w-full 2xl:w-2/3">
       <thead v-if="!underLgBreakpoint">
         <tr>
@@ -105,73 +84,26 @@ import {
   TrashIcon } from '@heroicons/vue/24/outline'
 import { ref, computed, watch } from "vue";
 import { useFundStore } from '../../stores/fundStore';
-import { useRecordStore } from '../../stores/recordStore';
 import { storeToRefs } from "pinia";
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
 
-const emit = defineEmits(['edit-record', 'delete-record'])
+const props = defineProps(['filteredRecords']);
+const emit = defineEmits(['edit-record', 'delete-record']);
 
 const fundStore = useFundStore();
-const recordStore = useRecordStore();
 const { funds } = storeToRefs(fundStore);
-const { records } = storeToRefs(recordStore);
 
 const headers = ["Date", "Fund", "Concept", "Amount", "Actions"];
 
 const currentPage = ref(1);
 const maxRows = ref(10);
-const search = ref("");
-const filters = ref([
-  {
-    name: 'Credits',
-    targetProperty: 'type',
-    fn: (r) => r.type === 1,
-    isApplied: false
-  },
-  {
-    name: 'Debits',
-    targetProperty: 'type',
-    fn: (r) => r.type === 2,
-    isApplied: false
-  },
-  {
-    name: 'Assignments',
-    targetProperty: 'type',
-    fn: (r) => r.type === 0,
-    isApplied: false
-  },
-  {
-    name: 'This month',
-    targetProperty: 'date',
-    fn: (r) => r.date.slice(0, 7) === new Date().toISOString().slice(0, 7),
-    isApplied: false
-  },
-  {
-    name: 'This year',
-    targetProperty: 'date',
-    fn: (r) => r.date.slice(0, 4) === new Date().toISOString().slice(0, 4),
-    isApplied: false
-  },
-]);
-
-const filteredRecords = ref([]);
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const underLgBreakpoint = breakpoints.smaller('lg');
 
-const totalPages = computed(() => Math.ceil(filteredRecords.value.length / maxRows.value));
+const totalPages = computed(() => Math.ceil(props.filteredRecords.length / maxRows.value));
 const startIndex = computed(() => (currentPage.value * maxRows.value) - maxRows.value);
 const endIndex = computed(() => (startIndex.value + maxRows.value));
-const recordRows = computed(() => filteredRecords.value.slice(startIndex.value, endIndex.value));
-const appliedFilters = computed(() => filters.value.filter(filter => filter.isApplied));
-
-function applyFilter(newFilter) {
-  if (newFilter.isApplied) return newFilter.isApplied = false;
-  const conflictFilter = filters.value.find(
-    filter => filter.isApplied && filter.targetProperty === newFilter.targetProperty
-  );
-  if (conflictFilter !== undefined) conflictFilter.isApplied = false;
-  newFilter.isApplied = true;
-}
+const recordRows = computed(() => props.filteredRecords.slice(startIndex.value, endIndex.value));
 
 function getRecordTypeIcon({ type }) {
   if (type === 0) return ArrowsRightLeftIcon
@@ -217,19 +149,8 @@ async function confirmDeletion(record) {
   if (deletionIsConfirmed) emit('delete-record', record)
 }
 
-watch([records, appliedFilters, search], ([records, appliedFilters, search]) => {
-  filteredRecords.value = appliedFilters.reduce((resultingArray, filter) => {
-    return resultingArray.filter(filter.fn)
-  }, JSON.parse(JSON.stringify(records)))
-    .filter((record) => {
-      if (!record.tag && !record.note) return false
-      const searchText = search.toLowerCase();
-      const recordTag = record.tag ? record.tag.toLowerCase() : "";
-      const recordNote = record.note ? record.note.toLowerCase() : "";
-      return recordTag.includes(searchText) || (recordNote.includes(searchText))
-    });
-  filteredRecords.value.forEach(r => r.date = new Date(r.date))
-  filteredRecords.value.sort((a, b) => b.date - a.date);
-}, { immediate: true })
+watch(totalPages, (numPages) => {
+  if (numPages < currentPage.value) currentPage.value = 1
+})
 
 </script>

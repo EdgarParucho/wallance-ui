@@ -5,9 +5,7 @@
 </template>
 
 <script setup>
-import { useRecordStore } from '../../stores/recordStore';
 import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS,
   CategoryScale,
@@ -28,8 +26,7 @@ import { Chart as ChartJS,
   Legend,
 );
 
-const recordStore = useRecordStore();
-const { records } = storeToRefs(recordStore);
+const props = defineProps(['filteredRecords']);
 const months = [
   'January',
   'February',
@@ -50,7 +47,7 @@ const monthsBalance = computed(() => {
   months.forEach(month => {
     const monthMatch = (date) => new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(date)) === month;
     const yearMatch = (date) => new Date(date).getFullYear() === new Date().getFullYear();
-    const monthRecords = records.value.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type !== 0);
+    const monthRecords = props.filteredRecords.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type !== 0);
     const monthBalance = monthRecords.reduce((acc, record) => acc + record.amount, 0);
     result.push(monthBalance);
   });

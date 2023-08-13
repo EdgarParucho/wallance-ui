@@ -73,7 +73,7 @@ const emailFormatIsValid = computed(() => {
   return emailIsValid;
 });
 
-const formIsValid = computed(() => emailFormatIsValid && form.value.password !== "");
+const formIsValid = computed(() => form.value.email !== "" && emailFormatIsValid && form.value.password !== "");
 
 function handleSubmit(data) {
   loading.value = true;
