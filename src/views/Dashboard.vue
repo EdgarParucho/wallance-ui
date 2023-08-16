@@ -30,7 +30,7 @@
         To<span class="text-yellow-300"> update </span>your balance
       </h3>
       <button
-      class="text-black hover:bg-yellow-300 bg-yellow-400 font-bold py-1 px-2 rounded-md w-36 inline-flex items-center justify-between"
+      class="text-black hover:bg-yellow-300 bg-yellow-400 font-bold py-1 px-2 gap-1 rounded-md w-40 inline-flex items-center justify-center"
       @click="recordFormIsOpen = true">
         <PlusIcon class="w-5" />
         Add a Record
@@ -57,16 +57,19 @@
         Do you want to<span class="text-yellow-300"> move balance </span>between funds?
       </h3>
       <button
-      class="text-black hover:bg-yellow-300 bg-yellow-400 font-bold py-1 px-2 rounded-md w-24 inline-flex items-center justify-between"
+        class="text-black hover:bg-yellow-300 bg-yellow-400 font-bold py-1 px-2 gap-1 rounded-md w-40 inline-flex items-center justify-center"
       @click="assignmentFormIsOpen = true">
         <ArrowsRightLeftIcon class="w-5" />
-        Assign
+        Go Assign
       </button>
     </div>
 
-    <h4 class="text-2xl font-bold text-center mt-16 mb-4 text-white">
-      My top tags on Records
-    </h4>
+    <div class="mt-16 mb-4 flex justify-center">
+      <h4 class="text-2xl font-bold text-white flex gap-2">
+        <TagIcon class="w-6" />
+        Tags Usage
+      </h4>
+    </div>
 
     <ol class="text-white lg:w-1/3 mx-auto space-y-0.5 text-sm">
       <h4 class="text-start text-lg font-bold my-6 text-white">
@@ -119,7 +122,26 @@
         <span class="w-1/3 text-end">{{ debitTag.percentage }}%</span>
       </li>
     </ol>
-    <div class="mt-28 md:flex items-center justify-around">
+
+    <div class="mt-16 mb-4 flex justify-center">
+      <h4 class="text-2xl font-bold text-white flex gap-2">
+        <BookmarkIcon class="w-6" />
+        Saved Queries
+      </h4>
+    </div>
+
+    <div class="text-center space-y-3">
+      <button
+      v-for="query, i in preferences.queries" :key="i"
+      class="bg-stone-700 hover:bg-yellow-400 hover:text-black text-white font-bold text-xs py-1 px-3 rounded-full mx-1"
+      :class="{ 'bg-yellow-400 text-black': queryIsApplied(query) }"
+      @click="appliedFilters = query.filters">
+        {{ query.name }}
+      </button>
+      <FundsRecords :funds="funds" :filtered-records="filteredRecords" />
+    </div>
+    
+    <div class="md:flex items-center justify-around mt-20 mb-6">
       <span class="text-white justify-center flex items-center space-x-2">
         To edit or create funds
         <router-link to="/funds" class="flex gap-1 mx-2 underline text-white font-bold">
@@ -147,20 +169,36 @@ import { computed, ref, defineAsyncComponent } from 'vue';
 import Logo from '../components/layout/Logo.vue';
 import { useFundStore } from '../stores/fundStore';
 import { useRecordStore } from '../stores/recordStore';
+import { useAccountStore } from '../stores/accountStore';
 import { storeToRefs } from 'pinia';
 import { MinusIcon, PlusIcon, ArrowsRightLeftIcon, LinkIcon, ArchiveBoxIcon } from '@heroicons/vue/24/outline';
+import FundsRecords from '../components/record/FundsRecords.vue';
+import { BookmarkIcon, TagIcon } from '@heroicons/vue/24/solid';
 
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
 const AssignmentForm = defineAsyncComponent(() => import('../components/record/AssignmentForm.vue'));
-const recordFormIsOpen = ref(false);
-const assignmentFormIsOpen = ref(false);
+
 const fundStore = useFundStore();
+const accountStore = useAccountStore();
 const recordStore = useRecordStore();
+
 const { funds } = storeToRefs(fundStore);
 const { records } = storeToRefs(recordStore);
+const { preferences } = storeToRefs(accountStore);
+const recordFormIsOpen = ref(false);
+const assignmentFormIsOpen = ref(false);
 
 const showAllCreditTags = ref(false);
 const showAllDebitTags = ref(false);
+const appliedFilters = ref({
+  tag: "",
+  note: "",
+  fromDate: null,
+  toDate: null,
+  type: null,
+});
+
+if (preferences.value.queries[0] !== undefined) appliedFilters.value = preferences.value.queries[0].filters;
 
 const balance = computed(() => funds.value.reduce((totalBalance, { balance }) => totalBalance + Number(balance), 0));
 const creditsBalance = computed(() => records.value
@@ -191,7 +229,6 @@ const creditsByTag = computed(() => {
   return { data: tagsRecords, totalTags: creditTags.length };
 });
 
-
 const debitsByTag = computed(() => {
   let tagsRecords = [];
   const debitRecords = records.value.filter(record => record.type === 2);
@@ -209,12 +246,40 @@ const debitsByTag = computed(() => {
   return { data: tagsRecords, totalTags: debitTags.length };
 });
 
+const filteredRecords = computed(() => {
+  const activeFiltersKeys = Object.entries(appliedFilters.value)
+  .filter(item => item[1] !== "" && item[1] !== null)
+  .map(entry => entry[0]);
+  if (activeFiltersKeys.length === 0 ) return records.value
+
+  const resultingRecords = activeFiltersKeys.reduce((resultingArray, filterKey) => {
+    const filterIsDate = (appliedFilters.value[filterKey] === "fromDate" || appliedFilters.value[filterKey] === "toDate");
+    if (filterIsDate) appliedFilters.value[filterKey] = new Date(appliedFilters.value[filterKey]);
+    const filterValue = appliedFilters.value[filterKey];
+    if (filterKey === "fromDate") return resultingArray.filter(record => new Date(record.date) > new Date(appliedFilters.value[filterKey]))
+    else if (filterKey === "toDate") return resultingArray.filter(record => new Date(record.date) < new Date(appliedFilters.value[filterKey]))
+    else if (typeof filterValue === "string") return resultingArray.filter(record => record[filterKey]?.toLowerCase().includes(filterValue.toLowerCase()))
+    else return resultingArray.filter(record => record[filterKey] === appliedFilters.value[filterKey])
+  }, JSON.parse(JSON.stringify(records.value)));
+  
+  resultingRecords.forEach(r => r.date = new Date(r.date))
+  return resultingRecords;
+});
+
 function amountFormatted(amount) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
     maximumFractionDigits: 2,
   }).format(amount)
+}
+
+function queryIsApplied({ filters, name }) {
+  return JSON.stringify(filters) === JSON.stringify(appliedFilters.value)
+}
+
+function clearFilters() {
+  appliedFilters.value = { tag: "", note: "", fromDate: null, toDate: null, type: null, name: "" };
 }
 
 </script>

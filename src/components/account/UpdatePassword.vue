@@ -102,7 +102,7 @@ function reSendOTP() {
 }
 function onSubmit(OTP, newPassword) {
   loading.value = true
-  accountStore.updatePassword({ OTP, updateEntries: { password: newPassword } })
+  accountStore.updateAccount({ OTP, updateEntries: { password: newPassword } })
     .then((message) => {
       displayAlert({ title: "Done", type: "success", text: message });
       emit('close-form')

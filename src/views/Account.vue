@@ -71,19 +71,15 @@
 
 <script setup>
 import { ref, inject } from 'vue'
-import { Cog6ToothIcon, PencilIcon, KeyIcon } from '@heroicons/vue/24/outline'
-import { useAccountStore } from '../stores/accountStore';
+import { Cog6ToothIcon, KeyIcon } from '@heroicons/vue/24/outline'
 import { useCredentialStore } from '../stores/credentialStore';
 import UpdateEmail from '../components/account/UpdateEmail.vue';
 import UpdatePassword from '../components/account/UpdatePassword.vue';
 import DeleteAccount from '../components/account/DeleteAccount.vue'
-import { storeToRefs } from 'pinia';
 
-const accountStore = useAccountStore();
 const credentialStore = useCredentialStore();
 const displayAlert = inject("alert");
 
-const { account } = storeToRefs(accountStore);
 const emailFormIsOpen = ref(false)
 const passwordFormIsOpen = ref(false)
 const deleteFormIsOpen = ref(false)
@@ -100,7 +96,6 @@ async function requestOTP(action) {
   if (!deletionIsConfirmed) return
   requestingOTP.value = true;
   credentialStore.requestOTPValidation({
-    email: account.value.email,
     action,
     emailShouldBeStored: true
   })

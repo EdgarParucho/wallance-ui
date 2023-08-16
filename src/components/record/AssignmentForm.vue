@@ -126,7 +126,7 @@
               <option class="text-white font-bold italic bg-stone-800 disabled:text-opacity-50">
                 <span>Add new</span>
               </option>
-              <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="tag, i in tags" :key="i">
+              <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="tag, i in tagOptions" :key="i">
                 {{ tag }}
               </option>
             </select>
@@ -179,6 +179,7 @@ import { ref, reactive, computed, watch, inject } from 'vue'
 import { DocumentPlusIcon, PencilSquareIcon, ChartPieIcon, ArrowsRightLeftIcon } from '@heroicons/vue/24/outline';
 import { useFundStore } from '../../stores/fundStore';
 import { useRecordStore } from '../../stores/recordStore';
+import { storeToRefs } from "pinia";
 import Dialog from '../layout/Dialog.vue';
 
 const props = defineProps({
@@ -201,6 +202,7 @@ const emit = defineEmits(['close-form']);
 const displayAlert = inject("alert");
 const recordStore = useRecordStore();
 const fundStore = useFundStore();
+const { recordTags } = storeToRefs(recordStore);
 
 const loading = ref(false);
 const amountPickers = [
@@ -223,7 +225,9 @@ const tagFields = reactive({
   input: null
 });
 
-const tags = new Set(recordStore.records.map(record => record.tag));
+const tagOptions = computed(() => {
+  return recordTags.value[0];
+});
 const amount = (props.editing)
   ? ref(-props.originalRecord.amount)
   : ref(1);
@@ -315,21 +319,3 @@ watch(
   }
 )
 </script>
-
-<style scoped>
-/* Remove the default arrows from input number fields */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-
-input[type=number] {
-  -moz-appearance: textfield;
-}
-
-/* Invert the default white color from input date fields icon */
-::-webkit-calendar-picker-indicator {
-  filter: invert(1);
-}
-</style>

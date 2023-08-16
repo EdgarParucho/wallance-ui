@@ -88,8 +88,6 @@ const someFieldIsEmpty = computed(() => {
   const tokenFieldEmpty = validatingEmail.value && OTP.value === ''
   return emailFieldEmpty || tokenFieldEmpty
 })
-const currentEmail = computed(() => accountStore.account.email)
-const currentEqualsNew = computed(() => email.value === currentEmail.value)
 const validatingEmail = ref(false)
 const OTP = ref('');
 
@@ -105,9 +103,8 @@ const emailFormatIsValid = computed(() => {
 })
 
 function updateEmail(OTP, email) {
-  if (currentEqualsNew.value) return alert('The email you entered is already your current address.')
   loading.value = true
-  accountStore.updateEmail({ OTP, updateEntries: { email } })
+  accountStore.updateAccount({ OTP, updateEntries: { email } })
   .then((message) => {
     displayAlert({ title: "Done", type: "success", text: message });
     emit('close-form');

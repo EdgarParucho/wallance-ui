@@ -90,11 +90,9 @@ export const useRecordStore = defineStore('records', () => {
     mutation: mutations.deleteRecord
   });
 
-  // watch(records, (recordsValue) => {
-  //   assignmentTags.value = new Set(...recordsValue
-  //     .filter(r => r.type === 0)
-  //     .map(r => r.tag))
-  // }, { immediate: true })
+  watch(records, () => {
+    records.value.sort((a, b) => new Date(b.date) - new Date(a.date))
+  }, { immediate: true })
   return {
     records,
     recordTags,

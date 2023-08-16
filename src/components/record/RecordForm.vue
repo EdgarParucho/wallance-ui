@@ -154,7 +154,7 @@
               <option class="text-white font-bold italic bg-stone-800 disabled:text-opacity-50">
                 <span>Add new</span>
               </option>
-              <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="tag, i in tags" :key="i">
+              <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="tag, i in tagOptions" :key="i">
                 {{ tag }}
               </option>
             </select>
@@ -223,6 +223,7 @@ import { ref, watch, computed, reactive, inject } from 'vue';
 import { DocumentPlusIcon, PencilSquareIcon, MinusIcon, PlusIcon } from '@heroicons/vue/24/outline';
 import { useRecordStore } from '../../stores/recordStore';
 import { useFundStore } from '../../stores/fundStore';
+import { storeToRefs } from "pinia";
 import Dialog from '../layout/Dialog.vue';
 
 const props = defineProps({
@@ -246,6 +247,7 @@ const emit = defineEmits(['close-form']);
 const displayAlert = inject("alert");
 const recordStore = useRecordStore();
 const fundStore = useFundStore();
+const { recordTags } = storeToRefs(recordStore);
 
 const formDate = (props.editing)
   ? ref(props.originalRecord.date.slice(0, 10))
@@ -258,7 +260,10 @@ const tagFields = reactive({
   option: props.editing ? props.originalRecord.tag : "Add new",
   input: null
 });
-const tags = new Set(recordStore.records.map(record => record.tag));
+const tagOptions = computed(() => {
+  return recordTags.value[record.type];
+});
+
 const amount = (props.editing)
   ? (props.originalRecord.amount < 0) ? ref(-props.originalRecord.amount) : ref(props.originalRecord.amount)
   : ref(1);
@@ -365,16 +370,3 @@ watch(
   }
 )
 </script>
-
-<style scoped>
-/* Remove the default arrows from input number fields */
-input::-webkit-outer-spin-button,
-input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-input[type=number] {
-  -moz-appearance: textfield;
-  appearance: inherit;
-}
-</style>

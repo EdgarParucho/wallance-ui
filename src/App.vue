@@ -32,4 +32,20 @@ provide("alert", ({ type = "error", title, text, button = false, timer = 2000 })
 .fade-leave-active {
   transition: opacity 0.2s ease-out;
 }
+
+::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+/* Remove the default arrows from input number fields */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number] {
+  -moz-appearance: textfield;
+  appearance: inherit;
+}
+
 </style>

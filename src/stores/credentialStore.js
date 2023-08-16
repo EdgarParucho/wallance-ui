@@ -14,10 +14,11 @@ export const useCredentialStore = defineStore('credential', () => {
   const credential = useLocalStorage("vueUseCredential", { token: null, exp: null });
 
   const mutations = {
-    login: ({ token, funds, records }) => {
+    login: ({ token, funds, records, preferences }) => {
       recordStore.setRecords(records);
       fundStore.setFunds(funds);
       credential.value = token;
+      accountStore.setPreferences(preferences);
       API.defaults.headers.common['Authorization'] = "bearer " + credential.value.token;
       return 'Good to have you. Get the most and enjoy.';
     },
@@ -30,9 +31,8 @@ export const useCredentialStore = defineStore('credential', () => {
   function resetStores() {
     credential.value.token = null;
     credential.value.exp = null;
-    accountStore.email = null;
-    recordStore.records = null;
-    fundStore.funds = null;
+    recordStore.records = [];
+    fundStore.funds = [];
   }
 
   const useService = ({ service, data, mutation }) => new Promise((resolve, reject) => service(data)
