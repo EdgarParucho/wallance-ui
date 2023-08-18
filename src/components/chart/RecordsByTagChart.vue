@@ -13,8 +13,29 @@ ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale,
 
 const props = defineProps(['filteredRecords']);
 const colors = [
-  "#d9ed92", "#a9edb2", "#99d98c", "#76c893", "#52b69a", "#34a0a4", "#168aad", "#1a759f", "#184e77",
-  "#156064", "#00c49a", "#f8e16c", "#ffc2b4", "#fb8f67",
+  // violet
+  "#ddd6fe",
+  "#a78bfa",
+  "#8b5cf6",
+  // purple
+  "#c084fc",
+  "#a855f7",
+  // fuchsia
+  "#e879f9",
+  "#d946ef",
+  // indigo
+  "#6366f1",
+  // // blue
+  "#60a5fa",
+  // // sky
+  "#38bdf8",
+  // pink
+  "#f472b6",
+  // rose
+  "#fb7185",
+  "#fecaca",
+  // red
+  "#2dd4bf",
 ];
 
 const recordsTags = computed(() => Array.from(new Set([...props.filteredRecords
@@ -55,12 +76,7 @@ const chartOptions = computed(() => {
     plugins: {
       legend: {
         position: "left",
-        labels: { color: "#fff" }
-      },
-      title: {
-        display: true,
-        text: "Debit by tag",
-        color: "#fff",
+        labels: { color: "#878787" }
       }
     }
   }

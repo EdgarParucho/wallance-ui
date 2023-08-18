@@ -1,23 +1,11 @@
 <template>
-  <Dialog :form-is-open="formIsOpen" @close-form="$emit('close-form')">
-    <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full mx-auto sm:h-10 sm:w-10 mb-2 bg-stone-700 text-yellow-400">
-      <KeyIcon class="h-6 w-6 text-white" aria-hidden="true" />
-    </div>
-    <h3 class="text-lg font-medium text-white text-center mt-4">
-      Updating my password
-    </h3>
-    <div aria-hidden="true">
-      <div class="py-5">
-        <div class="border-t border-white" />
-      </div>
-    </div>
-
+  <Dialog :form-is-open="formIsOpen" @close-form="$emit('close-form')" title="Updating Password" :icon="KeyIcon">
     <div class="mt-12 px-8">
       <form @submit.prevent="onSubmit(OTP, newPassword)">
         <fieldset class="my-6">
           <input
           type="text"
-          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
+          class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
           placeholder="Code"
           required
           autocomplete="ignore"
@@ -25,7 +13,7 @@
           >
           <input
           type="password"
-          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
+          class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
           placeholder="New password"
           required
           v-model="newPassword"
@@ -33,7 +21,7 @@
           >
           <input
           type="password"
-          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
+          class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
           placeholder="New password confirmation"
           required
           v-model="reEnteredPassword"
@@ -41,7 +29,7 @@
           >
         </fieldset>
         <button
-        class="flex justify-center rounded-sm px-3 py-1 mx-auto w-72 bg-yellow-400 hover:bg-yellow-500 text-stone-900 font-bold disabled:bg-stone-700"
+        class="flex justify-center items-center space-x-2 w-full my-2 py-1 outline-none font-bold rounded-sm text-white bg-stone-800 dark:disabled:bg-stone-800 dark:disabled:text-stone-500 hover:bg-stone-700 disabled:bg-stone-300 focus:outline-violet-500 outline-1"
         type="submit"
         :disabled="loading || passwordMismatch || someFieldIsEmpty"
         >
@@ -55,7 +43,7 @@
           <span v-else>Update Now</span>
         </button>
         <button
-        class="block rounded-sm my-2 px-3 mx-auto w-72 text-sm text-cyan-300 hover:text-cyan-100 bg-stone-800 disabled:text-stone-400 disabled:hover:bg-stone-800"
+        class="flex items-center gap-1 mx-auto mb-3 px-3 py-1 text-xs hover:border-stone-500 text-stone-600 hover:scale-110 transition-all hover:text-black dark:hover:text-white"
         @click="reSendOTP()"
         :disabled="loading || countDown > 0"
         type="button"

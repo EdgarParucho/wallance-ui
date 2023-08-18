@@ -1,91 +1,83 @@
 <template>
-  <Dialog :form-is-open="formIsOpen" @close-form="$emit('close-form')">
-    <div class="rounded-md p-8">
-      <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full mx-auto sm:h-10 sm:w-10 mb-2 bg-stone-700 text-yellow-400">
-        <IdentificationIcon class="h-6 w-6-400" aria-hidden="true" />
-      </div>
-      <h3 class="text-lg font-medium text-white text-center mt-4">
-        {{ title }}
-      </h3>
-      <div aria-hidden="true">
-        <div class="py-5">
-          <div class="border-t border-white" />
-        </div>
-      </div>
-
-      <form @submit.prevent="onSubmit(OTPSent, action)">
-        <fieldset class="my-6">
-          <input
-          type="email"
-          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
-          placeholder="email@example.com"
-          autofocus
-          required
-          v-model.trim="form.email"
-          >
-          <input
-          v-if="OTPSent"
-          type="password"
-          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
-          placeholder="Password"
-          required
-          v-model="form.password"
-          >
-          <input
-          v-if="OTPSent"
-          type="password"
-          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
-          placeholder="Password"
-          required
-          v-model="reEnteredPassword"
-          >
-          <input
-          v-if="OTPSent"
-          type="text"
-          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
-          placeholder="Code"
-          required
-          v-model="OTP"
-          >
-        </fieldset>
-        
-        <button
-        class="flex justify-center rounded-sm px-3 py-1 mx-auto w-72 bg-yellow-400 hover:bg-yellow-500 text-stone-900 font-bold disabled:bg-stone-700"
-        type="submit"
-        :disabled="(OTPSent && (passwordMismatch || passwordIsBlank)) || (emailIsBlank || !emailFormatIsValid) || (OTPSent && otpIsBlank) || loading"
+  <Dialog
+  :title="title"
+  subtitle=""
+  :icon="IdentificationIcon"
+  :form-is-open="formIsOpen"
+  @close-form="$emit('close-form')"
+  >
+    <form @submit.prevent="onSubmit(OTPSent, action)" class="rounded-md px-8 pb-10">
+      <fieldset class="my-6">
+        <input
+        type="email"
+        class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
+        placeholder="email@example.com"
+        autofocus
+        required
+        v-model.trim="form.email"
         >
-          <svg
-            v-if="loading"
-            class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span v-if="loading" class="mx-auto">Processing...</span>
-            <span v-else>
-              {{ OTPSent ? "Submit" : "Continue" }}
-            </span>
-        </button>
-      </form>
+        <input
+        v-if="OTPSent"
+        type="password"
+        class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
+        placeholder="Password"
+        required
+        v-model="form.password"
+        >
+        <input
+        v-if="OTPSent"
+        type="password"
+        class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
+        placeholder="Confirm password"
+        required
+        v-model="reEnteredPassword"
+        >
+        <input
+        v-if="OTPSent"
+        type="text"
+        class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
+        placeholder="Code"
+        required
+        v-model="OTP"
+        >
+      </fieldset>
+
       <button
-      v-if="OTPSent"
-      class="block rounded-sm my-2 px-3 mx-auto w-72 text-sm text-cyan-300 hover:text-cyan-100 bg-stone-800 disabled:text-stone-400 disabled:hover:bg-stone-800"
-      @click="requestOTP(form.email, action)"
-      :disabled="loading || countDown > 0 || !emailFormatIsValid || emailIsBlank"
-      type="button"
+      class="flex justify-center items-center space-x-2 w-full my-2 py-1 outline-none font-bold rounded-sm text-white bg-stone-800 dark:disabled:bg-stone-800 dark:disabled:text-stone-500 hover:bg-stone-700 disabled:bg-stone-300 focus:outline-violet-500 outline-1"
+      type="submit"
+      :disabled="(OTPSent && (passwordMismatch || passwordIsBlank)) || (emailIsBlank || !emailFormatIsValid) || (OTPSent && otpIsBlank) || loading"
       >
-        Request code again
-        <span v-if="countDown > 0">
-          ({{ countDown }})
-        </span>
+        <svg
+        v-if="loading"
+        class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+        >
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span v-if="loading" class="mx-auto">Processing...</span>
+        <span v-else>{{ OTPSent ? "Submit" : "Continue" }}</span>
       </button>
-    </div>
+    </form>
+    <button
+    v-if="OTPSent"
+    class="flex items-center gap-1 mx-auto mb-3 px-3 py-1 text-xs hover:border-stone-500 text-stone-600 hover:scale-110 transition-all hover:text-black dark:hover:text-white"
+    @click="requestOTP(form.email, action)"
+    :disabled="loading || countDown > 0 || !emailFormatIsValid || emailIsBlank"
+    type="button"
+    >
+      <ArrowUturnLeftIcon class="w-4" />
+      Request code again
+      <span v-if="countDown > 0">
+        ({{ countDown }})
+      </span>
+    </button>
   </Dialog>
 </template>
 
 <script setup>
 import { computed, ref, inject } from 'vue';
 import { useCredentialStore } from '../../stores/credentialStore';
-import { IdentificationIcon } from '@heroicons/vue/24/outline';
+import { IdentificationIcon, ArrowUturnLeftIcon, } from '@heroicons/vue/24/outline';
 import Dialog from '../layout/Dialog.vue';
 
 const props = defineProps({

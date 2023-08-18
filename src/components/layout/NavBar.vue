@@ -22,20 +22,20 @@ let assignmentFormIsOpen = ref(false);
 </script>
 
 <template>
-  <div v-if="!atHome" class="flex justify-around items-center px-1 w-full text-white bg-stone-900 sticky bottom-0">
+  <div v-if="!atHome" class="flex justify-around items-center w-full fixed bottom-0 shadow-lg bg-stone-100 border border-stone-300 dark:border-stone-700 dark:bg-stone-800">
     <button
-    class="grid justify-center pt-1 h-full w-full font-semibold text-white bg-stone-800 hover:bg-stone-700"
+    class="grid justify-center pt-1 h-full w-full font-semibold hover:bg-white dark:hover:bg-stone-700"
     @click="recordFormIsOpen = true"
     >
-      <PlusIcon class="text-yellow-400 w-6 mx-auto" />
+      <PlusIcon class="text-violet-500 w-6 mx-auto" />
       <small>Record</small>
     </button>
 
     <router-link
     v-for="link, i in links" :key="i"
     :to="link.path"
-    class="grid justify-center pt-1 h-full w-full bg-stone-800 text-white hover:bg-stone-700"
-    :class="{ 'bg-stone-600': (route.fullPath === link.path) }"
+    class="grid justify-center pt-1 h-full w-full hover:bg-violet-600 hover:text-white dark:hover:bg-stone-700"
+    :class="{ 'bg-violet-500 text-white': (route.fullPath === link.path) }"
     >
       <component :is="link.icon" class="w-6 mx-auto" />
       <small>{{ link.hint }}</small>
@@ -44,9 +44,9 @@ let assignmentFormIsOpen = ref(false);
     <button
     @click="assignmentFormIsOpen = true"
     :disabled="funds.length < 2"
-    class="grid justify-center pt-1 h-full w-full border-white font-semibold text-white bg-stone-800 hover:bg-stone-700"
+    class="grid justify-center pt-1 h-full w-full font-semibold hover:bg-white dark:hover:bg-stone-700"
     >
-      <ArrowsRightLeftIcon class="text-yellow-400 w-6 mx-auto" />
+      <ArrowsRightLeftIcon class="text-violet-500 w-6 mx-auto" />
       <small>Assign</small>
     </button>
     <RecordForm v-if="recordFormIsOpen" :form-is-open="recordFormIsOpen" @close-form="recordFormIsOpen = false" :editing="false" />

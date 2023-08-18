@@ -1,23 +1,16 @@
 <template>
-  <Dialog :form-is-open="formIsOpen" @close-form="$emit('close-form')">
+  <Dialog
+  :form-is-open="formIsOpen"
+  @close-form="$emit('close-form')"
+  :icon="ExclamationTriangleIcon"
+  title="Deleting Account"
+  >
     <div class="mt-12 px-8">
-      <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full mx-auto sm:h-10 sm:w-10 mb-2 bg-stone-700 text-yellow-400">
-        <ExclamationTriangleIcon class="h-6 w-6 text-white" aria-hidden="true" />
-      </div>
-      <h3 class="text-lg font-medium text-white text-center mt-4">
-        Deleting my account
-      </h3>
-      <div aria-hidden="true">
-        <div class="py-5">
-          <div class="border-t border-white" />
-        </div>
-      </div>
-
       <form @submit.prevent="onSubmit(OTP)">
         <fieldset class="my-6">
           <input
           type="text"
-          class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
+          class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
           placeholder="Validation"
           required
           v-model="OTP"
@@ -25,7 +18,7 @@
         </fieldset>
         <button
         type="submit"
-        class="flex w-full justify-center rounded-md bg-red-900 mt-2 p-2 text-sm text-red-200 shadow-sm opacity-70 hover:opacity-95 font-semibold disabled:bg-stone-900 disabled:hover:opacity-50 disabled:text-stone-600"
+        class="flex justify-center items-center space-x-2 w-full my-2 py-1 outline-none font-bold rounded-sm text-white bg-stone-800 dark:disabled:bg-stone-800 dark:disabled:text-stone-500 hover:bg-stone-700 disabled:bg-stone-300 focus:outline-violet-500 outline-1"
         :disabled="fieldIsEmpty || loading"
         >
           <svg
@@ -38,7 +31,7 @@
           <span v-else>Delete my account</span>
         </button>
         <button
-        class="block rounded-sm my-2 px-3 mx-auto w-72 text-sm text-cyan-300 hover:text-cyan-100 bg-stone-800 disabled:text-stone-400 disabled:hover:bg-stone-800"
+        class="flex items-center gap-1 mx-auto mb-3 px-3 py-1 text-xs hover:border-stone-500 text-stone-600 hover:scale-110 transition-all hover:text-black dark:hover:text-white"
         @click="reSendOTP()"
         :disabled="loading || countDown > 0"
         type="button"

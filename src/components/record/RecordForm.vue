@@ -1,26 +1,16 @@
 <template>
-  <Dialog :form-is-open="formIsOpen" @close-form="$emit('close-form')">
-    <div class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full mx-auto sm:h-10 sm:w-10 mb-2 bg-stone-700 text-yellow-400">
-      <PencilSquareIcon v-if="editing" class="h-6 w-6" aria-hidden="true" />
-      <DocumentPlusIcon v-else class="h-6 w-6-400" aria-hidden="true" />
-    </div>
-    <h3 class="text-lg font-medium text-white text-center mt-4">
-      Record Form
-    </h3>
-    <p class="text-sm text-white text-center">
-      You are <span class="p-1 bg-stone-700 rounded-md">{{ editing ? 'editing' : 'creating' }}</span> a record
-    </p>
-    <div aria-hidden="true">
-      <div class="py-5">
-        <div class="border-t border-white" />
-      </div>
-    </div>
-
-    <form class="p-5 text-white">
+  <Dialog
+  @close-form="$emit('close-form')"
+  :form-is-open="formIsOpen"
+  :icon="editing ? PencilSquareIcon : DocumentPlusIcon"
+  title="Record Form"
+  :subtitle="`You are ${editing ? 'editing' : 'creating'} a record`"
+  >
+    <form class="p-5 w-full">
       <fieldset>
         <legend class="mx-auto text-lg">Record Data</legend>
 
-        <div class="my-4">
+        <div class="my-4 space-y-2 text-left px-1">
           <div class="w-full text-md font-medium italic font-serif">
             <label for="date">
               Date
@@ -31,7 +21,7 @@
             type="date"
             name="date"
             id="date"
-            class="w-1/2 bg-transparent text-white focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
+            class="w-1/2 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-white transition-colors rounded-sm"
             required
             v-model="formDate"
             >
@@ -39,7 +29,7 @@
             type="time"
             name="time"
             id="time"
-            class="w-1/2 bg-transparent text-white focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
+            class="w-1/2 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-white transition-colors rounded-sm"
             required
             v-model="formTime"
             >
@@ -52,15 +42,12 @@
               id="credit"
               name="credit"
               type="radio"
-              class="text-yellow-300 focus:ring-yellow-300 p-2"
+              class=" text-violet-500 focus:ring-violet-500 p-2"
               :value="1"
               v-model="record.type"
               required
             >
-            <label
-              for="credit"
-              class="text-md font-medium italic font-serif"
-            >
+            <label for="credit" class="text-md font-medium italic font-serif">
               Credit
             </label>
           </div>
@@ -69,15 +56,12 @@
               id="debit"
               name="debit"
               type="radio"
-              class="text-yellow-300 focus:ring-yellow-300 p-2"
+              class=" text-violet-500 focus:ring-violet-500 p-2"
               :value="2"
               v-model="record.type"
               required
             >
-            <label
-              for="debit"
-              class="text-md font-medium italic font-serif"
-            >
+            <label for="debit" class="text-md font-medium italic font-serif">
               Debit
             </label>
           </div>
@@ -90,7 +74,7 @@
           <select
           id="fundID"
           name="fundID"
-          class="w-1/2 bg-transparent text-white focus:border-transparent focus:border-yellow-300 focus:ring-0 border-white focus:bg-stone-700 transition-colors rounded-sm"
+          class="w-1/2 bg-transparent focus:border-transparent focus:ring-0 rounded-sm transition-colors border-white focus:border-violet-500"
           required
           :disabled="recordIsCredit"
           v-model="record.fundID"
@@ -106,9 +90,9 @@
           
         </div>
 
-        <div class="flex justify-end space-x-2">
+        <div class="flex items-center justify-end space-x-2">
           <small>Balance on date:</small>
-          <span class="bg-stone-600 text-sm font-bold rounded-sm px-1">{{ formatToCurrency(fundBalanceOnDate) }}</span>
+          <span class="text-white bg-stone-600 text-sm font-bold rounded-sm px-1">{{ formatToCurrency(fundBalanceOnDate) }}</span>
         </div>
 
         <div class="my-4 flex items-center">
@@ -121,7 +105,7 @@
               <div :class="[typeStyles, 'p-1 rounded-full']">
                 <component class="h-4 w-4" :is="typeIcon" />
               </div>
-              <span class="text-white sm:text-md">$</span>
+              <span class="sm:text-md">$</span>
             </div>
             <input
               type="number"
@@ -129,7 +113,7 @@
               :min="0"
               name="amount"
               id="amount"
-              class="w-full bg-transparent text-white focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm pl-6 text-right"
+              class="w-full bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-white transition-colors rounded-sm pl-6 text-right"
               placeholder="0.0"
               required
               v-model.number="amount"
@@ -137,22 +121,20 @@
           </div>
         </div>
 
-        <div class="my-4 px-1">
-          <div>
-            <label for="tag" class="w-1/2 text-md font-medium italic font-serif">
-              Tag
-            </label>
-          </div>
+        <div class="my-4 space-y-2 text-left px-1">
+          <label for="tag" class="w-1/2 text-md font-medium italic font-serif">
+            Tag
+          </label>
           <div class="flex justify-between">
             <select
             id="tag"
             name="tag"
-            class="w-1/2 bg-transparent text-white focus:border-transparent focus:border-yellow-300 focus:ring-0 border-white focus:bg-stone-700 transition-colors rounded-sm"
+            class="w-1/2 bg-transparent focus:border-transparent focus:border-violet-500 focus:ring-0 border-white transition-colors rounded-sm"
             required
             v-model="tagFields.option"
             >
-              <option class="text-white font-bold italic bg-stone-800 disabled:text-opacity-50">
-                <span>Add new</span>
+              <option class="text-white bg-stone-600 disabled:text-opacity-50 font-medium">
+                <span>-- Add new --</span>
               </option>
               <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="tag, i in tagOptions" :key="i">
                 {{ tag }}
@@ -160,8 +142,8 @@
             </select>
             <input
               type="text"
-              :disabled="tagFields.option !== 'Add new'"
-              class="w-5/12 bg-transparent text-white focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
+              :disabled="tagFields.option !== '-- Add new --'"
+              class="w-5/12 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-white transition-colors rounded-sm"
               placeholder="New tag"
               required
               v-model="tagFields.input"
@@ -169,7 +151,7 @@
           </div>
         </div>
 
-        <div class="my-4">
+        <div class="my-4 space-y-2 text-left px-1">
           <label for="note" class="w-1/2 text-md font-medium italic font-serif">
             Note
           </label>
@@ -177,7 +159,7 @@
             type="text"
             name="note"
             id="note"
-            class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-yellow-500 focus:ring-yellow-500 sm:text-md text-white disabled:text-stone-600 disabled:border-b-stone-600"
+            class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-violet-500 focus:ring-violet-500 sm:text-md disabled:text-stone-600 disabled:border-b-stone-600"
             maxlength="100"
             placeholder="Car fuel"
             required
@@ -190,7 +172,7 @@
       <div class="py-3 flex justify-end">
         <button
         type="button"
-        class="mt-3 inline-flex w-full justify-center rounded-md bg-stone-800 text-white px-4 py-2 text-base font-bold shadow-sm hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+        class="mt-3 inline-flex w-full justify-center rounded-md px-4 py-2 text-base font-bold shadow-sm bg-stone-300 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-violet-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
         @click="$emit('close-form')"
         ref="cancelButtonRef"
         :disabled="loading"
@@ -199,7 +181,7 @@
       </button>
       <button
       type="button"
-      class="mt-3 inline-flex w-full justify-center rounded-md bg-yellow-400 text-black px-4 py-2 text-base font-bold shadow-sm hover:bg-yellow-300 focus:outline-none focus:ring-2 focus:ring-white sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:bg-stone-700"
+      class="mt-3 inline-flex w-full justify-center rounded-md px-4 py-2 text-base font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-white sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm hover:bg-violet-500 bg-violet-600 text-white disabled:bg-stone-300 dark:disabled:bg-stone-700 dark:disabled:text-stone-400"
       @click="onSave(record, editing)"
       :disabled="loading || formHasErrors"
       >
@@ -307,8 +289,8 @@ const typeIcon = computed(() => {
 });
 
 const typeStyles = computed(() => {
-  if (record.type === 1) return 'text-green-400 bg-green-900'
-  else return 'text-red-400 bg-red-900'
+  if (record.type === 1) return 'text-green-50 bg-green-700'
+  else return 'text-red-50 bg-red-700'
 });
 
 const formHasErrors = computed(() => {

@@ -1,12 +1,12 @@
 <template>
   <div class="py-4">
-    <h1 class="text-white text-4xl font-bold">
+    <h1 class="text-4xl font-bold">
       Records History
     </h1>
 
-    <div class="lg:flex my-10 space-x-1 space-y-2 items-center shadow-md shadow-black transition-shadow rounded-md bg-stone-800 justify-center">
+    <div class="lg:flex my-10 space-x-1 space-y-2 items-center shadow-lg transition-shadow rounded-md bg-white dark:bg-stone-800 justify-center">
       <div class="lg:w-2/5">
-        <DebitsByTagChart :filtered-records="filteredRecords" />
+        <RecordsByTagChart :filtered-records="filteredRecords" />
       </div>
       <div class="lg:w-3/5">
         <MonthlyBalanceChart :filtered-records="filteredRecords" />
@@ -49,7 +49,7 @@ import AssignmentForm from '../components/record/AssignmentForm.vue';
 import QueryForm from '../components/record/QueryForm.vue';
 import RecordsTable from '../components/record/RecordsTable.vue';
 import FundsRecords from '../components/record/FundsRecords.vue';
-import DebitsByTagChart from '../components/chart/DebitsByTagChart.vue';
+import RecordsByTagChart from '../components/chart/RecordsByTagChart.vue';
 import MonthlyBalanceChart from '../components/chart/MonthlyBalanceChart.vue';
 
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));

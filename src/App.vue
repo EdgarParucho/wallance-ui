@@ -11,16 +11,17 @@ provide("alert", ({ type = "error", title, text, button = false, timer = 2000 })
   button: type !== "success" ? "Dismiss" : button,
   timer: type !== "success" ? null : timer
 }));
+
 </script>
 
 <template>
-  <router-view class="pt-12 px-2 bg-stone-900 min-h-screen" v-slot="{ Component }">
-    <AppBar />
+  <AppBar />
+  <router-view class="pb-24 pt-12 px-2" v-slot="{ Component }">
     <transition name="fade" mode="out-in">
       <component :is="Component" />
     </transition>
-    <NavBar />
   </router-view>
+  <NavBar />
 </template>
 
 <style>

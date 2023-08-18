@@ -60,8 +60,8 @@ const chartData = computed(() => {
     datasets: [
       {
         label: "Balance ($)",
-        backgroundColor: '#156064',
-        borderColor: "#00c49a",
+        backgroundColor: '#8b5cf6',
+        borderColor: "#ddd6fe",
         data: monthsBalance.value
       },
     ]
@@ -72,20 +72,20 @@ const chartOptions = computed(() => {
     responsive: true,
     plugins: {
       legend: {
-        labels: { color: "#fff" }
+        labels: { color: "#878787" }
       },
       title: {
         display: true,
         text: "Balance by month",
-        color: "#fff",
+        color: "#878787",
       },
     },
     scales: {
       x: {
-        ticks: { color: 'white' }
+        ticks: { color: '#878787' }
       },
       y: {
-        ticks: { color: 'white' }
+        ticks: { color: '#878787' }
       }
     }
   }

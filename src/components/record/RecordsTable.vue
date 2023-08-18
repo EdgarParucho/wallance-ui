@@ -1,15 +1,15 @@
 <template>
   <div class="my-4">
-    <table class="border-separate border-spacing-2 border border-stone-500 text-white mx-auto w-full 2xl:w-2/3">
+    <table class="border-separate border-spacing-2 border border-stone-300 dark:border-stone-500 mx-auto w-full 2xl:w-2/3">
       <thead v-if="!underLgBreakpoint">
         <tr>
-          <th class="border border-stone-600 px-4 bg-stone-800 text-white" v-for="header in headers" :key="header">
+          <th class="px-4 bg-stone-200 dark:bg-stone-800" v-for="header in headers" :key="header">
             {{ header }}
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr class="border-b-white p-2 bg-stone-800 my-1" v-for="record in recordRows" :key="record.id" :class="underLgBreakpoint ? 'grid' : ''">
+        <tr class="border-b-white p-2 bg-stone-100 dark:bg-stone-800 my-1" v-for="record in recordRows" :key="record.id" :class="underLgBreakpoint ? 'grid' : ''">
           <td class="text-end xl:w-64 lg:px-2">
             {{ getDateFormatted(record) }}
           </td>
@@ -18,7 +18,7 @@
           </td>
           <td class="items-center flex justify-between 2xl:min-w-96 lg:pl-2">
             <span class="font-medium text-sm">{{ record.note }}</span>
-            <span class="text-sm bg-stone-600 font-medium px-2 py-1 rounded-sm">
+            <span class="text-sm bg-stone-200 dark:bg-stone-600 font-medium px-2 py-1 rounded-sm">
               {{ record.tag }}
             </span>
           </td>
@@ -32,10 +32,10 @@
           </td>
           <td class="lg:w-24">
             <div class="flex justify-around items-center">
-              <button class="p-1 rounded-sm bg-stone-800 hover:bg-stone-700 w-1/2" @click="$emit('edit-record', record)">
+              <button class="p-1 rounded-sm bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 w-1/2" @click="$emit('edit-record', record)">
                 <PencilSquareIcon class="h-4 w-4 mx-auto" />
               </button>
-              <button class="p-1 rounded-sm bg-stone-800 hover:bg-stone-700 w-1/2" @click="confirmDeletion(record)">
+              <button class="p-1 rounded-sm bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 w-1/2" @click="confirmDeletion(record)">
                 <TrashIcon class="h-4 w-4 mx-auto" />
               </button>
             </div>
@@ -45,24 +45,24 @@
     </table>
     <div class="flex items-end justify-between my-2 mx-auto w-full 2xl:w-2/3">
       <div class="grid font-bold">
-        <small class="text-white text-xs mb-1">Rows</small>
-        <select class="bg-stone-800 rounded-sm border-stone-600 text-white text-center" v-model="maxRows">
+        <small class="text-xs mb-1">Rows</small>
+        <select class="text-white bg-stone-800 rounded-sm border-stone-600 text-center" v-model="maxRows">
           <option :value="10">10</option>
           <option :value="30">30</option>
           <option :value="50">50</option>
         </select>
       </div>
       <div class="grid font-bold">
-        <small class="text-white text-xs mb-1">Page: {{ currentPage }} / {{ totalPages }}</small>
+        <small class="text-xs mb-1">Page: {{ currentPage }} / {{ totalPages }}</small>
         <div class="flex space-x-1">
           <button
-            class="bg-stone-800 rounded-sm border-stone-600 text-white text-center hover:bg-stone-700 px-2 disabled:bg-stone-900 disabled:text-stone-600"
+            class="text-white bg-stone-800 rounded-sm border-stone-600 text-center hover:bg-stone-700 px-2 disabled:bg-stone-900 disabled:text-stone-600"
             @click="currentPage--"
             :disabled="currentPage === 1">
             <ArrowLeftIcon class="w-5 py-1 mx-auto" aria-hidden="true" />
           </button>
           <button
-            class="bg-stone-800 rounded-sm border-stone-600 text-white text-center hover:bg-stone-700 px-2 disabled:bg-stone-900 disabled:text-stone-600"
+            class="text-white bg-stone-800 rounded-sm border-stone-600 text-center hover:bg-stone-700 px-2 disabled:bg-stone-900 disabled:text-stone-600"
             @click="currentPage++"
             :disabled="currentPage === totalPages">
             <ArrowRightIcon class="w-5 py-1 mx-auto" aria-hidden="true" />
@@ -112,9 +112,9 @@ function getRecordTypeIcon({ type }) {
 };
 
 function getRecordTypeStyles({ type }) {
-  if (type === 0) return 'text-white bg-stone-700'
-  else if (type === 1) return 'text-green-400 bg-green-900'
-  else return 'text-red-400 bg-red-900'
+  if (type === 0) return 'bg-stone-300 dark:bg-stone-700'
+  else if (type === 1) return 'text-green-50 bg-green-700'
+  else return 'text-red-50 bg-red-700'
 };
 
 function getFundName({ fundID }) {

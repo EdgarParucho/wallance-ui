@@ -1,25 +1,31 @@
 <template>
-  <div class="border rounded-sm border-stone-500 p-2 2xl:w-2/3 mx-auto">
+  <div class="border rounded-sm border-stone-300 dark:border-stone-500 p-2 2xl:w-2/3 mx-auto">
     <form @submit.prevent="submitQuery(filters)">
       <div class="flex space-x-1 items-center justify-start">
         <button
-        class="bg-stone-700 hover:bg-yellow-400 hover:text-black text-white font-bold text-xs py-1 px-3 rounded-full flex items-center justify-between gap-1"
-        :class="{ 'bg-yellow-400 text-black': currentMonthRange.filterApplied }"
+        :class="[
+          { 'bg-purple-600 dark:bg-purple-600 text-white': currentMonthRange.filterApplied },
+          'hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex items-center justify-between gap-1'
+        ]"
         @click="filterByThisMonth">
           <CalendarIcon class="w-4" />
           This month
         </button>
         <button
-        class="bg-stone-700 hover:bg-yellow-400 hover:text-black text-white font-bold text-xs py-1 px-3 rounded-full flex items-center justify-between gap-1"
-        :class="{ 'bg-yellow-400 text-black': currentYearRange.filterApplied }"
+        :class="[
+          { 'bg-purple-600 dark:bg-purple-600 text-white': currentYearRange.filterApplied },
+          'hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex items-center justify-between gap-1'
+        ]"
         @click="filterByThisYear">
           <CalendarDaysIcon class="w-4" />
           This year
         </button>
         <button
         v-for="query, i in preferences.queries" :key="i"
-        class="bg-stone-700 hover:bg-yellow-400 hover:text-black text-white font-bold text-xs py-1 px-3 rounded-full flex items-center justify-between gap-1"
-        :class="{ 'bg-yellow-400 text-black': JSON.stringify(query.filters) === JSON.stringify(filters) }"
+        :class="[
+          { 'bg-purple-600 dark:bg-purple-600 text-white': JSON.stringify(query.filters) === JSON.stringify(filters)   },
+          'hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex items-center justify-between gap-1'
+        ]"
         @click="filters = query.filters">
           <FilledBookmarkIcon class="w-4" />
           {{ query.name }}
@@ -34,7 +40,7 @@
             </button>
           </div>
           <select
-          class="bg-transparent text-white focus:border-transparent focus:border-yellow-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+          class="bg-transparent text-white focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
           v-model="filters.type"
           >
             <option v-for="type, i in typeOptions" :key="i" :value="type.value">{{ type.name }}</option>
@@ -49,7 +55,7 @@
           </div>
           <input
           id="from-date"
-          class="bg-transparent text-white focus:border-transparent focus:border-yellow-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+          class="bg-transparent text-white focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
           type="date"
           v-model="filters.fromDate"
           >
@@ -63,7 +69,7 @@
           </div>
           <input
           id="to-date"
-          class="bg-transparent text-white focus:border-transparent focus:border-yellow-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+          class="bg-transparent text-white focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
           type="date"
           v-model="filters.toDate"
           >
@@ -78,7 +84,7 @@
             </button>
           </div>
           <select
-          class="bg-transparent text-white focus:border-transparent focus:border-yellow-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+          class="bg-transparent text-white focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
           v-model="filters.fundID"
           >
             <option v-for="fund in funds" :key="funds.id" :value="fund.id">{{ fund.name }}</option>
@@ -92,7 +98,7 @@
             </button>
           </div>
         <select
-        class="bg-transparent text-white focus:border-transparent focus:border-yellow-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+        class="bg-transparent text-white focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
         v-model="filters.tag"
         >
         <option v-for="tag, i in tagOptions" :key="i">{{ tag }}</option>
@@ -103,7 +109,7 @@
       <input
       placeholder="Case insensitive"
       type="text"
-      class="bg-transparent text-white border-transparent border-b-stone-300 focus:border-yellow-300 focus:ring-0 focus:bg-stone-700 transition-colors rounded-sm"
+      class="bg-transparent text-white border-transparent border-b-stone-300 focus:border-violet-300 focus:ring-0 focus:bg-stone-700 transition-colors rounded-sm"
       v-model="filters.note"
       >
     </div>
@@ -111,15 +117,16 @@
     </form>
     <div class="flex items-end justify-between gap-1 mx-auto mt-6">
       <button
-      class="rounded-sm gap-1 py-0.5 transition-colors hover:bg-stone-700 bg-stone-800 text-white flex items-center w-1/3 xl:w-1/4 justify-center"
+      class="rounded-sm gap-1 py-0.5 transition-colors flex items-center w-1/3 xl:w-1/4 justify-center bg-stone-200 hover:bg-stone-300 text-stone-700 dark:bg-stone-700 dark:hover:bg-stone-600 dark:disabled:bg-stone-800 dark:text-white dark:disabled:text-stone-400 disabled:text-stone-400"
       type="button"
+      :disabled="!filtersApplied"
       @click="clearFilters"
       >
         <ArrowUturnLeftIcon class="mb-1 w-4" />
         Clear filters
       </button>
       <button
-      class="rounded-sm py-0.5 px-2 transition-colors bg-yellow-400 hover:bg-yellow-300 text-black font-bold flex w-1/3 xl:w-1/4 justify-center"
+      class="rounded-sm py-0.5 px-2 transition-colors font-bold flex w-1/3 xl:w-1/4 justify-center hover:bg-stone-600 border bg-stone-800 text-white"
       @click="submitQuery(filters)"
       >
         <span class="flex gap-1">
@@ -128,7 +135,7 @@
         </span>
       </button>
       <button
-      class="rounded-sm gap-1 py-0.5 transition-colors hover:bg-stone-700 bg-stone-800 text-white flex items-center w-1/3 xl:w-1/4 justify-center"
+      class="rounded-sm gap-1 py-0.5 transition-colors flex items-center w-1/3 xl:w-1/4 justify-center bg-stone-200 hover:bg-stone-300 text-stone-700 dark:bg-stone-700 dark:hover:bg-stone-600 dark:disabled:bg-stone-800 dark:text-white dark:disabled:text-stone-400 disabled:text-stone-400"
       type="button"
       :disabled="!filtersApplied"
       @click="updatePreferences(filters)"
@@ -143,15 +150,12 @@
         </span>
       </button>
     </div>
-    <Dialog :form-is-open="formIsOpen" @close-form="formIsOpen = false">
+    <Dialog :form-is-open="formIsOpen" @close-form="formIsOpen = false" title="Saving Query Config" :icon="CircleStackIcon">
     <div class="py-6 px-8">
-      <h3 class="text-lg font-bold text-white text-center mt-4">
-        Saving Query Config
-      </h3>
       <form @submit.prevent="saveQuery({ filters, name: queryName })">
         <input
         type="text"
-        class="block my-2 p-3 w-72 mx-auto text-white bg-transparent focus:border-transparent focus:border-b-yellow-300 focus:ring-0 border border-transparent border-b-white focus:bg-stone-700 transition-colors rounded-sm"
+        class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
         placeholder="Query Name"
         required
         :maxlength="20"
@@ -159,7 +163,7 @@
         >
         <button
         type="submit"
-        class="flex w-full justify-center rounded-md bg-stone-800 mt-2 p-2 text-sm text-white font-semibold disabled:text-stone-600"
+        class="flex justify-center items-center space-x-2 w-full my-2 py-1 outline-none font-bold rounded-sm text-white bg-stone-800 hover:bg-stone-700 disabled:bg-stone-300 dark:disabled:bg-stone-800 dark:disabled:text-stone-500 focus:outline-violet-500 outline-1"
         :disabled="queryName === ''"
         >
           Save
@@ -172,7 +176,7 @@
 
 <script setup>
 import Dialog from '../layout/Dialog.vue';
-import { XCircleIcon, BookmarkIcon, MagnifyingGlassIcon, ArrowUturnLeftIcon, CalendarIcon, CalendarDaysIcon, ArchiveBoxIcon } from '@heroicons/vue/24/outline';
+import { XCircleIcon, BookmarkIcon, MagnifyingGlassIcon, ArrowUturnLeftIcon, CalendarIcon, CalendarDaysIcon, ArchiveBoxIcon, CircleStackIcon } from '@heroicons/vue/24/outline';
 import { BookmarkIcon as FilledBookmarkIcon } from '@heroicons/vue/24/solid';
 import { useAccountStore } from '../../stores/accountStore';
 import { useRecordStore } from '../../stores/recordStore';

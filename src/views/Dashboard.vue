@@ -1,50 +1,52 @@
 <template>
   <div class="pt-26 pb-8">
     <Logo class="mx-auto" size="lg" />
-    <blockquote class="text-white text-center mt-16 italic" cite="http://www.worldwildlife.org/who/index.html">
+    <blockquote class="text-center mt-20 italic" cite="http://www.worldwildlife.org/who/index.html">
       Money is only a tool. It will take you wherever you wish, but it will not replace you as the driver. - Ayn Rand
     </blockquote>
 
-    <h2 class="text-4xl font-bold text-center mt-16 mb-4 text-white">My Balance</h2>
-    <div class="space-x-1 text-white">
-      <div class="flex items-center">
-        <div class="md:w-1/2 lg:w-1/3 xl:w-1/4 mx-auto px-16 py-6 rounded-md bg-stone-800">
-          <Logo size="md" />
-          <div class="my-4 flex justify-center items-center">
-            <h2 class="text-5xl text-center">
-              {{ amountFormatted(balance) }}
-            </h2>
-          </div>
-        </div>
+    <h2 class="text-4xl font-bold text-center mt-20">Balance</h2>
+    <p class="text-center text-sm text-stone-500">Your overall balance on date.</p>
+    <div class="mt-4 md:w-1/2 lg:w-1/3 xl:w-1/4 my-6 mx-auto px-16 py-6 rounded-xl dark:shadow-[#101010] shadow-lg bg-white dark:bg-stone-800">
+      <ScaleIcon class="w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+      <div class="my-8 flex justify-center items-center">
+        <h2 class="text-5xl text-center">
+          {{ amountFormatted(balance) }}
+        </h2>
       </div>
-      <p class="block text-center mt-3 mb-6 text-white">
-        You current balance represents the
-        <span class="text-black bg-white py-1 px-1.5 rounded-md font-bold">{{ savingsIndex }}%</span>
-        of your total income.
-      </p>
-
     </div>
+    <p class="block text-center font-bold">
+      You current balance represents
+      <span class="py-1 px-1.5 rounded-md font-bold bg-stone-600 text-white">{{ savingsIndex }}%</span>
+      of your total income.
+    </p>
 
-    <div class=" flex items-center justify-center mx-auto my-16 space-x-2">
-      <h3 class="font-bold text-white text-2xl">
-        To<span class="text-yellow-300"> update </span>your balance
+
+    <div class="flex items-center justify-center mx-auto my-20 space-x-2">
+      <h3 class="font-bold text-2xl">
+        Not<span class="text-violet-500"> updated</span>?
       </h3>
       <button
-      class="text-black hover:bg-yellow-300 bg-yellow-400 font-bold py-1 px-2 gap-1 rounded-md w-40 inline-flex items-center justify-center"
-      @click="recordFormIsOpen = true">
+      class="font-bold py-1 px-2 gap-1 rounded-md w-40 inline-flex items-center justify-center text-white hover:bg-violet-500 bg-violet-600"
+      @click="recordFormIsOpen = true"
+      >
         <PlusIcon class="w-5" />
         Add a Record
       </button>
     </div>
     
-    <div class="md:w-6/12 lg:w-4/12 xl:w-3/12 mx-auto px-6 rounded-md py-4 my-16 shadow-black transition-shadow bg-stone-800 justify-center">
-      <ArchiveBoxIcon class="w-12 text-white mx-auto bg-stone-900 p-2.5 rounded-full" />
-      <h4 class="text-2xl font-bold text-center mt-4 text-white">
-        Funds Status
+    
+    <div class="mt-20 mb-8 flex items-end justify-center space-x-2">
+      <h4 class="text-3xl font-bold flex items-center gap-2">
+        <ArchiveBoxIcon class="w-12 p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+        Funds
       </h4>
-      <div class="mt-4 bg-stone-800 text-white font-sans rounded-md lg:block mx-auto">
+      <p class="text-center text-sm text-stone-500">Current status.</p>
+    </div>
+    <div class="md:w-1/2 lg:w-1/3 xl:w-1/4 my-6 mx-auto px-16 py-6 rounded-xl dark:shadow-[#101010] shadow-lg bg-white dark:bg-stone-800">
+      <div class="mt-4 font-sans rounded-md lg:block mx-auto">
         <div class="flex justify-between items-center" v-for="fund in funds" :key="fund.id">
-          <p class="text-white font-bold">{{ fund.name }}</p>
+          <p class="font-bold">{{ fund.name }}</p>
           <div class="justify-end flex items-baseline my-2 mr-3">
             <span class="text-2xl">{{ amountFormatted(fund.balance) }}</span>
           </div>
@@ -52,106 +54,114 @@
       </div>
     </div>
 
-    <div class=" flex items-center justify-center mx-auto mt-10 space-x-2">
-      <h3 class="font-bold text-white text-2xl">
-        Do you want to<span class="text-yellow-300"> move balance </span>between funds?
+    <div class="flex items-center justify-center mx-auto my-20 space-x-2">
+      <h3 class="font-bold text-2xl">
+        <span class="text-violet-500">Move balance </span>between funds through
       </h3>
       <button
-        class="text-black hover:bg-yellow-300 bg-yellow-400 font-bold py-1 px-2 gap-1 rounded-md w-40 inline-flex items-center justify-center"
-      @click="assignmentFormIsOpen = true">
+      class="text-white hover:bg-violet-500 bg-violet-600 font-bold py-1 px-2 gap-1 rounded-md w-40 inline-flex items-center justify-center"
+      @click="assignmentFormIsOpen = true"
+      >
         <ArrowsRightLeftIcon class="w-5" />
-        Go Assign
+        Assignment
       </button>
     </div>
 
-    <div class="mt-16 mb-4 flex justify-center">
-      <h4 class="text-2xl font-bold text-white flex gap-2">
-        <TagIcon class="w-6" />
-        Tags Usage
+    <div class="mt-20 mb-8 flex items-end justify-center space-x-2">
+      <h4 class="text-3xl font-bold flex items-center gap-2">
+        <TagIcon class="w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+        Tags
       </h4>
+      <p class="text-center text-sm text-stone-500">Track your records.</p>
+    </div>
+    
+    <div class="lg:w-1/3 mx-auto text-sm bg-white p-4 dark:bg-stone-800 shadow-lg rounded-md">
+      <ol class="space-y-0.5">
+        <h4 class="text-start text-lg font-bold my-6">
+          Credits
+        </h4>
+        <div class="flex justify-between w-1/3">
+          <small>Showing: {{ creditsByTag.data.length }} / {{ creditsByTag.totalTags }}</small>
+          <small>
+            <button
+            class="text-stone-500 hover:text-black dark:hover:text-white hover:disabled:text-stone-500 dark:hover:disabled:text-stone-500"
+            :disabled="creditsByTag.totalTags < 5"
+            @click="showAllCreditTags = !showAllCreditTags"
+            >
+              Show {{ showAllCreditTags ? 'top 5' : 'All' }}
+            </button>
+          </small>
+        </div>
+        <li class="flex justify-between items-end space-x-2" v-for="creditTag, i in creditsByTag.data" :key="i">
+          <span class="font-bold w-1/3">{{ creditTag.tag }}</span>
+          <div class="flex items-center space-x-1 justify-between w-1/3">
+            <PlusIcon class="flex text-green-50 bg-green-700 p-0.5 rounded-full h-4 w-4" />
+            <span>{{ amountFormatted(creditTag.balance) }}</span>
+          </div>
+          <span class="w-1/3 text-end">{{ creditTag.percentage }}%</span>
+        </li>
+      </ol>
+
+      <ol class="space-y-0.5">
+        <h4 class="text-start text-lg font-bold my-6">
+          Debits
+        </h4>
+        <div class="flex items-center justify-between w-1/3">
+          <small>Showing: {{ debitsByTag.data.length }} / {{ debitsByTag.totalTags }}</small>
+          <small>
+            <button
+            class="text-stone-500 hover:text-black dark:hover:text-white hover:disabled:text-stone-500 dark:hover:disabled:text-stone-500"
+            :disabled="debitsByTag.totalTags < 5"
+            @click="showAllDebitTags = !showAllDebitTags"
+            >
+              Show {{ showAllDebitTags ? 'top 5' : 'All' }}
+            </button>
+          </small>
+        </div>
+        <li class="flex justify-between items-end space-x-2" v-for="debitTag, i in debitsByTag.data" :key="i">
+          <span class="font-bold w-1/3">{{ debitTag.tag }}</span>
+          <div class="flex items-center space-x-1 justify-between w-1/3">
+            <MinusIcon class="flex text-red-50 bg-red-700 p-0.5 rounded-full h-4 w-4" />
+            <span>{{ amountFormatted(debitTag.balance) }}</span>
+          </div>
+          <span class="w-1/3 text-end">{{ debitTag.percentage }}%</span>
+        </li>
+      </ol>
     </div>
 
-    <ol class="text-white lg:w-1/3 mx-auto space-y-0.5 text-sm">
-      <h4 class="text-start text-lg font-bold my-6 text-white">
-        Credits
+    <div class="mt-20 mb-8 flex items-end justify-center space-x-2">
+      <h4 class="text-3xl font-bold flex items-center gap-2">
+        <BookmarkIcon class="w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+        Queries
       </h4>
-      <div class="flex justify-between w-1/3">
-        <small>Showing: {{ creditsByTag.data.length }} / {{ creditsByTag.totalTags }}</small>
-        <small>
-          <button
-          class="py-0.5 px-1 rounded-md text-stone-300  hover:text-white disabled:text-stone-500"
-          :disabled="creditsByTag.totalTags < 5"
-          @click="showAllCreditTags = !showAllCreditTags"
-          >
-            Show {{ showAllCreditTags ? 'top 5' : 'All' }}
-          </button>
-        </small>
-      </div>
-      <li class="flex justify-between items-end space-x-2" v-for="creditTag, i in creditsByTag.data" :key="i">
-        <span class="bg-stone-700 px-2 py-0.5 rounded-sm font-bold w-1/3">{{ creditTag.tag }}</span>
-        <div class="flex items-center space-x-1 justify-between w-1/3">
-          <PlusIcon class="flex text-green-400 bg-green-900 p-0.5 rounded-full h-4 w-4" />
-          <span>{{ amountFormatted(creditTag.balance) }}</span>
-        </div>
-        <span class="w-1/3 text-end">{{ creditTag.percentage }}%</span>
-      </li>
-    </ol>
-
-    <ol class="text-white lg:w-1/3 mx-auto space-y-0.5 text-sm">
-      <h4 class="text-start text-lg font-bold my-6 text-white">
-        Debits
-      </h4>
-      <div class="flex items-center justify-between w-1/3">
-        <small>Showing: {{ debitsByTag.data.length }} / {{ debitsByTag.totalTags }}</small>
-        <small>
-          <button
-          class="py-0.5 px-1 rounded-md text-stone-300  hover:text-white disabled:text-stone-500"
-          :disabled="debitsByTag.totalTags < 5"
-          @click="showAllDebitTags = !showAllDebitTags"
-          >
-            Show {{ showAllDebitTags ? 'top 5' : 'All' }}
-          </button>
-        </small>
-      </div>
-      <li class="flex justify-between items-end space-x-2" v-for="debitTag, i in debitsByTag.data" :key="i">
-        <span class="bg-stone-700 px-2 py-0.5 rounded-sm font-bold w-1/3">{{ debitTag.tag }}</span>
-        <div class="flex items-center space-x-1 justify-between w-1/3">
-          <MinusIcon class="flex text-red-400 bg-red-900 p-0.5 rounded-full h-4 w-4" />
-          <span>{{ amountFormatted(debitTag.balance) }}</span>
-        </div>
-        <span class="w-1/3 text-end">{{ debitTag.percentage }}%</span>
-      </li>
-    </ol>
-
-    <div class="mt-16 mb-4 flex justify-center">
-      <h4 class="text-2xl font-bold text-white flex gap-2">
-        <BookmarkIcon class="w-6" />
-        Saved Queries
-      </h4>
+      <p class="text-center text-sm text-stone-500">From your preferences to your dashboard.</p>
     </div>
-
+    
     <div class="text-center space-y-3">
       <button
       v-for="query, i in preferences.queries" :key="i"
-      class="bg-stone-700 hover:bg-yellow-400 hover:text-black text-white font-bold text-xs py-1 px-3 rounded-full mx-1"
-      :class="{ 'bg-yellow-400 text-black': queryIsApplied(query) }"
-      @click="appliedFilters = query.filters">
+      :class="[
+        { 'bg-violet-500 dark:bg-violet-500 text-white hover:bg-violet-500 dark:hover:bg-violet-500': queryIsApplied(query) },
+        'font-bold text-xs py-1 px-3 rounded-full mx-1 shadow-stone-400 shadow-sm'
+      ]"
+      @click="appliedFilters = query.filters"
+      >
         {{ query.name }}
       </button>
       <FundsRecords :funds="funds" :filtered-records="filteredRecords" />
     </div>
     
     <div class="md:flex items-center justify-around mt-20 mb-6">
-      <span class="text-white justify-center flex items-center space-x-2">
+      <span class="justify-center flex items-center space-x-2">
         To edit or create funds
-        <router-link to="/funds" class="flex gap-1 mx-2 underline text-white font-bold">
+        <router-link to="/funds" class="flex gap-1 mx-2 underline font-bold text-violet-500">
           <LinkIcon class="w-5" />
           Go to funds
         </router-link>
       </span>
-      <span class="text-white justify-center flex items-center space-x-2">
+      <span class="justify-center flex items-center space-x-2">
         Looking for a specific record?
-        <router-link to="/records" class="flex gap-1 mx-2 underline text-white font-bold">
+        <router-link to="/records" class="flex gap-1 mx-2 underline font-bold text-violet-500">
           <LinkIcon class="w-5" />
           Go to records
         </router-link>
@@ -166,14 +176,14 @@
 
 <script setup>
 import { computed, ref, defineAsyncComponent } from 'vue';
-import Logo from '../components/layout/Logo.vue';
 import { useFundStore } from '../stores/fundStore';
 import { useRecordStore } from '../stores/recordStore';
 import { useAccountStore } from '../stores/accountStore';
 import { storeToRefs } from 'pinia';
-import { MinusIcon, PlusIcon, ArrowsRightLeftIcon, LinkIcon, ArchiveBoxIcon } from '@heroicons/vue/24/outline';
+import { MinusIcon, PlusIcon, ArrowsRightLeftIcon, LinkIcon, ArchiveBoxIcon, ScaleIcon, TagIcon } from '@heroicons/vue/24/outline';
+import { BookmarkIcon } from '@heroicons/vue/24/solid';
+import Logo from '../components/layout/Logo.vue';
 import FundsRecords from '../components/record/FundsRecords.vue';
-import { BookmarkIcon, TagIcon } from '@heroicons/vue/24/solid';
 
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
 const AssignmentForm = defineAsyncComponent(() => import('../components/record/AssignmentForm.vue'));

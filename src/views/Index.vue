@@ -1,29 +1,29 @@
 <template>
   <div class="pt-32">
     <Logo size="lg" />
-    <h1 class="text-5xl font-bold text-center mt-16 text-white">
+    <h1 class="text-5xl font-bold text-center mt-16">
       Wallance
     </h1>
-    <p class="text-lg text-white text-center mt-4">
-      The connection between your goals and your finances
+    <p class="text-lg text-center mt-4 font-medium">
+      A bridge between your goals and your finances
     </p>
-    <div class="mt-10 flex justify-center my-2 space-x-2">
+    <div class="mt-10 flex justify-center my-2 space-x-4">
       <button
-      class="rounded-sm px-3 py-1 outline-none w-52 bg-stone-800 hover:bg-stone-700 transition-colors text-white font-bold focus:outline-white focus:outline-1"
+      class="rounded-md py-1 w-52 hover:scale-105 transition-all font-bold focus:outline-violet-500 focus:outline-1 bg-white shadow-lg dark:bg-transparent dark:shadow-stone-800 dark:hover:bg-stone-800"
       @click="loginFormIsOpen = true"
       >
         Log In
       </button>
       <button
-      class="rounded-sm px-3 py-1 outline-none w-52 bg-yellow-400 hover:bg-yellow-300 transition-colors text-black font-bold focus:outline-white focus:outline-1"
+      class="rounded-md py-1 w-52 hover:scale-105 transition-all focus:outline-1 focus:outline-violet-500 font-bold bg-stone-800 dark:bg-white text-white dark:text-black"
       @click="signFormIsOpen = true"
       >
         Join
       </button>
     </div>
-    <div class="flex justify-center my-2">
+    <div class="flex justify-center mt-10">
       <button
-      class="px-3 py-1 text-xs rounded-md hover:border-stone-500 text-stone-400 font-semibold hover:text-white flex justify-between w-44"
+      class="flex items-center gap-1 mx-auto mb-3 px-3 py-1 text-xs hover:scale-110 transition-all hover:text-black hover:border-stone-500 text-stone-600 dark:text-stone-400 dark:hover:text-white"
       @click="recoverPassword"
       >
         <KeyIcon class="w-4" />

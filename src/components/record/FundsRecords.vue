@@ -1,9 +1,9 @@
 <template>
-  <table class="border-separate border-spacing-4 bg-stone-800 italic font-serif text-white mx-auto w-full 2xl:w-1/3">
+  <table class="border-separate border-spacing-4 italic font-serif mx-auto w-full 2xl:w-1/3 rounded-md shadow-lg bg-white dark:bg-stone-800">
     <thead>
       <tr>
-        <th class="px-4 text-white underline">Fund</th>
-        <th class="px-4 text-white underline">Balance on filters</th>
+        <th class="px-4 underline">Fund</th>
+        <th class="px-4 underline">Balance on filters</th>
       </tr>
     </thead>
     <tbody>
@@ -16,16 +16,16 @@
         </td>
       </tr>
       <tr class="font-bold">
-        <th class="px-2 text-center border-t border-white">Overall Balance</th>
-        <th class="px-2 text-end  border-t border-white flex items-center justify-end space-x-2">
+        <th class="px-2 text-center border-t dark:border-white border-stone-400">Overall Balance</th>
+        <th class="px-2 text-end  border-t dark:border-white border-stone-400 flex items-center justify-end space-x-2">
           {{ getAmountFormatted(balanceOnFilters) }}
         </th>
       </tr>
     </tbody>
   </table>
-  <p class="block text-center mt-3 mb-6 text-white" v-show="balanceDiff && balanceDiff !== currentBalance">
+  <p class="block text-center font-bold mt-4" v-show="balanceDiff && balanceDiff !== currentBalance">
     If you exclude the records from your query, your balance would be:
-    <span class="text-black bg-white py-1 px-1.5 rounded-md font-bold">{{ getAmountFormatted(balanceDiff) }}</span>
+    <span class="bg-stone-600 text-white py-1 px-1.5 rounded-md font-bold">{{ getAmountFormatted(balanceDiff) }}</span>
   </p>
 </template>
 
