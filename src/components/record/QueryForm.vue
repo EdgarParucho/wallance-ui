@@ -35,27 +35,32 @@
         <div class="grid lg:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <small class="text-xs font-bold">Find by type</small>
-            <button class="hover:text-white text-stone-300 rounded-full" @click="filters.type = ''">
+            <button class="hover:text-white text-stone-500 rounded-full" @click="filters.type = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
           <select
-          class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+          class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 transition-colors rounded-sm"
           v-model="filters.type"
           >
-            <option v-for="type, i in typeOptions" :key="i" :value="type.value">{{ type.name }}</option>
+            <option
+            v-for="type, i in typeOptions"
+            :key="i"
+            :value="type.value"
+            class="text-white bg-stone-800 disabled:text-opacity-50 font-medium"
+            >{{ type.name }}</option>
           </select>
         </div>
         <div class="grid md:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <label for="from-date" class="text-xs font-bold">From date</label>
-            <button class="hover:text-white text-stone-300 rounded-full" @click="filters.fromDate = ''">
+            <button class="hover:text-white text-stone-500 rounded-full" @click="filters.fromDate = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
           <input
           id="from-date"
-          class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+          class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 transition-colors rounded-sm"
           type="date"
           v-model="filters.fromDate"
           >
@@ -63,13 +68,13 @@
         <div class="grid md:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <label for="to-date" class="text-xs font-bold">To date</label>
-            <button class="hover:text-white text-stone-300 rounded-full" @click="filters.toDate = ''">
+            <button class="hover:text-white text-stone-500 rounded-full" @click="filters.toDate = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
           <input
           id="to-date"
-          class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+          class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 transition-colors rounded-sm"
           type="date"
           v-model="filters.toDate"
           >
@@ -79,29 +84,38 @@
         <div class="grid md:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <label for="to-date" class="text-xs font-bold">Fund</label>
-            <button class="hover:text-white text-stone-300 rounded-full" @click="filters.fundID = ''">
+            <button class="hover:text-white text-stone-500 rounded-full" @click="filters.fundID = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
           <select
-          class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+          class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 transition-colors rounded-sm"
           v-model="filters.fundID"
           >
-            <option v-for="fund in funds" :key="funds.id" :value="fund.id">{{ fund.name }}</option>
+            <option
+            v-for="fund in funds"
+            :key="funds.id"
+            :value="fund.id"
+            class="text-white bg-stone-800 disabled:text-opacity-50 font-medium"
+            >{{ fund.name }}</option>
           </select>
         </div>
         <div class="grid lg:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <small class="text-xs font-bold">Find by tag</small>
-            <button class="hover:text-white text-stone-300 rounded-full" @click="filters.tag = ''">
+            <button class="hover:text-white text-stone-500 rounded-full" @click="filters.tag = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
         <select
-        class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+        class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 transition-colors rounded-sm"
         v-model="filters.tag"
         >
-        <option v-for="tag, i in tagOptions" :key="i">{{ tag }}</option>
+        <option
+        v-for="tag, i in tagOptions"
+        :key="i"
+        class="text-white bg-stone-800 disabled:text-opacity-50 font-medium"
+        >{{ tag }}</option>
       </select>
     </div>
     <div class="grid lg:w-1/3 xl:w-1/4">
@@ -109,7 +123,7 @@
       <input
       placeholder="Case insensitive"
       type="text"
-      class="bg-transparent border-transparent border-b-stone-300 focus:border-violet-300 focus:ring-0 focus:bg-stone-700 transition-colors rounded-sm"
+      class="bg-transparent border-transparent border-b-stone-300 focus:border-violet-300 focus:ring-0 transition-colors rounded-sm"
       v-model="filters.note"
       >
     </div>

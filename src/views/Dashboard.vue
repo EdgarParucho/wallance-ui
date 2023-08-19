@@ -151,7 +151,7 @@
       <FundsRecords :funds="funds" :filtered-records="filteredRecords" />
     </div>
     
-    <div class="md:flex items-center justify-around mt-20 mb-6">
+    <div class="md:flex items-center justify-around mt-20 mb-20">
       <span class="justify-center flex items-center space-x-2">
         To edit or create funds
         <router-link to="/funds" class="flex gap-1 mx-2 underline font-bold text-violet-500">
