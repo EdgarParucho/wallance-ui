@@ -16,7 +16,7 @@ provide("alert", ({ type = "error", title, text, button = false, timer = 2000 })
 
 <template>
   <AppBar />
-  <router-view class="pb-24 pt-12 px-2" v-slot="{ Component }">
+  <router-view class="pb-28 pt-12 px-2" v-slot="{ Component }">
     <transition name="fade" mode="out-in">
       <component :is="Component" />
     </transition>

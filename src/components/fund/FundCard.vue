@@ -12,13 +12,13 @@
     <p class="ml-2 text-md h-11">{{ fund.description }}</p>
     <div class="flex align-bottom">
       <button
-      class="w-1/2 py-1 hover:bg-stone-200 dark:hover:bg-stone-700 focus:bg-stone-100 dark:focus:bg-stone-700 focus:outline-none transition-colors"
+      class="w-1/2 py-1 hover:bg-stone-100 dark:hover:bg-stone-700 focus:bg-stone-100 dark:focus:bg-stone-700 focus:outline-none transition-colors"
       @click="$emit('edit-fund', fund)"
       >
         <PencilSquareIcon class="w-4 mx-auto" aria-hidden="true" />
       </button>
       <button
-      class="w-1/2 py-1 text-red-400 hover:bg-red-100 dark:hover:bg-red-900 focus:bg-red-100 dark:focus:bg-red-900 focus:outline-none transition-colors disabled:text-stone-600 disabled:hover:bg-stone-800"
+      class="w-1/2 py-1 text-red-400 hover:bg-red-100 dark:hover:bg-red-900 focus:bg-red-100 dark:focus:bg-red-900 focus:outline-none transition-colors disabled:text-stone-400 disabled:hover:bg-stone-100 dark:disabled:hover:bg-stone-800"
       @click="validateDeletion(fund)"
       :disabled="fund.isDefault"
       >

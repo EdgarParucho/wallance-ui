@@ -36,7 +36,7 @@
         <div class="my-4 space-y-2 text-left px-1">
           <label for="source" class="text-xs font-semibold">Source</label>
           <select id="source" name="source"
-            class="px-2 mb-2 bg-transparent w-full rounded-md focus:border-transparent focus:border-violet-500 focus:ring-0 border-white transition-colors"
+            class="px-2 mb-2 bg-transparent w-full rounded-md focus:border-transparent focus:border-violet-500 focus:ring-0 border-stone-500 dark:border-white transition-colors"
             required v-model="record.fundID">
             <option
             class="text-white bg-stone-800 disabled:text-opacity-50"
@@ -46,7 +46,7 @@
             </option>
           </select>
           <div class="flex items-center justify-end space-x-2" v-if="record.fundID !== ''">
-            <small>Balance on date:</small>
+            <small class="text-left w-1/3 text-xs font-semibold">Balance on date:</small>
             <span class="text-white bg-stone-600 text-sm font-bold rounded-sm px-1">{{ formatToCurrency(fundBalanceOnDate) }}</span>
           </div>
         </div>
@@ -54,7 +54,7 @@
         <div class="my-4 space-y-2 text-left px-1">
           <label for="target" class="text-xs font-semibold">Target</label>
           <select id="target" name="target"
-            class="px-2 mb-2 bg-transparent w-full rounded-md focus:border-transparent focus:border-violet-500 focus:ring-0 border-white transition-colors"
+            class="px-2 mb-2 bg-transparent w-full rounded-md focus:border-transparent focus:border-violet-500 focus:ring-0 border-stone-500 dark:border-white transition-colors"
             required :disabled="record.fundID === ''" v-model="record.otherFundID">
             <option
             class="text-white bg-stone-800 disabled:text-opacity-50"
@@ -109,7 +109,7 @@
             <select
             id="tag"
             name="tag"
-            class="w-6/12 bg-transparent border-transparent border-b-stone-300 border-stone-300 py-2 px-3 shadow-sm focus:border-transparent focus:border-b-violet-500 focus:ring-0 sm:text-sm"
+            class="w-1/2 bg-transparent focus:border-violet-500 focus:ring-0 border-stone-500 dark:border-white rounded-sm"
             required
             v-model="tagFields.option"
             >

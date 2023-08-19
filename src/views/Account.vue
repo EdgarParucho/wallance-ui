@@ -75,7 +75,7 @@ const displayAlert = inject("alert");
 
 const emailFormIsOpen = ref(false);
 const passwordFormIsOpen = ref(false);
-const deleteFormIsOpen = ref(true);
+const deleteFormIsOpen = ref(false);
 const requestingOTP = ref(false);
 
 async function requestOTP(action) {

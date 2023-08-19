@@ -8,11 +8,9 @@
   >
     <form class="p-5 w-full">
       <fieldset>
-        <legend class="mx-auto text-lg">Record Data</legend>
-
         <div class="my-4 space-y-2 text-left px-1">
-          <div class="w-full text-md font-medium italic font-serif">
-            <label for="date">
+          <div class="w-full">
+            <label for="date" class="text-xs font-semibold">
               Date
             </label>
           </div>
@@ -21,7 +19,7 @@
             type="date"
             name="date"
             id="date"
-            class="w-1/2 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-white transition-colors rounded-sm"
+            class="w-1/2 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm"
             required
             v-model="formDate"
             >
@@ -29,7 +27,7 @@
             type="time"
             name="time"
             id="time"
-            class="w-1/2 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-white transition-colors rounded-sm"
+            class="w-1/2 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm"
             required
             v-model="formTime"
             >
@@ -47,7 +45,7 @@
               v-model="record.type"
               required
             >
-            <label for="credit" class="text-md font-medium italic font-serif">
+            <label for="credit" class="text-xs font-semibold">
               Credit
             </label>
           </div>
@@ -61,20 +59,20 @@
               v-model="record.type"
               required
             >
-            <label for="debit" class="text-md font-medium italic font-serif">
+            <label for="debit" class="text-xs font-semibold">
               Debit
             </label>
           </div>
         </div>
           
-        <div class="mt-4 mb-1 flex items-center">
-          <label for="fundID" class="w-1/2 text-md font-medium italic font-serif">
+        <div class="mt-4 flex items-center justify-between">
+          <label for="fundID" class="text-left w-1/3 text-xs font-semibold">
             Fund
           </label>
           <select
           id="fundID"
           name="fundID"
-          class="w-1/2 bg-transparent focus:border-transparent focus:ring-0 rounded-sm transition-colors border-white focus:border-violet-500"
+          class="w-2/3 bg-transparent focus:border-transparent focus:ring-0 rounded-sm border-stone-500 dark:border-white focus:border-violet-500"
           required
           :disabled="recordIsCredit"
           v-model="record.fundID"
@@ -90,17 +88,17 @@
           
         </div>
 
-        <div class="flex items-center justify-end space-x-2">
-          <small>Balance on date:</small>
+        <div class="flex items-center justify-end space-x-2 mt-2">
+          <small class="text-left w-1/3 text-xs font-semibold">Balance on date:</small>
           <span class="text-white bg-stone-600 text-sm font-bold rounded-sm px-1">{{ formatToCurrency(fundBalanceOnDate) }}</span>
         </div>
 
         <div class="my-4 flex items-center">
-          <label for="amount" class="w-1/2 text-md font-medium italic font-serif">
+          <label for="amount" class="text-left w-1/3 text-xs font-semibold">
             Amount
           </label>
 
-          <div class="relative rounded-md w-1/2">
+          <div class="relative rounded-md w-2/3">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 space-x-2">
               <div :class="[typeStyles, 'p-1 rounded-full']">
                 <component class="h-4 w-4" :is="typeIcon" />
@@ -113,7 +111,7 @@
               :min="0"
               name="amount"
               id="amount"
-              class="w-full bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-white transition-colors rounded-sm pl-6 text-right"
+              class="w-full bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm pl-6 text-right"
               placeholder="0.0"
               required
               v-model.number="amount"
@@ -122,14 +120,14 @@
         </div>
 
         <div class="my-4 space-y-2 text-left px-1">
-          <label for="tag" class="w-1/2 text-md font-medium italic font-serif">
+          <label for="tag" class="text-xs font-semibold">
             Tag
           </label>
           <div class="flex justify-between">
             <select
             id="tag"
             name="tag"
-            class="w-1/2 bg-transparent focus:border-transparent focus:border-violet-500 focus:ring-0 border-white transition-colors rounded-sm"
+            class="w-1/2 bg-transparent focus:border-violet-500 focus:ring-0 border-stone-500 dark:border-white rounded-sm"
             required
             v-model="tagFields.option"
             >
@@ -143,7 +141,7 @@
             <input
               type="text"
               :disabled="tagFields.option !== '-- Add new --'"
-              class="w-5/12 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-white transition-colors rounded-sm"
+              class="w-5/12 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm"
               placeholder="New tag"
               required
               v-model="tagFields.input"
@@ -152,7 +150,7 @@
         </div>
 
         <div class="my-4 space-y-2 text-left px-1">
-          <label for="note" class="w-1/2 text-md font-medium italic font-serif">
+          <label for="note" class="text-xs font-semibold">
             Note
           </label>
           <textarea
@@ -169,7 +167,7 @@
 
       </fieldset>
 
-      <div class="py-3 flex justify-end">
+      <div class="h-1/3 flex items-center justify-end my-4 space-x-2">
         <button
         type="button"
         class="mt-3 inline-flex w-full justify-center rounded-md px-4 py-2 text-base font-bold shadow-sm bg-stone-300 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-violet-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"

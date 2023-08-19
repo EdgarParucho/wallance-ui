@@ -1,11 +1,11 @@
 <template>
   <div class="border rounded-sm border-stone-300 dark:border-stone-500 p-2 2xl:w-2/3 mx-auto">
     <form @submit.prevent="submitQuery(filters)">
-      <div class="flex space-x-1 items-center justify-start">
+      <div class="sm:flex sm:space-x-1 items-center justify-start">
         <button
         :class="[
           { 'bg-purple-600 dark:bg-purple-600 text-white': currentMonthRange.filterApplied },
-          'hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex items-center justify-between gap-1'
+          'my-1 w-full sm:w-auto hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex justify-center items-center gap-1'
         ]"
         @click="filterByThisMonth">
           <CalendarIcon class="w-4" />
@@ -14,7 +14,7 @@
         <button
         :class="[
           { 'bg-purple-600 dark:bg-purple-600 text-white': currentYearRange.filterApplied },
-          'hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex items-center justify-between gap-1'
+          'my-1 w-full sm:w-auto hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex justify-center items-center gap-1'
         ]"
         @click="filterByThisYear">
           <CalendarDaysIcon class="w-4" />
@@ -24,7 +24,7 @@
         v-for="query, i in preferences.queries" :key="i"
         :class="[
           { 'bg-purple-600 dark:bg-purple-600 text-white': JSON.stringify(query.filters) === JSON.stringify(filters)   },
-          'hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex items-center justify-between gap-1'
+          'my-1 w-full sm:w-auto hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex justify-center items-center gap-1'
         ]"
         @click="filters = query.filters">
           <FilledBookmarkIcon class="w-4" />
@@ -34,13 +34,13 @@
       <div class="md:flex md:space-x-2 items-center justify-between">
         <div class="grid lg:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
-            <small class="text-white text-xs font-bold">Find by type</small>
+            <small class="text-xs font-bold">Find by type</small>
             <button class="hover:text-white text-stone-300 rounded-full" @click="filters.type = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
           <select
-          class="bg-transparent text-white focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+          class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
           v-model="filters.type"
           >
             <option v-for="type, i in typeOptions" :key="i" :value="type.value">{{ type.name }}</option>
@@ -48,28 +48,28 @@
         </div>
         <div class="grid md:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
-            <label for="from-date" class="text-white text-xs font-bold">From date</label>
+            <label for="from-date" class="text-xs font-bold">From date</label>
             <button class="hover:text-white text-stone-300 rounded-full" @click="filters.fromDate = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
           <input
           id="from-date"
-          class="bg-transparent text-white focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+          class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
           type="date"
           v-model="filters.fromDate"
           >
         </div>
         <div class="grid md:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
-            <label for="to-date" class="text-white text-xs font-bold">To date</label>
+            <label for="to-date" class="text-xs font-bold">To date</label>
             <button class="hover:text-white text-stone-300 rounded-full" @click="filters.toDate = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
           <input
           id="to-date"
-          class="bg-transparent text-white focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+          class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
           type="date"
           v-model="filters.toDate"
           >
@@ -78,13 +78,13 @@
       <div class="md:flex items-center justify-between gap-1">
         <div class="grid md:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
-            <label for="to-date" class="text-white text-xs font-bold">Fund</label>
+            <label for="to-date" class="text-xs font-bold">Fund</label>
             <button class="hover:text-white text-stone-300 rounded-full" @click="filters.fundID = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
           <select
-          class="bg-transparent text-white focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+          class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
           v-model="filters.fundID"
           >
             <option v-for="fund in funds" :key="funds.id" :value="fund.id">{{ fund.name }}</option>
@@ -92,24 +92,24 @@
         </div>
         <div class="grid lg:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
-            <small class="text-white text-xs font-bold">Find by tag</small>
+            <small class="text-xs font-bold">Find by tag</small>
             <button class="hover:text-white text-stone-300 rounded-full" @click="filters.tag = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
         <select
-        class="bg-transparent text-white focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
+        class="bg-transparent focus:border-transparent focus:border-violet-300 focus:ring-0 border-stone-300 focus:bg-stone-700 transition-colors rounded-sm"
         v-model="filters.tag"
         >
         <option v-for="tag, i in tagOptions" :key="i">{{ tag }}</option>
       </select>
     </div>
     <div class="grid lg:w-1/3 xl:w-1/4">
-      <small class="text-white text-xs font-bold my-2">Find by text in note</small>
+      <small class="text-xs font-bold my-2">Find by text in note</small>
       <input
       placeholder="Case insensitive"
       type="text"
-      class="bg-transparent text-white border-transparent border-b-stone-300 focus:border-violet-300 focus:ring-0 focus:bg-stone-700 transition-colors rounded-sm"
+      class="bg-transparent border-transparent border-b-stone-300 focus:border-violet-300 focus:ring-0 focus:bg-stone-700 transition-colors rounded-sm"
       v-model="filters.note"
       >
     </div>
@@ -131,7 +131,7 @@
       >
         <span class="flex gap-1">
           <MagnifyingGlassIcon class="w-5" />
-          Run Query
+          Search
         </span>
       </button>
       <button

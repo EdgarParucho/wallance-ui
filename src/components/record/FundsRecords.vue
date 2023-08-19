@@ -24,7 +24,7 @@
     </tbody>
   </table>
   <p class="block text-center font-bold mt-4" v-show="balanceDiff && balanceDiff !== currentBalance">
-    If you exclude the records from your query, your balance would be:
+    The difference between the results and your current balance is:
     <span class="bg-stone-600 text-white py-1 px-1.5 rounded-md font-bold">{{ getAmountFormatted(balanceDiff) }}</span>
   </p>
 </template>

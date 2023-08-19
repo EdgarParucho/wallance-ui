@@ -31,7 +31,7 @@
       @click="recordFormIsOpen = true"
       >
         <PlusIcon class="w-5" />
-        Add a Record
+        Add Record
       </button>
     </div>
     
@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <div class="flex items-center justify-center mx-auto my-20 space-x-2">
+    <div class="flex items-end justify-center mx-auto my-20 space-x-2">
       <h3 class="font-bold text-2xl">
         <span class="text-violet-500">Move balance </span>between funds through
       </h3>
