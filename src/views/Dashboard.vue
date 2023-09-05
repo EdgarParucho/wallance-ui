@@ -277,11 +277,15 @@ const filteredRecords = computed(() => {
 });
 
 function amountFormatted(amount) {
+  const integer = Math.floor(amount);
+  const fractions = amount
+    .toString()
+    .split('.')[1] || "0";
+  const recomposed = [integer, fractions.slice(0, 2)].join(".")
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(amount)
+  }).format(recomposed)
 }
 
 function queryIsApplied({ filters, name }) {

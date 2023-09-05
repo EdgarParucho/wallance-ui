@@ -68,11 +68,9 @@ export const useFundStore = defineStore('fund', () => {
     funds.value.forEach(fund => {
       const fundRecordsAmounts = records.filter(record => record.fundID === fund.id || record.otherFundID === fund.id);
       fund.balance = fundRecordsAmounts.reduce((balance, record) => {
-        const recordAmount = record.fundID === fund.id ? record.amount : -record.amount;
-        return balance + recordAmount;
+        const recordAmount = (record.fundID === fund.id) ? Number(record.amount) : -Number(record.amount);
+        return (balance + recordAmount);
       }, 0);
-  
-      fund.balance = fund.balance.toFixed(2)
     })
   }, { immediate: true });
   

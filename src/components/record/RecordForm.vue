@@ -90,7 +90,7 @@
 
         <div class="flex items-center justify-end space-x-2 mt-2">
           <small class="text-left w-1/3 text-xs font-semibold">Balance on date:</small>
-          <span class="text-white bg-stone-600 text-sm font-bold rounded-sm px-1">{{ formatToCurrency(fundBalanceOnDate) }}</span>
+          <span class="text-white bg-stone-600 text-sm font-bold rounded-sm px-1">{{ amountFormatted(fundBalanceOnDate) }}</span>
         </div>
 
         <div class="my-4 flex items-center">
@@ -109,12 +109,11 @@
               type="number"
               :disabled="!recordIsCredit && record.fundID === ''"
               :min="0"
-              name="amount"
               id="amount"
               class="w-full bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm pl-6 text-right"
               placeholder="0.0"
               required
-              v-model.number="amount"
+              v-model.number.lazy="formAmount"
             >
           </div>
         </div>
@@ -244,7 +243,7 @@ const tagOptions = computed(() => {
   return recordTags.value[record.type];
 });
 
-const amount = (props.editing)
+const formAmount = (props.editing)
   ? (props.originalRecord.amount < 0) ? ref(-props.originalRecord.amount) : ref(props.originalRecord.amount)
   : ref(1);
 
@@ -273,12 +272,16 @@ const fundBalanceOnDate = computed(() => {
   return fundBalanceOnDate;
 });
 
-function formatToCurrency(amount) {
+function amountFormatted(amount) {
+  const integer = Math.floor(amount);
+  const fractions = amount
+    .toString()
+    .split('.')[1] || "0";
+  const recomposed = [integer, fractions.slice(0, 2)].join(".")
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(amount)
+   }).format(recomposed)
 }
 
 const typeIcon = computed(() => {
@@ -340,13 +343,16 @@ watch(
   }
 )
 watch(
-  () => amount.value,
+  () => formAmount.value,
   (amountValue) => {
     const multiplier = (record.type === 1) ? 1 : -1;
-    amount.value = new Intl.NumberFormat(undefined, {
-      maximumFractionDigits: 2,
-    }).format(amountValue)
-    record.amount = amountValue * multiplier;
+    record.amount = (amountValue * multiplier);
+    const integer = Math.floor(amountValue);
+    const fractions = amountValue
+      .toString()
+      .split('.')[1] || "0";
+    const recomposed = [integer, fractions.slice(0, 2)].join(".")
+    formAmount.value = recomposed
   }
 )
 </script>

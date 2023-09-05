@@ -47,7 +47,7 @@
           </select>
           <div class="flex items-center justify-end space-x-2" v-if="record.fundID !== ''">
             <small class="text-left w-1/3 text-xs font-semibold">Balance on date:</small>
-            <span class="text-white bg-stone-600 text-sm font-bold rounded-sm px-1">{{ formatToCurrency(fundBalanceOnDate) }}</span>
+            <span class="text-white bg-stone-600 text-sm font-bold rounded-sm px-1">{{ amountFormatted(fundBalanceOnDate) }}</span>
           </div>
         </div>
 
@@ -94,7 +94,7 @@
             type="number" name="amount" id="amount"
             class="w-full bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-white transition-colors rounded-sm pl-6 text-right"
             placeholder="0.00"
-            v-model.number="amount"
+            v-model.number.lazy="formAmount"
             required
             :disabled="record.fundID  === '' || record.otherFundID === ''"
             :min="0">
@@ -218,10 +218,10 @@ const tagFields = reactive({
 const tagOptions = computed(() => {
   return recordTags.value[0];
 });
-const amount = (props.editing)
+const formAmount = (props.editing)
   ? ref(-props.originalRecord.amount)
   : ref(1);
-const newRecord = {
+const record = reactive(props.editing ? { ...props.originalRecord } : {
   amount: -1,
   date: null,
   note: null,
@@ -229,8 +229,7 @@ const newRecord = {
   fundID: '',
   otherFundID: '',
   type: 0,
-};
-const record = reactive(props.editing ? { ...props.originalRecord } : newRecord);
+});
 
 const formIsValid = computed(() => record.fundID !== '' || record.otherFundID !== '');
 
@@ -244,12 +243,16 @@ const fundBalanceOnDate = computed(() => {
   return fundBalanceOnDate;
 });
 
-function formatToCurrency(amount) {
+function amountFormatted(amount) {
+  const integer = Math.floor(amount);
+  const fractions = amount
+    .toString()
+    .split('.')[1] || "0";
+  const recomposed = [integer, fractions.slice(0, 2)].join(".")
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-    maximumFractionDigits: 2,
-  }).format(amount)
+   }).format(recomposed)
 }
 
 function divisorIsApplied({ divisor }) {
@@ -259,7 +262,7 @@ function divisorIsApplied({ divisor }) {
 }
 
 function divideAmount(divisor) {
-  amount.value = (fundBalanceOnDate.value / divisor)
+  formAmount.value = (fundBalanceOnDate.value / divisor)
 }
 
 function onSave(record, editing) {
@@ -299,14 +302,16 @@ watch(
 )
 
 watch(
-  () => amount.value,
+  () => formAmount.value,
   (amountValue) => {
     const multiplier = (record.type === 1) ? 1 : -1;
     record.amount = (amountValue * multiplier);
-    amount.value = new Intl.NumberFormat("en-US", {
-      maximumFractionDigits: 2,
-      useGrouping: false,
-    }).format(amountValue)
+    const integer = Math.floor(amountValue);
+    const fractions = amountValue
+      .toString()
+      .split('.')[1] || "0";
+    const recomposed = [integer, fractions.slice(0, 2)].join(".")
+    formAmount.value = recomposed
   }
 )
 </script>
