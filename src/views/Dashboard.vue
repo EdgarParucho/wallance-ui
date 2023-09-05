@@ -16,26 +16,22 @@
       </div>
     </div>
     <p class="block text-center font-bold">
-      You current balance represents
-      <span class="py-1 px-1.5 rounded-md font-bold bg-stone-600 text-white">{{ savingsIndex }}%</span>
-      of your total income.
+      <div class="flex items-center justify-center mx-auto my-20 space-x-2">
+        <h3 class="font-bold text-2xl">
+          Not<span class="text-violet-500"> updated</span>?
+        </h3>
+        <button
+        class="font-bold py-1 px-2 gap-1 rounded-md w-40 inline-flex items-center justify-center text-white hover:bg-violet-500 bg-violet-600"
+        @click="recordFormIsOpen = true"
+        >
+          <PlusIcon class="w-5" />
+          Add Record
+        </button>
+      </div>
     </p>
 
+    <Stats class="my-20" :records="records" />
 
-    <div class="flex items-center justify-center mx-auto my-20 space-x-2">
-      <h3 class="font-bold text-2xl">
-        Not<span class="text-violet-500"> updated</span>?
-      </h3>
-      <button
-      class="font-bold py-1 px-2 gap-1 rounded-md w-40 inline-flex items-center justify-center text-white hover:bg-violet-500 bg-violet-600"
-      @click="recordFormIsOpen = true"
-      >
-        <PlusIcon class="w-5" />
-        Add Record
-      </button>
-    </div>
-    
-    
     <div class="mt-20 mb-8 flex items-end justify-center space-x-2">
       <h4 class="text-3xl font-bold flex items-center gap-2">
         <ArchiveBoxIcon class="w-12 p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
@@ -184,6 +180,7 @@ import { MinusIcon, PlusIcon, ArrowsRightLeftIcon, LinkIcon, ArchiveBoxIcon, Sca
 import { BookmarkIcon } from '@heroicons/vue/24/solid';
 import Logo from '../components/layout/Logo.vue';
 import FundsRecords from '../components/record/FundsRecords.vue';
+import Stats from '../components/dashboard/Stats.vue';
 
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
 const AssignmentForm = defineAsyncComponent(() => import('../components/record/AssignmentForm.vue'));
@@ -219,8 +216,6 @@ const debitsBalance = computed(() => records.value
   .filter(record => record.type === 2)
   .reduce((totalCredits, { amount }) => totalCredits + Number(amount), 0)
 );
-
-const savingsIndex = computed(() => ((balance.value / creditsBalance.value) * 100 ).toFixed());
 
 const creditsByTag = computed(() => {
   const tagsRecords = [];

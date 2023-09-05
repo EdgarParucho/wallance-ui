@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { Update, Delete } from '../services/accountAPI'
 import { useCredentialStore } from './credentialStore';
 import { useLocalStorage } from '@vueuse/core';
+import { watch } from 'vue';
 
 export const useAccountStore = defineStore('account', () => {
   const preferences = useLocalStorage("vueUsePreferences", {})
@@ -29,6 +30,12 @@ export const useAccountStore = defineStore('account', () => {
       const feedback = error.response?.data?.message || error.response?.data || error.message || error;
       reject(feedback);
     })
+  )
+
+  watch(() => preferences.value.darkMode,
+    (isDarkMode) => {
+      if (isDarkMode) document.querySelector("html").className =  "dark";
+    }, { immediate: true }
   )
 
   return { preferences, updateAccount, erase, setPreferences };
