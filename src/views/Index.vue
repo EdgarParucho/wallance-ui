@@ -9,7 +9,7 @@
     </p>
     <div class="mt-10 flex justify-center my-2 space-x-4">
       <button
-      class="rounded-md py-1 w-52 hover:scale-105 transition-all font-bold focus:outline-violet-500 focus:outline-1 bg-white shadow-lg dark:bg-transparent dark:shadow-stone-800 dark:hover:bg-stone-800"
+      class="rounded-md py-1 w-52 hover:scale-105 transition-all font-bold focus:outline-violet-500 focus:outline-1 bg-white dark:bg-stone-800 shadow-lg"
       @click="loginFormIsOpen = true"
       >
         Log In

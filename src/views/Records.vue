@@ -4,16 +4,35 @@
       Records History
     </h1>
 
-    <div class="lg:flex my-10 space-x-1 space-y-2 items-center shadow-lg transition-shadow rounded-md bg-white dark:bg-stone-800 justify-center">
-      <div class="lg:w-2/5">
-        <RecordsByTagChart :filtered-records="filteredRecords" />
+    <h4
+    class="my-4 px-2 mx-auto md:w-3/4 lg:w-1/2 xl:w-1/3 justify-center flex items-center text-violet-500 bg-violet-900 bg-opacity-10 border-l-4 border-violet-700 rounded-sm py-2"
+    >
+      <InformationCircleIcon class="w-8 text-left" />
+      <span class="mx-auto font-bold">
+        Data here is responsive to queries from the panel at the bottom
+      </span>
+    </h4>
+
+    <div class="lg:flex my-10 p-10 justify-between items-center shadow-md rounded-md bg-white dark:bg-stone-800">
+      <div class="grid w-4/12">
+        <div class="p-10">
+          <TagsEquivalenceChart :filtered-records="filteredRecords" />
+        </div>
+        <div>
+          <TypesSumChart :filtered-records="filteredRecords" />
+        </div>
       </div>
-      <div class="lg:w-3/5">
+      <div class="lg:w-7/12">
         <MonthlyBalanceChart :filtered-records="filteredRecords" />
       </div>
     </div>
 
-    <div class="my-20">
+    <div class="lg:flex items-end gap-2 my-10 justify-center">
+    </div>
+
+    <div class="my-16">
+      <ArchiveBoxIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+      <h2 class="mb-4 text-4xl font-bold text-center">Funds status</h2>
       <FundsRecords :funds="funds" :filtered-records="filteredRecords" />
     </div>
 
@@ -49,8 +68,10 @@ import AssignmentForm from '../components/record/AssignmentForm.vue';
 import QueryForm from '../components/record/QueryForm.vue';
 import RecordsTable from '../components/record/RecordsTable.vue';
 import FundsRecords from '../components/record/FundsRecords.vue';
-import RecordsByTagChart from '../components/chart/RecordsByTagChart.vue';
+import TagsEquivalenceChart from '../components/chart/TagsEquivalenceChart.vue';
 import MonthlyBalanceChart from '../components/chart/MonthlyBalanceChart.vue';
+import TypesSumChart from '../components/chart/TypesSumChart.vue';
+import { ArchiveBoxIcon, InformationCircleIcon } from '@heroicons/vue/24/outline';
 
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
 const recordStore = useRecordStore();

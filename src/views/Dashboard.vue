@@ -5,49 +5,36 @@
       Money is only a tool. It will take you wherever you wish, but it will not replace you as the driver. - Ayn Rand
     </blockquote>
 
-    <h2 class="text-4xl font-bold text-center mt-20">Balance</h2>
-    <p class="text-center text-sm text-stone-500">Your overall balance on date.</p>
-    <div class="mt-4 md:w-1/2 lg:w-1/3 xl:w-1/4 my-6 mx-auto px-16 py-6 rounded-xl dark:shadow-[#101010] shadow-lg bg-white dark:bg-stone-800">
-      <ScaleIcon class="w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
-      <div class="my-8 flex justify-center items-center">
-        <h2 class="text-5xl text-center">
-          {{ amountFormatted(balance) }}
-        </h2>
-      </div>
+    <div class="my-20">
+      <h2 class="text-4xl font-bold text-center mt-20">Balance</h2>
+      <h4 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">Your overall balance on date.</h4>
+      <Balance :balance="balance" />
     </div>
-    <p class="block text-center font-bold">
-      <div class="flex items-center justify-center mx-auto my-20 space-x-2">
-        <h3 class="font-bold text-2xl">
-          Not<span class="text-violet-500"> updated</span>?
-        </h3>
-        <button
-        class="font-bold py-1 px-2 gap-1 rounded-md w-40 inline-flex items-center justify-center text-white hover:bg-violet-500 bg-violet-600"
-        @click="recordFormIsOpen = true"
-        >
-          <PlusIcon class="w-5" />
-          Add Record
-        </button>
-      </div>
-    </p>
 
-    <Stats class="my-20" :records="records" />
-
-    <div class="mt-20 mb-8 flex items-end justify-center space-x-2">
-      <h4 class="text-3xl font-bold flex items-center gap-2">
-        <ArchiveBoxIcon class="w-12 p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
-        Funds
-      </h4>
-      <p class="text-center text-sm text-stone-500">Current status.</p>
+    <div class="flex items-end justify-center mx-auto my-20 space-x-2">
+      <h3 class="font-bold text-2xl">
+        Not<span class="text-violet-500"> updated</span>?
+      </h3>
+      <button
+      class="text-white hover:bg-violet-500 bg-violet-600 font-bold py-1 px-2 rounded-md w-36 inline-flex items-center"
+      @click="recordFormIsOpen = true"
+      >
+        <PlusIcon class="w-5 text-left" />
+        <span class="mx-auto">Add Record</span>
+      </button>
     </div>
-    <div class="md:w-1/2 lg:w-1/3 xl:w-1/4 my-6 mx-auto px-16 py-6 rounded-xl dark:shadow-[#101010] shadow-lg bg-white dark:bg-stone-800">
-      <div class="mt-4 font-sans rounded-md lg:block mx-auto">
-        <div class="flex justify-between items-center" v-for="fund in funds" :key="fund.id">
-          <p class="font-bold">{{ fund.name }}</p>
-          <div class="justify-end flex items-baseline my-2 mr-3">
-            <span class="text-2xl">{{ amountFormatted(fund.balance) }}</span>
-          </div>
-        </div>
-      </div>
+
+    <div class="my-28">
+      <h2 class="text-4xl font-bold text-center mt-20">Let's check some stats</h2>
+      <h4 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">Numbers from this year.</h4>
+      <Stats class="mt-4" :records="records" />
+    </div>
+
+    <div class="my-28">
+      <ArchiveBoxIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+      <h2 class="text-4xl font-bold text-center">Funds status</h2>
+      <h3 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">This is how you group your assets.</h3>
+      <FundsBalances :funds="funds" />
     </div>
 
     <div class="flex items-end justify-center mx-auto my-20 space-x-2">
@@ -55,95 +42,50 @@
         <span class="text-violet-500">Move balance </span>between funds through
       </h3>
       <button
-      class="text-white hover:bg-violet-500 bg-violet-600 font-bold py-1 px-2 gap-1 rounded-md w-40 inline-flex items-center justify-center"
+      class="text-white hover:bg-violet-500 bg-violet-600 font-bold py-1 px-2 gap-1 rounded-md w-36 inline-flex items-center justify-center"
       @click="assignmentFormIsOpen = true"
       >
-        <ArrowsRightLeftIcon class="w-5" />
-        Assignment
+        <ArrowsRightLeftIcon class="w-5 text-left" />
+        <span class="mx-auto">Assignment</span>
       </button>
     </div>
 
-    <div class="mt-20 mb-8 flex items-end justify-center space-x-2">
-      <h4 class="text-3xl font-bold flex items-center gap-2">
-        <TagIcon class="w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
-        Tags
-      </h4>
-      <p class="text-center text-sm text-stone-500">Track your records.</p>
+    <div class="my-28">
+      <TagIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+      <h2 class="text-4xl font-bold text-center">Tags usage</h2>
+      <h3 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">Track your records.</h3>
+      <div class="2xl:flex 2xl:items-start 2xl:justify-around">
+        <TopTags
+        :tags="creditsByTag"
+        title="Credits"
+        :show-all-tags="showAllCreditTags"
+        @alternate-limit="showAllCreditTags = !showAllCreditTags"
+        :icon="PlusIcon"/>
+        <TopTags
+        :tags="debitsByTag"
+        title="Debits"
+        :show-all-tags="showAllDebitTags"
+        @alternate-limit="showAllDebitTags = !showAllDebitTags"
+        :icon="MinusIcon"/>
+      </div>
     </div>
     
-    <div class="lg:w-1/3 mx-auto text-sm bg-white p-4 dark:bg-stone-800 shadow-lg rounded-md">
-      <ol class="space-y-0.5">
-        <h4 class="text-start text-lg font-bold my-6">
-          Credits
-        </h4>
-        <div class="flex justify-between w-1/3">
-          <small>Showing: {{ creditsByTag.data.length }} / {{ creditsByTag.totalTags }}</small>
-          <small>
-            <button
-            class="text-stone-500 hover:text-black dark:hover:text-white hover:disabled:text-stone-500 dark:hover:disabled:text-stone-500"
-            :disabled="creditsByTag.totalTags < 5"
-            @click="showAllCreditTags = !showAllCreditTags"
-            >
-              Show {{ showAllCreditTags ? 'top 5' : 'All' }}
-            </button>
-          </small>
-        </div>
-        <li class="flex justify-between items-end space-x-2" v-for="creditTag, i in creditsByTag.data" :key="i">
-          <span class="font-bold w-1/3">{{ creditTag.tag }}</span>
-          <div class="flex items-center space-x-1 justify-between w-1/3">
-            <PlusIcon class="flex text-green-50 bg-green-700 p-0.5 rounded-full h-4 w-4" />
-            <span>{{ amountFormatted(creditTag.balance) }}</span>
-          </div>
-          <span class="w-1/3 text-end">{{ creditTag.percentage }}%</span>
-        </li>
-      </ol>
-
-      <ol class="space-y-0.5">
-        <h4 class="text-start text-lg font-bold my-6">
-          Debits
-        </h4>
-        <div class="flex items-center justify-between w-1/3">
-          <small>Showing: {{ debitsByTag.data.length }} / {{ debitsByTag.totalTags }}</small>
-          <small>
-            <button
-            class="text-stone-500 hover:text-black dark:hover:text-white hover:disabled:text-stone-500 dark:hover:disabled:text-stone-500"
-            :disabled="debitsByTag.totalTags < 5"
-            @click="showAllDebitTags = !showAllDebitTags"
-            >
-              Show {{ showAllDebitTags ? 'top 5' : 'All' }}
-            </button>
-          </small>
-        </div>
-        <li class="flex justify-between items-end space-x-2" v-for="debitTag, i in debitsByTag.data" :key="i">
-          <span class="font-bold w-1/3">{{ debitTag.tag }}</span>
-          <div class="flex items-center space-x-1 justify-between w-1/3">
-            <MinusIcon class="flex text-red-50 bg-red-700 p-0.5 rounded-full h-4 w-4" />
-            <span>{{ amountFormatted(debitTag.balance) }}</span>
-          </div>
-          <span class="w-1/3 text-end">{{ debitTag.percentage }}%</span>
-        </li>
-      </ol>
-    </div>
-
-    <div class="mt-20 mb-8 flex items-end justify-center space-x-2">
-      <h4 class="text-3xl font-bold flex items-center gap-2">
-        <BookmarkIcon class="w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
-        Queries
-      </h4>
-      <p class="text-center text-sm text-stone-500">From your preferences to your dashboard.</p>
-    </div>
-    
-    <div class="text-center space-y-3">
-      <button
-      v-for="query, i in preferences.queries" :key="i"
-      :class="[
-        { 'bg-violet-500 dark:bg-violet-500 text-white hover:bg-violet-500 dark:hover:bg-violet-500': queryIsApplied(query) },
-        'font-bold text-xs py-1 px-3 rounded-full mx-1 shadow-stone-400 shadow-sm'
-      ]"
-      @click="appliedFilters = query.filters"
-      >
-        {{ query.name }}
-      </button>
+    <div class="my-28">
+      <BookmarkIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+      <h2 class="text-4xl font-bold text-center">Saved Queries</h2>
+      <h3 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">From your preferences to your dashboard.</h3>
+      <div class="text-center my-4">
+        <button
+        v-for="query, i in preferences.queries" :key="i"
+        :class="[
+          { 'bg-violet-500 dark:bg-violet-500 text-white hover:bg-violet-500 dark:hover:bg-violet-500': queryIsApplied(query) },
+          'font-bold text-xs py-1 px-3 rounded-full mx-1 shadow-stone-400 shadow-sm'
+        ]"
+        @click="appliedFilters = query.filters"
+        >
+          {{ query.name }}
+        </button>
+      </div>
       <FundsRecords :funds="funds" :filtered-records="filteredRecords" />
     </div>
     
@@ -176,11 +118,13 @@ import { useFundStore } from '../stores/fundStore';
 import { useRecordStore } from '../stores/recordStore';
 import { useAccountStore } from '../stores/accountStore';
 import { storeToRefs } from 'pinia';
-import { MinusIcon, PlusIcon, ArrowsRightLeftIcon, LinkIcon, ArchiveBoxIcon, ScaleIcon, TagIcon } from '@heroicons/vue/24/outline';
-import { BookmarkIcon } from '@heroicons/vue/24/solid';
+import { BookmarkIcon, MinusIcon, PlusIcon, ArrowsRightLeftIcon, LinkIcon, TagIcon, ArchiveBoxIcon } from '@heroicons/vue/24/solid';
 import Logo from '../components/layout/Logo.vue';
 import FundsRecords from '../components/record/FundsRecords.vue';
 import Stats from '../components/dashboard/Stats.vue';
+import Balance from '../components/dashboard/Balance.vue';
+import FundsBalances from '../components/dashboard/FundsBalances.vue';
+import TopTags from '../components/dashboard/TopTags.vue';
 
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
 const AssignmentForm = defineAsyncComponent(() => import('../components/record/AssignmentForm.vue'));
@@ -207,7 +151,10 @@ const appliedFilters = ref({
 
 if (preferences.value.queries[0] !== undefined) appliedFilters.value = preferences.value.queries[0].filters;
 
-const balance = computed(() => funds.value.reduce((totalBalance, { balance }) => totalBalance + Number(balance), 0));
+const balance = computed(() => {
+  const total = funds.value.reduce((totalBalance, { balance }) => totalBalance + Number(balance), 0);
+  return amountFormatted(total)
+});
 const creditsBalance = computed(() => records.value
   .filter(record => record.type === 1)
   .reduce((totalCredits, { amount }) => totalCredits + Number(amount), 0)
@@ -227,7 +174,7 @@ const creditsByTag = computed(() => {
       .reduce((balance, { amount }) => balance + amount, 0)
       .toFixed();
     const percentage = (balance / creditsBalance.value * 100).toFixed();
-    tagsRecords.push({ tag, balance, percentage });
+    tagsRecords.push({ name: tag, balance, percentage });
   })
   tagsRecords.sort((a, b) => b.balance - a.balance);
   if (!showAllCreditTags.value && tagsRecords.length > 5) tagsRecords.slice(0, 5)
@@ -244,7 +191,7 @@ const debitsByTag = computed(() => {
       .reduce((balance, { amount }) => balance + amount, 0)
       .toFixed();
     const percentage = (balance / debitsBalance.value * 100).toFixed();
-    tagsRecords.push({ tag, balance, percentage });
+    tagsRecords.push({ name: tag, balance, percentage });
   })
   tagsRecords.sort((a, b) => a.balance - b.balance);
   if (!showAllDebitTags.value && tagsRecords.length > 5) tagsRecords = tagsRecords.slice(0, 5)

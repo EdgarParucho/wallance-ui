@@ -1,13 +1,16 @@
 <template>
-  <div class="bg-white py-24 sm:py-32">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <dl class="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-3">
-        <div v-for="stat in stats" :key="stat.id" class="mx-auto flex max-w-xs flex-col gap-y-4">
-          <dt class="text-base leading-7 text-gray-600">{{ stat.name }}</dt>
-          <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">{{ stat.value }}</dd>
+  <div>
+    <dl class="md:flex items-center justify-center gap-1">
+      <div
+      v-for="stat in stats" :key="stat.id"
+      class="flex items-center justify-center shadow-md bg-white dark:bg-stone-800 h-36 sm:h-56 w-full lg:w-4/12 xl:w-3/12 2xl:w-2/12"
+      >
+        <div class="grid">
+          <dd class="text-3xl font-semibold text-center text-stone-900 dark:text-stone-100 sm:text-5xl">{{ stat.value }}</dd>
+          <dt class="leading-7 text-stone-600 dark:text-stone-400">{{ stat.name }}</dt>
         </div>
-      </dl>
-    </div>
+      </div>
+    </dl>
   </div>
 </template>
 
@@ -34,9 +37,9 @@ const yearSavings = computed(() => ((yearBalance.value / creditsBalance.value) *
 const averageMonthSaving = computed(() => (yearBalance.value / currentMonth).toFixed());
 
 const stats = [
-  { id: 1, name: 'You have saved this year', value: yearSavings.value + '%'},
-  { id: 2, name: 'You are saving on average monthly', value: '$' + averageMonthSaving.value },
-  { id: 3, name: 'This year estimated savings', value: '$' + averageMonthSaving.value * 12 },
+  { id: 1, name: 'Your savings from this year', value: yearSavings.value + '%'},
+  { id: 2, name: 'Saved on average monthly', value: '$' + averageMonthSaving.value },
+  { id: 3, name: 'The full year estimated savings', value: '$' + averageMonthSaving.value * 12 },
 ];
 
 </script>

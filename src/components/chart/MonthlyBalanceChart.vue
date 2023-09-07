@@ -54,16 +54,52 @@ const monthsBalance = computed(() => {
   return result;
 });
 
+const monthsCredits = computed(() => {
+  const result = [];
+  months.forEach(month => {
+    const monthMatch = (date) => new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(date)) === month;
+    const yearMatch = (date) => new Date(date).getFullYear() === new Date().getFullYear();
+    const monthRecords = props.filteredRecords.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type === 1);
+    const monthBalance = monthRecords.reduce((acc, record) => acc + record.amount, 0);
+    result.push(monthBalance);
+  });
+  return result;
+});
+
+const monthsDebits = computed(() => {
+  const result = [];
+  months.forEach(month => {
+    const monthMatch = (date) => new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(date)) === month;
+    const yearMatch = (date) => new Date(date).getFullYear() === new Date().getFullYear();
+    const monthRecords = props.filteredRecords.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type === 2);
+    const monthBalance = monthRecords.reduce((acc, record) => acc + record.amount, 0);
+    result.push(monthBalance);
+  });
+  return result;
+});
+
 const chartData = computed(() => {
   return {
     labels: months,
     datasets: [
-      {
-        label: "Balance ($)",
-        backgroundColor: '#8b5cf6',
-        borderColor: "#ddd6fe",
-        data: monthsBalance.value
+    {
+        label: "Credits",
+        backgroundColor: '#22c55e',
+        borderColor: "#bbf7d0",
+        data: monthsCredits.value
       },
+      {
+        label: "Debits",
+        backgroundColor: '#dc2626',
+        borderColor: "#fecaca",
+        data: monthsDebits.value
+      },
+      {
+        label: "Balance",
+        backgroundColor: '#7c3aed',
+        borderColor: "#c4b5fd",
+        data: monthsBalance.value
+      }
     ]
   }
 });
