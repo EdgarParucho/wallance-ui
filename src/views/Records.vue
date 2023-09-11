@@ -3,10 +3,11 @@
     <h1 class="text-4xl font-bold">
       Records History
     </h1>
+    <p class="text-xl my-4">
+      It's accurate to consider records as movements.
+    </p>
 
-    <h4
-    class="my-4 px-2 mx-auto md:w-3/4 lg:w-1/2 xl:w-1/3 justify-center flex items-center text-violet-500 bg-violet-900 bg-opacity-10 border-l-4 border-violet-700 rounded-sm py-2"
-    >
+    <h4 class="my-4 px-2 mx-auto md:w-3/4 lg:w-1/2 xl:w-1/3 justify-center flex items-center text-violet-500 bg-violet-600 bg-opacity-20 border-l-4 border-violet-700 rounded-sm py-2">
       <InformationCircleIcon class="w-8 text-left" />
       <span class="mx-auto font-bold">
         Data here is responsive to queries from the panel at the bottom

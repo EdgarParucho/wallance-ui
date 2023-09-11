@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto mt-20 p-3 w-96 h-96 2xl:w-1/4 bg-white dark:bg-stone-800 shadow-lg rounded-md">
+  <div class="mx-auto mt-20 w-96 h-96 2xl:w-1/4 bg-white dark:bg-stone-800 shadow-lg rounded-md">
     <div class="flex items-center justify-center h-12 w-12 rounded-full mx-auto bg-stone-100 dark:bg-stone-800 text-stone-500 shadow-sm shadow-stone-400">
       <Cog6ToothIcon class="h-6 w-6" aria-hidden="true" />
     </div>
@@ -14,7 +14,7 @@
         <div class="mx-10 border-t border-stone-400 dark:border-white" />
       </div>
     </div>
-    <div class="my-4">
+    <div class="my-2">
       <button
       @click="emailFormIsOpen = true"
       class="flex w-full justify-center rounded-md dark:bg-stone-800 mt-2 p-2 text-sm shadow-md bg-stone-100 hover:bg-stone-50 dark:hover:bg-stone-700 font-semibold disabled:text-stone-500"
@@ -27,7 +27,7 @@
       </div>
     </div>
 
-    <div class="my-4">
+    <div class="my-2">
       <button
       @click="requestOTP('update')"
       class="flex w-full justify-center rounded-md dark:bg-stone-800 mt-2 p-2 text-sm shadow-md bg-stone-100 hover:bg-stone-50 dark:hover:bg-stone-700 font-semibold disabled:text-stone-500"
@@ -42,7 +42,7 @@
       @request-otp="requestOTP('update')" />
     </div>
 
-    <div class="my-4">
+    <div class="my-2">
       <button
       @click="requestOTP('delete')"
       class="flex w-full justify-center rounded-md dark:bg-stone-800 mt-2 p-2 text-sm shadow-md bg-stone-100 hover:bg-stone-50 dark:hover:bg-stone-700 font-semibold disabled:text-stone-500"
@@ -52,13 +52,18 @@
       </button>
       <DeleteAccount v-if="deleteFormIsOpen" :form-is-open="deleteFormIsOpen" @close-form="deleteFormIsOpen = false" @request-otp="requestOTP('delete')" />
     </div>
-    <div v-if="requestingOTP" class="flex justify-center space-x-3 border border-yellow-500 py-2 font-bold bg-stone-900">
-      <KeyIcon class="w-5 text-yellow-500" aria-hidden="true" />
-      <span class="text-sm">
+    <div v-if="requestingOTP" class="flex items-center justify-center space-x-3 py-1 font-bold bg-stone-900">
+      <svg
+      class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+      >
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span class="text-sm text-white">
         Requesting validation code
       </span>
     </div>
-
+    
   </div>
 </template>
 

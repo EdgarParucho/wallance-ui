@@ -1,6 +1,6 @@
 <template>
   <div
-  class="neumorphism mx-auto flex bg-white shadow-xl shadow-stone-300 text-stone-400 dark:bg-stone-800 dark:shadow-[#101010]"
+  class="neumorphism mx-auto flex bg-white shadow-md shadow-stone-300 text-stone-400 dark:bg-stone-800 dark:shadow-[#101010]"
   :class="{ 'w-40 h-40': size === 'lg', 'w-12 h-12': size === 'md', 'w-8 h-8': size === 'sm' }"
   >
     <ScaleIcon

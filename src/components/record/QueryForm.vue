@@ -166,7 +166,7 @@
     </div>
     <Dialog :form-is-open="formIsOpen" @close-form="formIsOpen = false" title="Saving Query Config" :icon="CircleStackIcon">
     <div class="py-6 px-8">
-      <form @submit.prevent="saveQuery({ filters, name: queryName })">
+      <form @submit.prevent="savePreferredQuery({ filters, name: queryName })">
         <input
         type="text"
         class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
@@ -275,17 +275,17 @@ function filterByThisYear() {
 }
 
 function updatePreferences(updatingFilters) {
-  if (queryIsSaved.value) removeFromPreferences(updatingFilters);
+  if (queryIsSaved.value) removePreferredQuery(updatingFilters);
   else formIsOpen.value = true;
 }
 
-function saveQuery(query) {
+function savePreferredQuery(query) {
   preferences.value.queries.push(query);
   accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
   formIsOpen.value = false;
 }
 
-function removeFromPreferences(filtersApplied) {
+function removePreferredQuery(filtersApplied) {
   const queryIndex = preferences.value.queries.findIndex(query => JSON.stringify(query.filters) === JSON.stringify(filtersApplied))
   if (queryIndex === -1) return;
   preferences.value.queries.splice(queryIndex, 1);

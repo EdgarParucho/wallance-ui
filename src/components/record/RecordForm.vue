@@ -201,6 +201,7 @@
 import { ref, watch, computed, reactive, inject } from 'vue';
 import { DocumentPlusIcon, PencilSquareIcon, MinusIcon, PlusIcon } from '@heroicons/vue/24/outline';
 import { useRecordStore } from '../../stores/recordStore';
+import { useAccountStore } from '../../stores/accountStore';
 import { useFundStore } from '../../stores/fundStore';
 import { storeToRefs } from "pinia";
 import Dialog from '../layout/Dialog.vue';
@@ -211,7 +212,7 @@ const props = defineProps({
     required: true,
     default: false
   },
-  originalRecord: {
+  presetData: {
     type: Object,
     required: false,
     default: undefined
@@ -220,43 +221,48 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false
+  },
+  followingStep: {
+    type: Number,
+    required: false,
+    default: null
   }
 });
 const emit = defineEmits(['close-form']);
 const displayAlert = inject("alert");
 const recordStore = useRecordStore();
+const accountStore = useAccountStore();
 const fundStore = useFundStore();
 const { recordTags } = storeToRefs(recordStore);
+const { preferences } = storeToRefs(accountStore);
 
-const formDate = (props.editing)
-  ? ref(props.originalRecord.date.slice(0, 10))
+const formDate = (props.presetData !== undefined)
+  ? ref(props.presetData.date.slice(0, 10))
   : ref(new Intl.DateTimeFormat("en-UK").format(new Date()).split("/").reverse().join("-"));
-const formTime = (props.editing)
-  ? ref(new Date(props.originalRecord.date).toTimeString().slice(0, 5))
+const formTime = (props.presetData !== undefined)
+  ? ref(new Date(props.presetData.date).toTimeString().slice(0, 5))
   : ref(new Date().toTimeString().slice(0, 5));
 
 const tagFields = reactive({
-  option: props.editing ? props.originalRecord.tag : "Add new",
+  option: props.presetData !== undefined ? props.presetData.tag : "Add new",
   input: null
 });
 const tagOptions = computed(() => {
   return recordTags.value[record.type];
 });
 
-const formAmount = (props.editing)
-  ? (props.originalRecord.amount < 0) ? ref(-props.originalRecord.amount) : ref(props.originalRecord.amount)
+const formAmount = (props.presetData !== undefined)
+  ? (props.presetData.amount < 0) ? ref(-props.presetData.amount) : ref(props.presetData.amount)
   : ref(1);
 
-  const record = (props.editing)
-  ? reactive({ ...props.originalRecord })
-  : reactive({
-    amount: -1,
-    date: null,
-    note: null,
-    tag: null,
-    fundID: "",
-    type: 2,
-  });
+const record = reactive({ ...props.presetData }) ?? reactive({
+  amount: -1,
+  date: null,
+  note: null,
+  tag: null,
+  fundID: "",
+  type: 2,
+});
 
 const loading = ref(false);
 const recordIsCredit = computed(() => record.type === 1);
@@ -307,10 +313,15 @@ function onSave(record, editing) {
   action(body)
     .then((message) => {
       displayAlert({ title: "Done", type: "success", text: message });
-      emit('close-form');
+    })
+    .then(() => {
+      if (props.followingStep !== null) updateFirstStepsPreferences();
     })
     .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
-    .finally(() => loading.value = false)
+    .finally(() => {
+      loading.value = false
+      emit('close-form');
+    })
 };
 
 function defineBody(record, editing) {
@@ -322,11 +333,16 @@ function defineBody(record, editing) {
 
   const keys = Object.keys(record);
   const entries = [];
-  const valueUpdated = (key) => record[key] !== props.originalRecord[key]
+  const valueUpdated = (key) => record[key] !== props.presetData[key]
   for (const key of keys) if (valueUpdated(key)) entries.push([key, record[key]])
   const body = Object.fromEntries(entries);
-  const { id } = props.originalRecord;
+  const { id } = props.presetData;
   return { id, body };
+}
+
+async function updateFirstStepsPreferences() {
+  preferences.value.FirstStepsStatus[props.followingStep] = "Completed";
+  await accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
 }
 
 watch(

@@ -24,7 +24,7 @@ function amountFormatted(amount) {
     <div class="flex items-center justify-between my-4">
       <div class="flex items-center gap-1">
         <component
-        :class="[title === 'Credits' ? 'bg-green-700 text-green-50' : 'bg-red-700 text-red-50', 'flex p-0.5 rounded-full h-5 w-5']"
+        :class="[title === 'Credits' ? 'text-green-500 bg-green-600' : 'text-red-500 bg-red-600', ' bg-opacity-20 flex p-0.5 rounded-full h-5 w-5']"
         :is="icon"></component>
         <h4 class="text-center text-xl font-bold">{{ title }}</h4>
       </div>

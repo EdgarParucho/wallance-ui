@@ -1,41 +1,42 @@
 <template>
-  <div class="pt-26 pb-8">
+  <div class="py-26 pb-8">
     <Logo class="mx-auto" size="lg" />
     <blockquote class="text-center mt-20 italic" cite="http://www.worldwildlife.org/who/index.html">
       Money is only a tool. It will take you wherever you wish, but it will not replace you as the driver. - Ayn Rand
     </blockquote>
 
-    <div class="my-20">
+    <FirstSteps v-if="gettingStarted" @follow-step="step => followStep(step)" />
+
+    <section class="my-20">
       <h2 class="text-4xl font-bold text-center mt-20">Balance</h2>
       <h4 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">Your overall balance on date.</h4>
       <Balance :balance="balance" />
-    </div>
-
+    </section>
     <div class="flex items-end justify-center mx-auto my-20 space-x-2">
       <h3 class="font-bold text-2xl">
         Not<span class="text-violet-500"> updated</span>?
       </h3>
       <button
       class="text-white hover:bg-violet-500 bg-violet-600 font-bold py-1 px-2 rounded-md w-36 inline-flex items-center"
-      @click="recordFormIsOpen = true"
+      @click="newRecord"
       >
         <PlusIcon class="w-5 text-left" />
         <span class="mx-auto">Add Record</span>
       </button>
     </div>
 
-    <div class="my-28">
+    <section class="my-28">
       <h2 class="text-4xl font-bold text-center mt-20">Let's check some stats</h2>
       <h4 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">Numbers from this year.</h4>
       <Stats class="mt-4" :records="records" />
-    </div>
+    </section>
 
-    <div class="my-28">
+    <section class="my-28">
       <ArchiveBoxIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
       <h2 class="text-4xl font-bold text-center">Funds status</h2>
       <h3 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">This is how you group your assets.</h3>
       <FundsBalances :funds="funds" />
-    </div>
+    </section>
 
     <div class="flex items-end justify-center mx-auto my-20 space-x-2">
       <h3 class="font-bold text-2xl">
@@ -50,7 +51,7 @@
       </button>
     </div>
 
-    <div class="my-28">
+    <section class="my-28">
       <TagIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
       <h2 class="text-4xl font-bold text-center">Tags usage</h2>
       <h3 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">Track your records.</h3>
@@ -68,9 +69,9 @@
         @alternate-limit="showAllDebitTags = !showAllDebitTags"
         :icon="MinusIcon"/>
       </div>
-    </div>
-    
-    <div class="my-28">
+    </section>
+
+    <section class="my-28">
       <BookmarkIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
       <h2 class="text-4xl font-bold text-center">Saved Queries</h2>
       <h3 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">From your preferences to your dashboard.</h3>
@@ -87,28 +88,33 @@
         </button>
       </div>
       <FundsRecords :funds="funds" :filtered-records="filteredRecords" />
-    </div>
-    
-    <div class="md:flex items-center justify-around mt-20 mb-20">
-      <span class="justify-center flex items-center space-x-2">
-        To edit or create funds
-        <router-link to="/funds" class="flex gap-1 mx-2 underline font-bold text-violet-500">
+    </section>
+
+    <div class="grid gap-2 sm:flex items-center justify-around mt-20 mb-20">
+
+      <div class="h-56 w-72 bg-white dark:bg-stone-800 p-4 rounded-md shadow-md text-center">
+        <ArchiveBoxIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+        <p class="my-8">To manage your funds</p>
+        <router-link to="/funds" class="justify-center flex gap-2 underline font-bold text-violet-500 hover:bg-violet-900 hover:bg-opacity-20 transition-colors">
           <LinkIcon class="w-5" />
           Go to funds
         </router-link>
-      </span>
-      <span class="justify-center flex items-center space-x-2">
-        Looking for a specific record?
-        <router-link to="/records" class="flex gap-1 mx-2 underline font-bold text-violet-500">
+      </div>
+
+      <div class="h-56 w-72 bg-white dark:bg-stone-800 p-4 rounded-md shadow-md text-center">
+        <CircleStackIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+        <p class="my-8">For records details and queries</p>
+        <router-link to="/records" class="justify-center flex gap-2 underline font-bold text-violet-500 hover:bg-violet-900 hover:bg-opacity-20 transition-colors">
           <LinkIcon class="w-5" />
           Go to records
         </router-link>
-      </span>
+      </div>
+
     </div>
     <RecordForm
-    v-if="recordFormIsOpen" :form-is-open="recordFormIsOpen" @close-form="recordFormIsOpen = false" :editing="false" />
-    <AssignmentForm
-    v-if="assignmentFormIsOpen" :form-is-open="assignmentFormIsOpen" @close-form="assignmentFormIsOpen = false" />
+    v-if="recordFormIsOpen"
+    :form-is-open="recordFormIsOpen" @close-form="closeForm" :editing="false" :preset-data="presetData" :following-step="followingStep" />
+    <AssignmentForm v-if="assignmentFormIsOpen" :form-is-open="assignmentFormIsOpen" @close-form="closeForm" />
   </div>
 </template>
 
@@ -118,13 +124,14 @@ import { useFundStore } from '../stores/fundStore';
 import { useRecordStore } from '../stores/recordStore';
 import { useAccountStore } from '../stores/accountStore';
 import { storeToRefs } from 'pinia';
-import { BookmarkIcon, MinusIcon, PlusIcon, ArrowsRightLeftIcon, LinkIcon, TagIcon, ArchiveBoxIcon } from '@heroicons/vue/24/solid';
+import { CircleStackIcon, BookmarkIcon, MinusIcon, PlusIcon, ArrowsRightLeftIcon, LinkIcon, TagIcon, ArchiveBoxIcon } from '@heroicons/vue/24/solid';
 import Logo from '../components/layout/Logo.vue';
 import FundsRecords from '../components/record/FundsRecords.vue';
 import Stats from '../components/dashboard/Stats.vue';
 import Balance from '../components/dashboard/Balance.vue';
 import FundsBalances from '../components/dashboard/FundsBalances.vue';
 import TopTags from '../components/dashboard/TopTags.vue';
+import FirstSteps from '../components/dashboard/FirstSteps.vue'
 
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
 const AssignmentForm = defineAsyncComponent(() => import('../components/record/AssignmentForm.vue'));
@@ -149,6 +156,9 @@ const appliedFilters = ref({
   type: null,
 });
 
+let presetData = null;
+let followingStep = null;
+
 if (preferences.value.queries[0] !== undefined) appliedFilters.value = preferences.value.queries[0].filters;
 
 const balance = computed(() => {
@@ -164,6 +174,7 @@ const debitsBalance = computed(() => records.value
   .reduce((totalCredits, { amount }) => totalCredits + Number(amount), 0)
 );
 
+const gettingStarted = computed(() => preferences.value.FirstStepsStatus === undefined || preferences.value.FirstStepsStatus?.some(step => step === "Active"))
 const creditsByTag = computed(() => {
   const tagsRecords = [];
   const creditRecords = records.value.filter(record => record.type === 1);
@@ -218,6 +229,17 @@ const filteredRecords = computed(() => {
   return resultingRecords;
 });
 
+function newRecord() {
+  presetData = undefined;
+  recordFormIsOpen.value = true
+}
+
+function closeForm() {
+  presetData = undefined;
+  recordFormIsOpen.value = false;
+  assignmentFormIsOpen.value = false;
+}
+
 function amountFormatted(amount) {
   const integer = Math.floor(amount);
   const fractions = amount
@@ -234,8 +256,12 @@ function queryIsApplied({ filters, name }) {
   return JSON.stringify(filters) === JSON.stringify(appliedFilters.value)
 }
 
-function clearFilters() {
-  appliedFilters.value = { tag: "", note: "", fromDate: null, toDate: null, type: null, name: "" };
+function followStep({ id, status, preset }) {
+  followingStep = id;
+  presetData = preset;
+  recordFormIsOpen.value = true;
 }
+
+
 
 </script>

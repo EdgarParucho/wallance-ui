@@ -21,7 +21,7 @@
       </div>
     </dl>
     <div
-    class="my-4 px-2 mx-auto md:w-2/3 lg:w-1/2 xl:w-1/3 flex items-center text-violet-500 bg-violet-900 bg-opacity-10 border-l-4 border-violet-700 rounded-sm py-2"
+    class="my-4 px-2 mx-auto md:w-2/3 lg:w-1/2 xl:w-1/3 flex items-center text-violet-500 bg-violet-600 bg-opacity-20 border-l-4 border-violet-700 rounded-sm py-2"
     v-show="balanceDiff && balanceDiff !== currentBalance"
     >
       <InformationCircleIcon class="w-8 text-left" />
