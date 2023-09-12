@@ -255,7 +255,7 @@ const formAmount = (props.presetData !== undefined)
   ? (props.presetData.amount < 0) ? ref(-props.presetData.amount) : ref(props.presetData.amount)
   : ref(1);
 
-const record = reactive({ ...props.presetData }) ?? reactive({
+const record = (props.presetData !== undefined) ? reactive({ ...props.presetData }) : reactive({
   amount: -1,
   date: null,
   note: null,
