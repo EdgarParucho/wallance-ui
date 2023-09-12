@@ -55,7 +55,7 @@
     :form-is-open="recordFormIsOpen"
     @close-form="closeForm"
     :editing="true"
-    :original-record="originalRecord"
+    :preset-data="originalRecord"
     />
     <AssignmentForm
     v-if="assignmentFormIsOpen"
