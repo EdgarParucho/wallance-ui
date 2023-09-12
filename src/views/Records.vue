@@ -4,31 +4,38 @@
       Records History
     </h1>
     <p class="text-xl my-4">
-      It's accurate to consider records as movements.
+      Find and manage your records from here. Take a look on the dynamic stats when you make your query. 
     </p>
 
-    <h4 class="my-4 px-2 mx-auto md:w-3/4 lg:w-1/2 xl:w-1/3 justify-center flex items-center text-violet-500 bg-violet-600 bg-opacity-20 border-l-4 border-violet-700 rounded-sm py-2">
+    <h4 class="my-10 px-2 mx-auto md:w-3/4 lg:w-1/2 xl:w-1/3 justify-center flex items-center text-violet-500 bg-violet-600 bg-opacity-20 border-l-4 border-violet-700 rounded-sm py-2">
       <InformationCircleIcon class="w-8 text-left" />
       <span class="mx-auto font-bold">
         Data here is responsive to queries from the panel at the bottom
       </span>
     </h4>
 
-    <div class="lg:flex my-10 p-10 justify-between items-center shadow-md rounded-md bg-white dark:bg-stone-800">
-      <div class="grid w-4/12">
-        <div class="p-10">
-          <TagsEquivalenceChart :filtered-records="filteredRecords" />
-        </div>
-        <div>
-          <TypesSumChart :filtered-records="filteredRecords" />
-        </div>
-      </div>
-      <div class="lg:w-7/12">
+    <div class="lg:flex my-10 justify-center items-center">
+      <div class="lg:w-7/12 p-10 shadow-md rounded-md bg-white dark:bg-stone-800">
+        <h4 class="text-xl font-bold text-center mb-4 text-stone-600 dark:text-stone-300">
+          Balance - Current year
+        </h4>
         <MonthlyBalanceChart :filtered-records="filteredRecords" />
       </div>
     </div>
 
-    <div class="lg:flex items-end gap-2 my-10 justify-center">
+    <div class="md:flex my-10 justify-center items-center space-x-1">
+      <div class="md:w-1/2 2xl:w-1/3 p-4 shadow-md rounded-md bg-white dark:bg-stone-800">
+        <h4 class="text-xl font-bold text-center mb-4 text-stone-600 dark:text-stone-300">
+          Credit-Debit Balance
+        </h4>
+        <TypesSumChart :filtered-records="filteredRecords" />
+      </div>
+      <div class="md:w-1/2 2xl:w-1/3 p-4 shadow-md rounded-md bg-white dark:bg-stone-800">
+        <h4 class="text-xl font-bold text-center mb-4 text-stone-600 dark:text-stone-300">
+          Tags Usage
+        </h4>
+        <TagsEquivalenceChart :filtered-records="filteredRecords" />
+      </div>
     </div>
 
     <div class="my-16">

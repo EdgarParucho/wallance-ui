@@ -1,12 +1,12 @@
 <template>
   <div>
-    <Bar id="debits-tags-chart" :options="chartOptions" :data="chartData" />
+    <Doughnut id="debits-tags-chart" :options="chartOptions" :data="chartData" />
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue';
-import { Bar } from 'vue-chartjs'
+import { Doughnut } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
@@ -85,7 +85,8 @@ const chartOptions = computed(() => {
     indexAxis: 'y',
     plugins: {
       legend: {
-        display: false
+        position: "bottom",
+        labels: { color: "#878787" }
       },
       borderColor: "#fff"
     },

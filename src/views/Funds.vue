@@ -1,9 +1,31 @@
 <template>
   <div class="mb-8 mx-auto">
     <h1 class="text-4xl font-bold">Funds</h1>
-    <p class="mt-2 mb-8">
-      Consider funds as spaces dedicated to group records as required by your management.
+    <p class="text-xl my-4">
+      Think in a fund like an account, a space to manage your records and the balance resulting from them.
     </p>
+
+    <div v-if="funds.length < 2" class="lg:flex justify-around mt-10">
+      <div class="lg:w-1/3 my-10">
+        <h3 class="text-center text-2xl my-4 font-bold">Why having multiple funds?</h3>
+        <p class="text-justify text-lg my-4">
+          One word: flexibility. With multiple funds, you're able to implement different methods like
+          <a class="underline" href="https://www.betterinvesting.org/learn-about-investing/investor-education/personal-finance/the-bucket-approach" target="_blank">the buckets approach</a>,
+          or try your own ones, like creating an X fund for X goal, or organizing funds by subjects (e.g. services).
+        </p>
+      </div>
+
+      <div class="lg:w-1/3 my-10">
+        <h3 class="text-center text-2xl my-4 font-bold">Getting started with funds</h3>
+        <p class="text-justify text-lg my-4">
+          You start with a default fund (Base). All credits go there, increasing the fund's balance available
+          for debits and assignments to other funds.
+        </p>
+        <p class="text-justify text-lg my-4">
+          Any fund you create can increase its balance through assignments, and then also be used for debits or assigning to another fund.
+        </p>
+      </div>
+    </div>
 
     <div class="lg:flex lg:justify-between space-y-10 mt-10">
       <div class="sm:w-3/4 lg:w-2/4 xl:w-1/3 mx-auto mt-24">

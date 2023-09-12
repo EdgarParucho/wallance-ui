@@ -38,7 +38,20 @@
       <FundsBalances :funds="funds" />
     </section>
 
-    <div class="flex items-end justify-center mx-auto my-20 space-x-2">
+    <div v-if="funds.length < 2" class="flex items-end justify-center mx-auto mb-20 space-x-2">
+      <h3 class="font-bold text-2xl">
+        Grouping into funds can<span class="text-violet-500"> illuminate </span>your management.
+      </h3>
+      <a
+      class="text-white hover:bg-violet-500 bg-violet-600 font-bold py-1 px-2 gap-1 rounded-md w-36 inline-flex items-center justify-center"
+      href="/funds"
+      >
+        <LinkIcon class="w-5 text-left" />
+        <span class="mx-auto">Learn</span>
+      </a>
+    </div>
+
+    <div v-else class="flex items-end justify-center mx-auto mb-20 space-x-2">
       <h3 class="font-bold text-2xl">
         <span class="text-violet-500">Move balance </span>between funds through
       </h3>
@@ -55,42 +68,91 @@
       <TagIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
       <h2 class="text-4xl font-bold text-center">Tags usage</h2>
       <h3 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">Track your records.</h3>
-      <div class="2xl:flex 2xl:items-start 2xl:justify-around">
+
+      <div v-if="creditsByTag.totalTags < 1 && debitsByTag.totalTags < 1" class="text-center my-20">
+        <h3 class="font-bold text-2xl mb-4">
+          You may want to<span class="text-violet-500"> start using Tags </span>
+        </h3>
+        <p>This feature is intended to mark recurrent records, so you can measure, track and find them easier.</p>
+        <p><span class="font-bold">Check these examples </span>to take advantage of Tags.</p>
+        <div class="mt-10 2xl:flex 2xl:items-start 2xl:justify-around">
+          <TopTags
+          :tags="{
+            data: [
+              { name: 'Salary', balance: 700, percentage: 58 },
+              { name: 'Bonifications', balance: 500, percentage: 42 },
+            ],
+            totalTags: 2
+          }"
+          title="Credits"
+          :show-all-tags="false"
+          :icon="PlusIcon"/>
+          <TopTags
+          :tags="{
+            data: [
+              { name: 'Rent', balance: 300, percentage: 53 },
+              { name: 'Car repairs', balance: 150, percentage: 26 },
+              { name: 'School', balance: 120, percentage: 21 },
+            ],
+            totalTags: 3
+          }"
+          title="Debits"
+          :show-all-tags="false"
+          :icon="MinusIcon" />
+        </div>
+      </div>
+
+      <div v-else class="2xl:flex 2xl:items-start 2xl:justify-around">
         <TopTags
         :tags="creditsByTag"
         title="Credits"
         :show-all-tags="showAllCreditTags"
         @alternate-limit="showAllCreditTags = !showAllCreditTags"
-        :icon="PlusIcon"/>
+        :icon="PlusIcon" />
         <TopTags
         :tags="debitsByTag"
         title="Debits"
         :show-all-tags="showAllDebitTags"
         @alternate-limit="showAllDebitTags = !showAllDebitTags"
-        :icon="MinusIcon"/>
+        :icon="MinusIcon" />
       </div>
     </section>
 
     <section class="my-28">
+
       <BookmarkIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
       <h2 class="text-4xl font-bold text-center">Saved Queries</h2>
       <h3 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">From your preferences to your dashboard.</h3>
-      <div class="text-center my-4">
-        <button
-        v-for="query, i in preferences.queries" :key="i"
-        :class="[
-          { 'bg-violet-500 dark:bg-violet-500 text-white hover:bg-violet-500 dark:hover:bg-violet-500': queryIsApplied(query) },
-          'font-bold text-xs py-1 px-3 rounded-full mx-1 shadow-stone-400 shadow-sm'
-        ]"
-        @click="appliedFilters = query.filters"
-        >
-          {{ query.name }}
-        </button>
+
+      <div v-if="preferences.queries.length > 0">
+        <div class="text-center my-4">
+          <button
+          v-for="query, i in preferences.queries" :key="i"
+          :class="[
+            { 'bg-violet-500 dark:bg-violet-500 text-white hover:bg-violet-500 dark:hover:bg-violet-500': queryIsApplied(query) },
+            'font-bold text-xs py-1 px-3 rounded-full mx-1 shadow-stone-400 shadow-sm'
+          ]"
+          @click="appliedFilters = query.filters"
+          >
+            {{ query.name }}
+          </button>
+        </div>
+        <FundsRecords :funds="funds" :filtered-records="filteredRecords" />
       </div>
-      <FundsRecords :funds="funds" :filtered-records="filteredRecords" />
+
+      <div v-else class="text-center my-20">
+        <h3 class="font-bold text-2xl mb-4">Did you know you can<span class="text-violet-500"> save queries</span>?</h3>
+        <p>Just go to Records, set the parameters in the query panel, and name it.</p>
+        <p>
+          Mix the properties as needed:
+          <span class="italic">Credits this year</span>, <span class="italic">Records tagged with &quot;bills&quot; and the word &quot;cash&quot; within the note.</span>
+        </p>
+        <p>Plus, the overall results will be here in your dashboard.</p>
+      </div>
+
     </section>
 
-    <div class="grid gap-2 sm:flex items-center justify-around mt-20 mb-20">
+    <div class="grid gap-2 sm:flex items-center justify-around my-28">
 
       <div class="h-56 w-72 bg-white dark:bg-stone-800 p-4 rounded-md shadow-md text-center">
         <ArchiveBoxIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
@@ -261,7 +323,5 @@ function followStep({ id, status, preset }) {
   presetData = preset;
   recordFormIsOpen.value = true;
 }
-
-
 
 </script>

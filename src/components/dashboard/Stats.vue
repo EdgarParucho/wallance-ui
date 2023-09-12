@@ -36,10 +36,10 @@ const creditsBalance = computed(() => yearCredits.value.reduce((balance, { amoun
 const debitsBalance = computed(() => yearDebits.value.reduce((balance, { amount }) => (balance + Number(amount)), 0));
 const yearBalance = computed(() => creditsBalance.value + debitsBalance.value);
 const yearSavings = computed(() => (creditsBalance.value > 0) ? (yearBalance.value / creditsBalance.value) * 100 : 0);
-const averageMonthSaving = computed(() => (yearBalance.value / (currentMonth - 1)).toFixed(2));
+const averageMonthSaving = computed(() => (yearBalance.value / (currentMonth - 1)).toFixed());
 
 const stats = computed(() => [
-  { id: 1, name: 'Your savings from this year', value: yearSavings.value + '%'},
+  { id: 1, name: 'Your savings from this year', value: yearSavings.value.toFixed() + '%'},
   { id: 2, name: 'Saved on average monthly', value: '$' + averageMonthSaving.value },
   { id: 3, name: 'The full year estimated savings', value: '$' + (averageMonthSaving.value * 12).toFixed() },
 ]);

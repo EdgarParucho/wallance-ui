@@ -44,9 +44,9 @@ let assignmentFormIsOpen = ref(false);
     <button
     @click="assignmentFormIsOpen = true"
     :disabled="funds.length < 2"
-    class="grid justify-center pt-1 h-full w-full font-semibold hover:bg-white dark:hover:bg-stone-700"
+    class="grid justify-center pt-1 h-full w-full font-semibold hover:bg-white dark:hover:bg-stone-700 disabled:text-stone-400 disabled:dark:text-stone-500"
     >
-      <ArrowsRightLeftIcon class="text-violet-500 w-6 mx-auto" />
+      <ArrowsRightLeftIcon :class="[(funds.length < 2) ?'text-stone-400 dark:text-stone-500' : 'text-violet-500', 'w-6 mx-auto']" />
       <small>Assign</small>
     </button>
     <RecordForm v-if="recordFormIsOpen" :form-is-open="recordFormIsOpen" @close-form="recordFormIsOpen = false" :editing="false" />

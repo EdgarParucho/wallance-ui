@@ -111,7 +111,7 @@ const chartOptions = computed(() => {
         labels: { color: "#878787" }
       },
       title: {
-        display: true,
+        display: false,
         text: "Balance by month",
         color: "#878787",
       },

@@ -33,7 +33,7 @@
             >
           </div>
         </div>
-        
+
         <div class="my-4 flex items-center space-x-6">
           <div class="flex items-center space-x-2">
             <input
@@ -64,7 +64,7 @@
             </label>
           </div>
         </div>
-          
+
         <div class="mt-4 flex items-center justify-between">
           <label for="fundID" class="text-left w-1/3 text-xs font-semibold">
             Fund
@@ -85,7 +85,7 @@
               <span>{{ fund.name }}</span>
             </option>
           </select>
-          
+
         </div>
 
         <div class="flex items-center justify-end space-x-2 mt-2">
@@ -131,7 +131,7 @@
             v-model="tagFields.option"
             >
               <option class="text-white bg-stone-600 disabled:text-opacity-50 font-medium">
-                <span>-- Add new --</span>
+                <span>Add new</span>
               </option>
               <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="tag, i in tagOptions" :key="i">
                 {{ tag }}
@@ -139,7 +139,7 @@
             </select>
             <input
               type="text"
-              :disabled="tagFields.option !== '-- Add new --'"
+              :disabled="tagFields.option !== 'Add new'"
               class="w-5/12 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm"
               placeholder="New tag"
               required
@@ -244,8 +244,8 @@ const formTime = (props.presetData !== undefined)
   : ref(new Date().toTimeString().slice(0, 5));
 
 const tagFields = reactive({
-  option: props.presetData !== undefined ? props.presetData.tag : "Add new",
-  input: null
+  option: (props.presetData !== undefined && props.followingStep === null) ? props.presetData.tag : "Add new",
+  input: (props.followingStep !== null) ? props.presetData.tag : null
 });
 const tagOptions = computed(() => {
   return recordTags.value[record.type];
@@ -341,6 +341,7 @@ function defineBody(record, editing) {
 }
 
 async function updateFirstStepsPreferences() {
+  if (preferences.value.FirstStepsStatus === undefined) preferences.value.FirstStepsStatus = ["Active", "Active", "Active"];
   preferences.value.FirstStepsStatus[props.followingStep] = "Completed";
   await accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
 }

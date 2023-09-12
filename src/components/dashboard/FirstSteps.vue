@@ -39,7 +39,7 @@
           </button>
           <button
           class="w-44 mx-auto text-sm rounded-sm text-stone-500 dark:text-stone-200  hover:bg-stone-100 dark:hover:bg-stone-700 transition-colors"
-          @click="dontShowAgain(step.id)"
+          @click="dontShowAgain(step.id, 'Hidden')"
           >
             Don't show again
           </button>
@@ -138,21 +138,17 @@ if (preferences.value.FirstStepsStatus) steps.value.forEach(step => step.status 
 
 function StepIsHidden(stepID) {
   if (preferences.value.FirstStepsStatus === undefined) return false
-  return preferences.value.FirstStepsStatus[stepID] === 'Hidden' ?? false;
+  return preferences.value.FirstStepsStatus[stepID] === 'Hidden';
 }
 
 function StepIsCompleted(stepID) {
   if (preferences.value.FirstStepsStatus === undefined) return false
-  return preferences.value.FirstStepsStatus[stepID] === 'Completed' ?? false;
+  return preferences.value.FirstStepsStatus[stepID] === 'Completed';
 }
 
-function dontShowAgain(stepIndex) {
-  steps.value[stepIndex].status = "Hidden";
-  updateFirstStepsPreferences()
-}
-
-async function updateFirstStepsPreferences() {
-  preferences.value.FirstStepsStatus = steps.value.map(({ status }) => status);
+async function dontShowAgain(stepNumber, stepStatus) {
+  if (preferences.value.FirstStepsStatus === undefined) preferences.value.FirstStepsStatus = ["Active", "Active", "Active"];
+  preferences.value.FirstStepsStatus[stepNumber] = stepStatus;
   await accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
 }
 

@@ -1,12 +1,12 @@
 <template>
-  <div class="xl:pr-12">
-    <Pie id="debits-tags-chart" :options="chartOptions" :data="chartData" />
+  <div>
+    <Doughnut id="debits-tags-chart" :options="chartOptions" :data="chartData" />
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue';
-import { Pie } from 'vue-chartjs'
+import { Doughnut } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
@@ -75,7 +75,7 @@ const chartOptions = computed(() => {
     responsive: true,
     plugins: {
       legend: {
-        position: "left",
+        position: "bottom",
         labels: { color: "#878787" }
       }
     }
