@@ -74,7 +74,7 @@
           You may want to<span class="text-violet-500"> start using Tags </span>
         </h3>
         <p>This feature is intended to mark recurrent records, so you can measure, track and find them easier.</p>
-        <p><span class="font-bold">Check these examples </span>to take advantage of Tags.</p>
+        <p><span class="font-bold">Check the following examples </span>to take advantage of Tags.</p>
         <div class="mt-10 2xl:flex 2xl:items-start 2xl:justify-around">
           <TopTags
           :tags="{

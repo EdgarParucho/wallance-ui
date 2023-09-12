@@ -85,7 +85,7 @@
           </label>
           <div class="relative rounded-md w-1/2">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 space-x-2">
-              <div class="p-1 bg-stone-700 text-white rounded-full">
+              <div class="p-1 text-stone-500 bg-stone-600 bg-opacity-20 rounded-full">
                 <ArrowsRightLeftIcon class="h-4 w-4" />
               </div>
               <span class="sm:text-md">$</span>

@@ -112,9 +112,9 @@ function getRecordTypeIcon({ type }) {
 };
 
 function getRecordTypeStyles({ type }) {
-  if (type === 0) return 'bg-stone-300 dark:bg-stone-700'
-  else if (type === 1) return 'text-green-50 bg-green-700'
-  else return 'text-red-50 bg-red-700'
+  if (type === 0) return 'text-stone-500 bg-stone-600 bg-opacity-20'
+  else if (type === 1) return 'text-green-500 bg-green-600 bg-opacity-20'
+  else return 'text-red-500 bg-red-600 bg-opacity-20'
 };
 
 function getFundName({ fundID }) {

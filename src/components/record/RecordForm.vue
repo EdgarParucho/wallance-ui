@@ -100,7 +100,7 @@
 
           <div class="relative rounded-md w-2/3">
             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 space-x-2">
-              <div :class="[typeStyles, 'p-1 rounded-full']">
+              <div :class="[typeStyles, 'bg-opacity-20 p-1 rounded-full']">
                 <component class="h-4 w-4" :is="typeIcon" />
               </div>
               <span class="sm:text-md">$</span>
@@ -296,8 +296,8 @@ const typeIcon = computed(() => {
 });
 
 const typeStyles = computed(() => {
-  if (record.type === 1) return 'text-green-50 bg-green-700'
-  else return 'text-red-50 bg-red-700'
+  if (record.type === 1) return 'text-green-500 bg-green-600'
+  else return 'text-red-500 bg-red-600'
 });
 
 const formHasErrors = computed(() => {

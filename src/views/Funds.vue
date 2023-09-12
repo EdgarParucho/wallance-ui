@@ -27,8 +27,8 @@
       </div>
     </div>
 
-    <div class="lg:flex lg:justify-between space-y-10 mt-10">
-      <div class="sm:w-3/4 lg:w-2/4 xl:w-1/3 mx-auto mt-24">
+    <div class="lg:flex lg:justify-center space-y-10 mt-10">
+      <div v-if="funds.length > 1" class="sm:w-3/4 lg:w-2/4 xl:w-1/3 mx-auto mt-24">
         <BalanceByFundChart />
       </div>
       <div class="lg:w-2/4 space-y-4 pb-6">
@@ -61,9 +61,10 @@ import { storeToRefs } from 'pinia';
 import { useFundStore } from '../stores/fundStore';
 import FundCard from '../components/fund/FundCard.vue';
 import swal from "sweetalert";
-import BalanceByFundChart from '../components/chart/BalanceByFundChart.vue';
 
 const FundForm = defineAsyncComponent(() => import('../components/fund/FundForm.vue'))
+const BalanceByFundChart = defineAsyncComponent(() => import('../components/chart/BalanceByFundChart.vue'))
+
 const displayAlert = inject("alert");
 const fundStore = useFundStore();
 
