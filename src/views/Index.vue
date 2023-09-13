@@ -37,11 +37,40 @@
       :action="recoveringPassword ? 'recovery' : 'sign'"
       @close-form="signFormIsOpen = false"
     />
+    <div class="flex justify-center">
+      <footer class="bottom-0 absolute h-16 bg-stone-800 w-11/12 lg:w-5/12 flex items-center justify-between rounded-sm p-4">
+
+        <div class="grid">
+          <div class="text-zinc-600 dark:text-zinc-400">
+            <h1 class="tracking-tight">
+              A project by
+              <span class="text-zinc-900 dark:text-zinc-100 sign text-xl">Edgar Parucho</span>
+            </h1>
+            <a href="https://edgarparucho.github.io/" target="_blank" class="text-zinc-900 dark:text-zinc-100 underline flex gap-1">
+              <LinkIcon class="w-4" />
+              edgarparucho.github.io
+            </a>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-center space-x-2">
+          <a
+          v-for="link, k in links" :key="k"
+          :href="link.URL"
+          target="_blank"
+          :title="link.title"
+          class="rounded-full border border-transparent shadow-sm shadow-zinc-900 bg-white hover:scale-110 transition-all"
+          >
+            <img width="32" height="32" :src="link.icon" :alt="link.title">
+          </a>
+        </div>
+      </footer>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { KeyIcon } from '@heroicons/vue/24/outline';
+import { KeyIcon, LinkIcon } from '@heroicons/vue/24/outline';
 import Login from '../components/credential/Login.vue';
 import Logo from '../components/layout/Logo.vue';
 import Sign from '../components/credential/Sign.vue';
@@ -51,7 +80,13 @@ const signFormIsOpen = ref(false);
 const loginFormIsOpen = ref(false);
 const recoveringPassword = ref(false);
 
-function recoverPassword() {
+const links = [
+  { URL: 'https://www.linkedin.com/in/edgarparucho/', title: "Linkedin", icon: "https://img.icons8.com/ios-filled/50/linkedin-circled--v1.png" },
+  { URL: 'mailto:parucho.edgar@outlook.es', title: "Email", icon: "https://img.icons8.com/ios-filled/50/circled-envelope.png" },
+  { URL: 'https://www.github.com/EdgarParucho', title: "GitHub", icon: "https://img.icons8.com/ios-filled/50/github--v1.png",  }
+]        
+        
+ function recoverPassword() {
   recoveringPassword.value = true;
   signFormIsOpen.value = true;
 }
@@ -62,3 +97,10 @@ watch(() => signFormIsOpen.value,
 });
 
 </script>
+
+<style scoped>
+.sign {
+  /* font-family: 'Parisienne', cursive; */
+  font-family: 'Sriracha', cursive;
+}
+</style>
