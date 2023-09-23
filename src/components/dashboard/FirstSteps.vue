@@ -113,7 +113,7 @@ const steps = ref([
       amount: 1,
       date: dateFormatted(currentDate.value, "00:01"),
       note: "Starting data: Total Revenue.",
-      tag: "Starting Balance",
+      tag: "Accumulated income",
       fundID: defaultFund.value.id,
       type: 1,
     }
@@ -127,7 +127,7 @@ const steps = ref([
       amount: -1,
       date: dateFormatted(currentDate.value, "00:02"),
       note: "Starting data: Total Expenditures.",
-      tag: "Starting Balance",
+      tag: "Accumulated expenses",
       fundID: defaultFund.value.id,
       type: 2,
     }

@@ -134,8 +134,9 @@
         <div class="my-4 text-left items-center">
           <label for="note" class="text-xs font-semibold">Note</label>
           <textarea id="note"
-            class="text-sm text-stone-200 bg-transparent w-full border-0 border-b focus:outline-0 active:outline-0 focus:ring-0 active:ring-0"
-            placeholder="A creative description" maxlength="80" v-model="record.note" required />
+            class="text-sm bg-transparent w-full border-0 border-b focus:outline-0 active:outline-0 focus:ring-0 active:ring-0"
+            placeholder="A creative description" maxlength="80" v-model="record.note" required
+          />
         </div>
 
         <div class="h-1/3 flex items-center justify-end my-4 space-x-2">

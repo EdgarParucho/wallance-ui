@@ -178,7 +178,7 @@
       </button>
       <button
       type="button"
-      class="mt-3 inline-flex w-full justify-center rounded-md px-4 py-2 text-base font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-white sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm hover:bg-violet-500 bg-violet-600 text-white disabled:bg-stone-300 dark:disabled:bg-stone-700 dark:disabled:text-stone-400"
+      class="mt-3 inline-flex gap-2 w-full justify-center rounded-md px-4 py-2 text-base font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-white sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm hover:bg-violet-500 bg-violet-600 text-white disabled:bg-stone-300 dark:disabled:bg-stone-700 dark:disabled:text-stone-400"
       @click="onSave(record, editing)"
       :disabled="loading || formHasErrors"
       >
@@ -306,6 +306,7 @@ const formHasErrors = computed(() => {
   const invalidFundID = record.fundID === "";
   return invalidDate || invalidAmount || invalidFundID;
 });
+
 function onSave(record, editing) {
   loading.value = true;
   const action = editing ? recordStore.updateRecord : recordStore.createRecord;
@@ -313,20 +314,16 @@ function onSave(record, editing) {
   action(body)
     .then((message) => {
       displayAlert({ title: "Done", type: "success", text: message });
-    })
-    .then(() => {
       if (props.followingStep !== null) updateFirstStepsPreferences();
-    })
-    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
-    .finally(() => {
-      loading.value = false
       emit('close-form');
     })
+    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .finally(() => loading.value = false)
 };
 
 function defineBody(record, editing) {
   record.date = new Date(datetime.value).toISOString();
-  if (record.note === null) delete record.note;
+  if (record.note === null || record.note === undefined || record.note === "") delete record.note;
   if (tagFields.option === "Add new" && tagFields.input === null) delete record.tag;
   else record.tag = tagFields.input || tagFields.option;
   if (!editing) return { body: record };
