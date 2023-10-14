@@ -24,13 +24,13 @@
     </div>
 
     <div class="md:flex my-10 justify-center items-center space-x-1">
-      <div class="md:w-1/2 2xl:w-1/3 p-4 shadow-md rounded-md bg-white dark:bg-stone-800">
+      <div class="md:w-1/3 2xl:w-1/3 p-4 shadow-md rounded-md bg-white dark:bg-stone-800">
         <h4 class="text-xl font-bold text-center mb-4 text-stone-600 dark:text-stone-300">
           Credit-Debit Balance
         </h4>
         <TypesSumChart :filtered-records="filteredRecords" />
       </div>
-      <div class="md:w-1/2 2xl:w-1/3 p-4 shadow-md rounded-md bg-white dark:bg-stone-800">
+      <div class="md:w-1/3 2xl:w-1/3 p-4 shadow-md rounded-md bg-white dark:bg-stone-800">
         <h4 class="text-xl font-bold text-center mb-4 text-stone-600 dark:text-stone-300">
           Tags Usage
         </h4>

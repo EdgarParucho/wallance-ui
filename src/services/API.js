@@ -1,5 +1,9 @@
 import axios from 'axios';
 
-const API = axios.create({ baseURL: 'https://wallance.onrender.com/api' });
+const baseURL = import.meta.env.HOST ?? 'http://localhost:3000/api';
+
+const API = axios.create({
+  baseURL
+});
 
 export default API;

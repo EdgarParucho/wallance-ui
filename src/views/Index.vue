@@ -41,9 +41,9 @@
       <footer class="bottom-0 absolute h-16 dark:bg-stone-800 w-11/12 lg:w-5/12 flex items-center justify-between rounded-sm p-4">
 
         <div class="grid">
-          <div class="text-zinc-600 dark:text-zinc-400">
+          <div class="text-zinc-600 dark:text-zinc-400 sm:text-xs">
             <h1 class="tracking-tight">
-              A project by
+              Made by
               <span class="text-zinc-900 dark:text-zinc-100 sign text-xl">Edgar Parucho</span>
             </h1>
             <a href="https://edgarparucho.github.io/" target="_blank" class="text-zinc-900 dark:text-zinc-100 underline flex gap-1">
