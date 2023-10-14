@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: 'https://wallance.onrender.com/api',
+  baseURL: import.meta.env.VITE_API,
 });
 
 export default API;
