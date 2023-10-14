@@ -36,7 +36,7 @@ const emit = defineEmits(['edit-fund', 'confirm-deletion']);
 const props = defineProps(['fund']);
 const displayAlert = inject("alert");
 
-function amountFormatted(amount) {
+function amountFormatted(amount = 0) {
   const integer = Math.floor(amount);
   const fractions = amount
     .toString()

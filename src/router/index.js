@@ -49,13 +49,22 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   const credentialStore = useCredentialStore();
-  const tokenIsBlank = (credentialStore.credential.token === "" && credentialStore.credential.token === null && credentialStore.credential.token === undefined);
+  const tokenIsBlank = (credentialStore.credential.token === "" || credentialStore.credential.token === null || credentialStore.credential.token === undefined);
   const tokenExpired = new Date(credentialStore.credential.exp * 1000) < new Date();
-  if ((tokenIsBlank || tokenExpired) && to.name !== 'Index') {
+  if ((tokenIsBlank) && to.name !== 'Index') {
+    swal({
+      icon: "info",
+      title: "Welcome",
+      text: "Please, log in to start.",
+      timer: 3000,
+      button: false })
+    return { name: 'Index' }
+  }
+  if ((tokenExpired) && to.name !== 'Index') {
     swal({
       icon: "info",
       title: "Please log in",
-      text: "For security matters, your session finished.",
+      text: "Your session finished.",
       timer: 3000,
       button: false })
     return { name: 'Index' }
