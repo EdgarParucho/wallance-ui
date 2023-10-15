@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { watch, computed } from 'vue';
 import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from 'vue-router';
 import { useAccountStore } from '../../stores/accountStore';
@@ -14,11 +14,13 @@ const credentialStore = useCredentialStore();
 const { preferences } = storeToRefs(accountStore);
 
 const atHome = computed(() => route.fullPath === '/');
-const darkModeActive = ref(preferences.value.darkMode);
+const darkMode = computed(() => preferences.value.darkMode);
 
 function updateDarkModePreference(isDarkMode) {
-  preferences.value.darkMode = isDarkMode;
   document.querySelector("html").className = isDarkMode ? "dark" : "";
+}
+
+function updateUI() {
   accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
 }
 
@@ -27,7 +29,8 @@ function logout() {
   router.replace('/')
 }
 
-watch(darkModeActive, (newDarkModePreference) => updateDarkModePreference(newDarkModePreference))
+watch(darkMode, (newDarkModePreference) => updateUI(newDarkModePreference))
+watch(darkMode, (newDarkModePreference) => updateDarkModePreference(newDarkModePreference), { immediate: true })
 
 </script>
 
@@ -43,13 +46,13 @@ watch(darkModeActive, (newDarkModePreference) => updateDarkModePreference(newDar
 
     <div class="flex space-x-4">
       <label for="toogleButton" class="flex items-center cursor-pointer space-x-2">
-        <SunIcon :class="[darkModeActive ? 'text-stone-400' : 'text-black', 'transition delay-75 w-5']" />
+        <SunIcon :class="[darkMode ? 'text-stone-400' : 'text-black', 'transition delay-75 w-5']" />
         <div class="relative">
-          <input id="toogleButton" type="checkbox" class="hidden" v-model="darkModeActive">
+          <input id="toogleButton" type="checkbox" class="hidden" v-model="preferences.darkMode">
           <div class="toggle-path bg-stone-500 w-9 h-5 rounded-full shadow-inner" />
           <div class="toggle-circle absolute w-3.5 h-3.5 bg-stone-200 rounded-full shadow inset-y-0 left-0" />
         </div>
-        <MoonIcon :class="[darkModeActive ? 'text-white' : 'text-stone-400', 'transition delay-75 w-5']" />
+        <MoonIcon :class="[darkMode ? 'text-white' : 'text-stone-400', 'transition delay-75 w-5']" />
       </label>
 
     <Menu as="div" class="relative inline-block text-left">

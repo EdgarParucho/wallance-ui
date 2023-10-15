@@ -7,7 +7,6 @@ import { watch } from 'vue';
 export const useAccountStore = defineStore('account', () => {
   const preferences = useLocalStorage("vueUsePreferences", {})
   const credentialStore = useCredentialStore();
-  
 
   const setPreferences = (preferencesValues) => preferences.value = preferencesValues;
   const updateAccount = (data) => {
