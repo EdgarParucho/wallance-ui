@@ -86,7 +86,7 @@ const chartOptions = computed(() => {
     plugins: {
       legend: {
         position: "bottom",
-        labels: { color: "#878787" }
+        labels: { color: "#5d5d5d" }
       },
       borderColor: "#fff"
     },

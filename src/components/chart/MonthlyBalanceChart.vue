@@ -108,20 +108,20 @@ const chartOptions = computed(() => {
     responsive: true,
     plugins: {
       legend: {
-        labels: { color: "#878787" }
+        labels: { color: "#5d5d5d" }
       },
       title: {
         display: false,
         text: "Balance by month",
-        color: "#878787",
+        color: "#5d5d5d",
       },
     },
     scales: {
       x: {
-        ticks: { color: '#878787' }
+        ticks: { color: '#5d5d5d' }
       },
       y: {
-        ticks: { color: '#878787' }
+        ticks: { color: '#5d5d5d' }
       }
     }
   }
