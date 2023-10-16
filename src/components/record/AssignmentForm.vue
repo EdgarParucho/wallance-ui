@@ -65,20 +65,6 @@
           </select>
         </div>
 
-        <div class="grid-flow-col p-2 flex-wrap text-center">
-          <ChartPieIcon class="w-5 h-5 text-violet-500 mx-auto" aria-hidden="true" />
-          <button
-          v-for="picker, i in amountPickers" :key="i"
-          class="text-xs font-bold rounded-xl w-20 m-1 py-1 transition-colors text-white disabled:bg-stone-300 dark:disabled:bg-stone-800 dark:disabled:text-stone-600 disabled:text-stone-400 focus:border-transparent focus:ring-violet-500 focus:ring-2 focus:outline-0"
-          :class="divisorIsApplied(picker) ? 'bg-violet-600 hover:bg-violet-500' : 'bg-stone-800 hover:bg-stone-700'"
-          @click="divideAmount(picker.divisor)"
-          type="button"
-          :disabled="record.fundID === '' || fundBalanceOnDate === 0"
-          >
-            {{ picker.name }}
-          </button>
-        </div>
-
         <div class="my-4 flex text-left items-center">
           <label for="amount" class="w-1/2 text-xs font-semibold">
             Amount
@@ -139,6 +125,21 @@
           />
         </div>
 
+        <div class="my-2 space-y-2 justify-between flex items-center px-1">
+          <label for="template" class="text-xs font-semibold">
+            Template name
+          </label>
+          <input
+            type="text"
+            name="template"
+            id="template"
+            class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-violet-500 focus:ring-violet-500 sm:text-md disabled:text-stone-600 disabled:border-b-stone-600 placeholder:text-xs"
+            maxlength="100"
+            placeholder="Fill only to save template"
+            v-model="templateName"
+          >
+        </div>
+
         <div class="h-1/3 flex items-center justify-end my-4 space-x-2">
           <button
           class="mt-3 inline-flex w-full justify-center rounded-md px-4 py-2 text-base font-bold shadow-sm bg-stone-300 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-violet-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
@@ -170,6 +171,7 @@ import { ref, reactive, computed, watch, inject } from 'vue'
 import { DocumentPlusIcon, PencilSquareIcon, ChartPieIcon, ArrowsRightLeftIcon } from '@heroicons/vue/24/outline';
 import { useFundStore } from '../../stores/fundStore';
 import { useRecordStore } from '../../stores/recordStore';
+import { useAccountStore } from '../../stores/accountStore';
 import { storeToRefs } from "pinia";
 import Dialog from '../layout/Dialog.vue';
 
@@ -179,50 +181,51 @@ const props = defineProps({
     required: true,
     default: false
   },
-  originalRecord: {
-    type: Object,
-    required: false,
-  },
   editing: {
     type: Boolean,
     required: false,
     default: false
-  }
+  },
+  presetData: {
+    type: Object,
+    required: false,
+    default: undefined
+  },
 });
 const emit = defineEmits(['close-form']);
 const displayAlert = inject("alert");
 const recordStore = useRecordStore();
 const fundStore = useFundStore();
+const accountStore = useAccountStore();
 const { recordTags } = storeToRefs(recordStore);
+const { preferences } = storeToRefs(accountStore);
 
 const loading = ref(false);
-const amountPickers = [
-  { name: 'All', divisor: 1 },
-  { name: '1/2', divisor: 2 },
-  { name: '1/3', divisor: 3 }
-];
 
-const formDate = (props.editing)
-  ? ref(props.originalRecord.date.slice(0, 10))
+const formDate = (props.presetData?.date !== undefined)
+  ? ref(new Intl.DateTimeFormat("en-UK").format(new Date(props.presetData.date)).split("/").reverse().join("-"))
   : ref(new Intl.DateTimeFormat("en-UK").format(new Date()).split("/").reverse().join("-"));
-const formTime = (props.editing)
-  ? ref(new Date(props.originalRecord.date).toTimeString().slice(0, 5))
+const formTime = (props.presetData?.date !== undefined)
+  ? ref(new Date(props.presetData.date).toTimeString().slice(0, 5))
   : ref(new Date().toTimeString().slice(0, 5));
+
+const templateName = ref("");
 
 const datetime = computed(() => `${formDate.value}T${formTime.value}:01`);
 
 const tagFields = reactive({
-  option: props.editing ? props.originalRecord.tag : "Add new",
-  input: null
+  option: (props.presetData !== undefined) ? props.presetData?.tag : "Add new",
+  input: (props.presetData !== null) ? props.presetData?.tag : null
 });
 
 const tagOptions = computed(() => {
-  return recordTags.value[0];
+  return recordTags.value[record.type];
 });
+
 const formAmount = (props.editing)
-  ? ref(-props.originalRecord.amount)
+  ? ref(-props.presetData.amount)
   : ref(1);
-const record = reactive(props.editing ? { ...props.originalRecord } : {
+let record = reactive({
   amount: -1,
   date: null,
   note: null,
@@ -232,6 +235,7 @@ const record = reactive(props.editing ? { ...props.originalRecord } : {
   type: 0,
 });
 
+if (props.presetData !== undefined) record = { ...record, ...props.presetData };
 const formIsValid = computed(() => record.fundID !== '' || record.otherFundID !== '');
 
 const fundBalanceOnDate = computed(() => {
@@ -256,16 +260,6 @@ function amountFormatted(amount) {
    }).format(recomposed)
 }
 
-function divisorIsApplied({ divisor }) {
-  if (record.fundID === "" || record.amount === 0) return false
-  const divisorIsApplied = Number(record.amount) === -(fundBalanceOnDate.value / divisor).toFixed(2);
-  return divisorIsApplied;
-}
-
-function divideAmount(divisor) {
-  formAmount.value = (fundBalanceOnDate.value / divisor)
-}
-
 function onSave(record, editing) {
   loading.value = true;
   const action = (editing) ? recordStore.updateRecord : recordStore.createRecord;
@@ -273,6 +267,11 @@ function onSave(record, editing) {
   action(body)
     .then((message) => {
       displayAlert({ title: "Done", type: "success", text: message });
+    })
+    .then(() => {
+      if (templateName.value !== "") saveTemplate(record, templateName.value)
+    })
+    .then(() => {
       emit('close-form');
     })
     .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
@@ -288,11 +287,18 @@ function defineBody(record, editing) {
 
   const keys = Object.keys(record);
   const entries = [];
-  const valueUpdated = (key) => record[key] !== props.originalRecord[key]
+  const valueUpdated = (key) => record[key] !== props.presetData[key]
   for (const key of keys) if (valueUpdated(key)) entries.push([key, record[key]])
   const body = Object.fromEntries(entries);
-  const { id } = props.originalRecord;
+  const { id } = props.presetData;
   return { id, body };
+}
+
+async function saveTemplate(baseRecord, templateName) {
+  const { fundID, otherFundID, amount, tag, note, type } = baseRecord;
+  const fields = { fundID, otherFundID, amount, tag, note, type };
+  preferences.value.templates.push({ fields, name: templateName });
+  await accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
 }
 
 watch(

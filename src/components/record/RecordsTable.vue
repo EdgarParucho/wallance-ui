@@ -1,6 +1,6 @@
 <template>
   <div class="my-4">
-    <table class="border-separate border-spacing-2 border border-stone-300 dark:border-stone-500 mx-auto w-full 2xl:w-2/3">
+    <table class="border-separate border-spacing-2 border border-stone-300 dark:border-stone-500 mx-auto w-full 2xl:w-2/3 text-sm">
       <thead v-if="!underLgBreakpoint">
         <tr>
           <th class="px-4 bg-stone-200 dark:bg-stone-800" v-for="header in headers" :key="header">
@@ -10,7 +10,7 @@
       </thead>
       <tbody>
         <tr class="border-b-white p-2 bg-stone-100 dark:bg-stone-800 my-1" v-for="record in recordRows" :key="record.id" :class="underLgBreakpoint ? 'grid' : ''">
-          <td class="text-end xl:w-64 lg:px-2">
+          <td class="text-end xl:w-40 lg:px-2">
             {{ getDateFormatted(record) }}
           </td>
           <td class="text-end lg:w-36 lg:px-2">
@@ -117,8 +117,10 @@ function getRecordTypeStyles({ type }) {
   else return 'text-red-500 bg-red-600 bg-opacity-20'
 };
 
-function getFundName({ fundID }) {
-  return funds.value.find(fund => fund.id === fundID).name;
+function getFundName({ fundID, otherFundID }) {
+  const primaryFund = funds.value.find(fund => fund.id === fundID).name;
+  const secondaryFund = funds.value.find(fund => fund.id === otherFundID)?.name;
+  return [primaryFund, secondaryFund].join(' | ');
 }
 
 function getAmountFormatted({ amount }) {
@@ -131,10 +133,9 @@ function getAmountFormatted({ amount }) {
 
 function getDateFormatted({ date }){
   return new Intl.DateTimeFormat(undefined, {
-    weekday: "long",
     day: "2-digit",
+    weekday: "short",
     month: "short",
-    year: "2-digit"
   }).format(new Date(date)).toLocaleString()
 }
 

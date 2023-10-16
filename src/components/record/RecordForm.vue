@@ -164,9 +164,24 @@
           ></textarea>
         </div>
 
+        <div class="my-2 space-y-2 justify-between flex items-center px-1">
+          <label for="template" class="text-xs font-semibold">
+            Template name
+          </label>
+          <input
+            type="text"
+            name="template"
+            id="template"
+            class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-violet-500 focus:ring-violet-500 sm:text-md disabled:text-stone-600 disabled:border-b-stone-600 placeholder:text-xs"
+            maxlength="100"
+            placeholder="Fill only to save template"
+            v-model="templateName"
+          >
+        </div>
+
       </fieldset>
 
-      <div class="h-1/3 flex items-center justify-end my-4 space-x-2">
+      <div class="h-1/2 flex items-center justify-end my-4 space-x-2">
         <button
         type="button"
         class="mt-3 inline-flex w-full justify-center rounded-md px-4 py-2 text-base font-bold shadow-sm bg-stone-300 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-violet-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
@@ -236,10 +251,10 @@ const fundStore = useFundStore();
 const { recordTags } = storeToRefs(recordStore);
 const { preferences } = storeToRefs(accountStore);
 
-const formDate = (props.presetData !== undefined)
-  ? ref(props.presetData.date.slice(0, 10))
+const formDate = (props.presetData?.date !== undefined)
+  ? ref(new Intl.DateTimeFormat("en-UK").format(new Date(props.presetData.date)).split("/").reverse().join("-"))
   : ref(new Intl.DateTimeFormat("en-UK").format(new Date()).split("/").reverse().join("-"));
-const formTime = (props.presetData !== undefined)
+const formTime = (props.presetData?.date !== undefined)
   ? ref(new Date(props.presetData.date).toTimeString().slice(0, 5))
   : ref(new Date().toTimeString().slice(0, 5));
 
@@ -255,7 +270,7 @@ const formAmount = (props.presetData !== undefined)
   ? (props.presetData.amount < 0) ? ref(-props.presetData.amount) : ref(props.presetData.amount)
   : ref(1);
 
-const record = (props.presetData !== undefined) ? reactive({ ...props.presetData }) : reactive({
+let record = reactive({
   amount: -1,
   date: null,
   note: null,
@@ -264,7 +279,11 @@ const record = (props.presetData !== undefined) ? reactive({ ...props.presetData
   type: 2,
 });
 
+if (props.presetData !== undefined) record = { ...record, ...props.presetData };
+
 const loading = ref(false);
+const templateName = ref("");
+
 const recordIsCredit = computed(() => record.type === 1);
 const datetime = computed(() => `${formDate.value}T${formTime.value}:01`);
 
@@ -312,18 +331,31 @@ function onSave(record, editing) {
   const action = editing ? recordStore.updateRecord : recordStore.createRecord;
   const body = defineBody(record, editing);
   action(body)
-    .then((message) => {
+  .then((message) => {
       displayAlert({ title: "Done", type: "success", text: message });
       if (props.followingStep !== null) updateFirstStepsPreferences();
+    })
+    .then(() => {
+      if (templateName.value !== "") saveTemplate(record, templateName.value)
+    })
+    .then(() => {
       emit('close-form');
     })
     .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
     .finally(() => loading.value = false)
 };
 
+async function saveTemplate(baseRecord, templateName) {
+  const { fundID, otherFundID, amount, tag, note, type } = baseRecord;
+  const fields = { fundID, otherFundID, amount, tag, note, type };
+  preferences.value.templates.push({ fields, name: templateName });
+  await accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
+}
+
 function defineBody(record, editing) {
   record.date = new Date(datetime.value).toISOString();
   if (record.note === null || record.note === undefined || record.note === "") delete record.note;
+  if (record.otherFundID === null || record.otherFundID === undefined || record.otherFundID === "") delete record.otherFundID;
   if (tagFields.option === "Add new" && tagFields.input === null) delete record.tag;
   else record.tag = tagFields.input || tagFields.option;
   if (!editing) return { body: record };

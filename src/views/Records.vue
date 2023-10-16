@@ -62,7 +62,7 @@
     :form-is-open="assignmentFormIsOpen"
     @close-form="closeForm"
     :editing="true"
-    :original-record="originalRecord"
+    :preset-data="originalRecord"
     />
   </div>
 </template>

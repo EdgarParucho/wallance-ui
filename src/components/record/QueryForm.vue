@@ -35,7 +35,7 @@
         <div class="grid lg:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <small class="text-xs font-bold">Find by type</small>
-            <button class="hover:text-white text-stone-500 rounded-full" @click="filters.type = ''">
+            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" @click="filters.type = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
@@ -54,7 +54,7 @@
         <div class="grid md:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <label for="from-date" class="text-xs font-bold">From date</label>
-            <button class="hover:text-white text-stone-500 rounded-full" @click="filters.fromDate = ''">
+            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" @click="filters.fromDate = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
@@ -68,7 +68,7 @@
         <div class="grid md:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <label for="to-date" class="text-xs font-bold">To date</label>
-            <button class="hover:text-white text-stone-500 rounded-full" @click="filters.toDate = ''">
+            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" @click="filters.toDate = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
@@ -84,7 +84,7 @@
         <div class="grid md:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <label for="to-date" class="text-xs font-bold">Fund</label>
-            <button class="hover:text-white text-stone-500 rounded-full" @click="filters.fundID = ''">
+            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" @click="filters.fundID = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
@@ -103,7 +103,7 @@
         <div class="grid lg:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <small class="text-xs font-bold">Find by tag</small>
-            <button class="hover:text-white text-stone-500 rounded-full" @click="filters.tag = ''">
+            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" @click="filters.tag = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
@@ -165,26 +165,26 @@
       </button>
     </div>
     <Dialog :form-is-open="formIsOpen" @close-form="formIsOpen = false" title="Saving Query Config" :icon="CircleStackIcon">
-    <div class="py-6 px-8">
-      <form @submit.prevent="savePreferredQuery({ filters, name: queryName })">
-        <input
-        type="text"
-        class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
-        placeholder="Query Name"
-        required
-        :maxlength="20"
-        v-model="queryName"
-        >
-        <button
-        type="submit"
-        class="flex justify-center items-center space-x-2 w-full my-2 py-1 outline-none font-bold rounded-sm text-white bg-stone-800 hover:bg-stone-700 disabled:bg-stone-300 dark:disabled:bg-stone-800 dark:disabled:text-stone-500 focus:outline-violet-500 outline-1"
-        :disabled="queryName === ''"
-        >
-          Save
-        </button>
-      </form>
-    </div>
-  </Dialog>
+      <div class="py-6 px-8">
+        <form @submit.prevent="savePreferredQuery({ filters, name: queryName })">
+          <input
+          type="text"
+          class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
+          placeholder="Query Name"
+          required
+          :maxlength="20"
+          v-model="queryName"
+          >
+          <button
+          type="submit"
+          class="flex justify-center items-center space-x-2 w-full my-2 py-1 outline-none font-bold rounded-sm text-white bg-stone-800 hover:bg-stone-700 disabled:bg-stone-300 dark:disabled:bg-stone-800 dark:disabled:text-stone-500 focus:outline-violet-500 outline-1"
+          :disabled="queryName === ''"
+          >
+            Save
+          </button>
+        </form>
+      </div>
+    </Dialog>
   </div>
 </template>
 

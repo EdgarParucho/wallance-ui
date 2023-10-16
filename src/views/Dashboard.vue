@@ -130,7 +130,7 @@
           v-for="query, i in preferences.queries" :key="i"
           :class="[
             { 'bg-violet-500 dark:bg-violet-500 text-white hover:bg-violet-500 dark:hover:bg-violet-500': queryIsApplied(query) },
-            'font-bold text-xs py-1 px-3 rounded-full mx-1 shadow-stone-400 shadow-sm'
+            'font-bold text-xs py-1 px-3 rounded-full mx-1 shadow-stone-600 shadow-sm'
           ]"
           @click="appliedFilters = query.filters"
           >
@@ -148,6 +148,23 @@
           <span class="italic">Credits this year</span>, <span class="italic">Records tagged with &quot;bills&quot; and the word &quot;cash&quot; within the note.</span>
         </p>
         <p>Plus, the overall results will be here in your dashboard.</p>
+      </div>
+
+    </section>
+
+    <section class="my-28">
+
+      <ClipboardDocumentListIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+      <h2 class="text-4xl font-bold text-center">Templates</h2>
+      <h3 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">Simplify. Time is priceless.</h3>
+
+      <div v-if="preferences.templates.length > 0">
+        <Templates @use-template="(template) => useTemplate(template)" :templates="preferences.templates" />
+      </div>
+
+      <div v-else class="text-center mb-20">
+        <h3 class="font-bold text-2xl mb-4">For your frequent records.</h3>
+        <p>At the bottom of the record form you'll find a field to name it. Write, save, then find it here to reuse.</p>
       </div>
 
     </section>
@@ -176,7 +193,7 @@
     <RecordForm
     v-if="recordFormIsOpen"
     :form-is-open="recordFormIsOpen" @close-form="closeForm" :editing="false" :preset-data="presetData" :following-step="followingStep" />
-    <AssignmentForm v-if="assignmentFormIsOpen" :form-is-open="assignmentFormIsOpen" @close-form="closeForm" />
+    <AssignmentForm v-if="assignmentFormIsOpen" :form-is-open="assignmentFormIsOpen" @close-form="closeForm" :preset-data="presetData" />
   </div>
 </template>
 
@@ -186,9 +203,10 @@ import { useFundStore } from '../stores/fundStore';
 import { useRecordStore } from '../stores/recordStore';
 import { useAccountStore } from '../stores/accountStore';
 import { storeToRefs } from 'pinia';
-import { CircleStackIcon, BookmarkIcon, MinusIcon, PlusIcon, ArrowsRightLeftIcon, LinkIcon, TagIcon, ArchiveBoxIcon } from '@heroicons/vue/24/solid';
+import { CircleStackIcon, BookmarkIcon, MinusIcon, PlusIcon, ArrowsRightLeftIcon, LinkIcon, TagIcon, ArchiveBoxIcon, ClipboardDocumentListIcon } from '@heroicons/vue/24/solid';
 import Logo from '../components/layout/Logo.vue';
 import FundsRecords from '../components/record/FundsRecords.vue';
+import Templates from '../components/dashboard/Templates.vue';
 import Stats from '../components/dashboard/Stats.vue';
 import Balance from '../components/dashboard/Balance.vue';
 import FundsBalances from '../components/dashboard/FundsBalances.vue';
@@ -314,14 +332,20 @@ function amountFormatted(amount) {
   }).format(recomposed)
 }
 
-function queryIsApplied({ filters, name }) {
+function queryIsApplied({ filters }) {
   return JSON.stringify(filters) === JSON.stringify(appliedFilters.value)
 }
 
-function followStep({ id, status, preset }) {
+function followStep({ id, preset }) {
   followingStep = id;
   presetData = preset;
   recordFormIsOpen.value = true;
+}
+
+function useTemplate({ fields }) {
+  presetData = fields;
+  if (fields.type !== 0) recordFormIsOpen.value = true;
+  else assignmentFormIsOpen.value = true;
 }
 
 </script>
