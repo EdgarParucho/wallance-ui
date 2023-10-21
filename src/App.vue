@@ -34,7 +34,7 @@ provide("alert", ({ type = "error", title, text, button = false, timer = 2000 })
   transition: opacity 0.2s ease-out;
 }
 
-::-webkit-calendar-picker-indicator {
+.dark ::-webkit-calendar-picker-indicator {
   filter: invert(1);
 }
 

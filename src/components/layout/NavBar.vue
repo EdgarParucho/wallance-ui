@@ -20,7 +20,7 @@ let recordFormIsOpen = ref(false);
     <router-link
     v-for="link, i in links" :key="i"
     :to="link.path"
-    class="grid justify-center pt-1 h-full w-full hover:bg-violet-600 hover:text-white dark:hover:bg-stone-700"
+    class="text-center pt-1 w-full hover:bg-violet-600 hover:text-white dark:hover:bg-stone-700"
     :class="{ 'bg-violet-500 text-white': (route.fullPath === link.path) }"
     >
       <component :is="link.icon" class="w-6 mx-auto" />

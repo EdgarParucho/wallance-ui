@@ -20,7 +20,7 @@
             type="date"
             name="date"
             id="date"
-            class="w-1/2 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm invalid:text-red-400"
+            class="w-1/2 focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 invalid:text-red-400 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
             required
             v-model="form.date"
             >
@@ -28,7 +28,7 @@
             type="time"
             name="time"
             id="time"
-            class="w-1/2 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm invalid:text-red-400"
+            class="w-1/2 focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 invalid:text-red-400 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
             required
             v-model="form.time"
             >
@@ -113,7 +113,7 @@
               <select
               id="fundID"
               name="fundID"
-              class="bg-transparent focus:border-violet-500 dark:focus:border-violet-500 focus:ring-0 border-stone-600 dark:border-white rounded-sm invalid:text-red-400 dark:disabled:border-stone-500"
+              class="focus:border-violet-500 dark:focus:border-violet-500 shadow-md rounded-full border-none invalid:text-red-400 disabled:border-stone-400 dark:disabled:border-stone-500 bg-transparent focus:ring-0"
               required
               :disabled="isCredit"
               v-model="form.fundID"
@@ -128,13 +128,13 @@
               </select>
             </div>
             <div class="grid space-y-2 w-1/2">
-              <label for="otherFundID" :class="[{ 'text-stone-400': funds.length < 2 }, 'text-xs font-semibold']">
+              <label for="otherFundID" :class="[{ 'text-stone-400': form.type !== 0 || !form.fundID }, 'text-xs font-semibold']">
                 Correlated Fund
               </label>
               <select
               id="otherFundID"
               name="otherFundID"
-              class="bg-transparent focus:border-violet-500 dark:focus:border-violet-500 focus:ring-0 border-stone-600 dark:border-white rounded-sm invalid:text-red-400 disabled:border-stone-400 dark:disabled:border-stone-500"
+              class="focus:border-violet-500 dark:focus:border-violet-500 shadow-md rounded-full border-none invalid:text-red-400 disabled:border-stone-400 dark:disabled:border-stone-500 bg-transparent focus:ring-0"
               :disabled="form.type !== 0 || !form.fundID"
               required
               v-model="form.otherFundID"
@@ -168,11 +168,11 @@
               id="tag"
               type="text"
               name="tag"
-              class="w-full bg-transparent focus:border-transparent focus:outline-none focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white dark:focus:border-b-violet-500 transition-colors rounded-sm"
+              class="w-full focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
               required
               v-model.trim="form.tag"
               >
-              <div v-show="showTags" class="px-1 text-xs rounded-sm mt-4 bg-white dark:bg-stone-800 border-violet-500 border absolute w-72">
+              <div v-show="showTags" class="px-1 text-sm rounded-sm mt-4 bg-white dark:bg-stone-800 border-violet-500 border absolute w-72">
                 <button
                 v-for="tag, i in tags" Key="i"
                 type="button"
@@ -195,7 +195,7 @@
               maxlength="240"
               required
               v-model.trim="form.note"
-              class="w-full bg-transparent focus:border-transparent focus:outline-none focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white dark:focus:border-b-violet-500 transition-colors rounded-sm"
+              class="w-full focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
               >
             </div>
           </div>
@@ -208,7 +208,7 @@
             type="text"
             name="template"
             id="template"
-            class="w-1/2 bg-transparent border-transparent border-b-stone-300 focus:border-violet-500 focus:ring-violet-500 sm:text-md disabled:text-stone-600 disabled:border-b-stone-600 placeholder:text-xs"
+            class="w-1/2 focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
             maxlength="100"
             placeholder="Fill only to save template"
             v-model="templateName"
