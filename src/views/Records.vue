@@ -53,16 +53,9 @@
     <RecordForm
     v-if="recordFormIsOpen"
     :form-is-open="recordFormIsOpen"
-    @close-form="closeForm"
+    @close-form="resetForm"
     :editing="true"
-    :preset-data="originalRecord"
-    />
-    <AssignmentForm
-    v-if="assignmentFormIsOpen"
-    :form-is-open="assignmentFormIsOpen"
-    @close-form="closeForm"
-    :editing="true"
-    :preset-data="originalRecord"
+    :preset="originalRecord"
     />
   </div>
 </template>
@@ -72,7 +65,6 @@ import { ref, computed, inject, defineAsyncComponent } from 'vue'
 import { useRecordStore } from '../stores/recordStore';
 import { useFundStore } from '../stores/fundStore';
 import { storeToRefs } from "pinia";
-import AssignmentForm from '../components/record/AssignmentForm.vue';
 import QueryForm from '../components/record/QueryForm.vue';
 import RecordsTable from '../components/record/RecordsTable.vue';
 import FundsRecords from '../components/record/FundsRecords.vue';
@@ -91,7 +83,6 @@ const { funds } = storeToRefs(fundStore);
 let originalRecord = null;
 const loading = ref(false);
 const recordFormIsOpen = ref(false);
-const assignmentFormIsOpen = ref(false);
 
 const appliedFilters = ref({
   tag: "",
@@ -122,16 +113,14 @@ const filteredRecords = computed(() => {
   return resultingRecords;
 });
 
-function editRecord({ id }) {
-  originalRecord = records.value.find(r => r.id === id);
-  if (originalRecord.type === 0) assignmentFormIsOpen.value = true;
-  else recordFormIsOpen.value = true;
+function editRecord(record) {
+  originalRecord = record;
+  recordFormIsOpen.value = true;
 }
 
-function closeForm() {
+function resetForm() {
   originalRecord = null;
-  if (assignmentFormIsOpen.value) assignmentFormIsOpen.value = false;
-  else recordFormIsOpen.value = false;
+  recordFormIsOpen.value = false;
 }
 
 function deleteRecord(record) {

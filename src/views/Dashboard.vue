@@ -5,7 +5,7 @@
       Money is only a tool. It will take you wherever you wish, but it will not replace you as the driver. - Ayn Rand
     </blockquote>
 
-    <FirstSteps v-if="gettingStarted" @follow-step="step => followStep(step)" />
+    <FirstSteps v-if="firstStepsVisible" @follow-step="step => useFirstSteps(step)" />
 
     <section class="my-20">
       <h2 class="text-4xl font-bold text-center mt-20">Balance</h2>
@@ -18,7 +18,7 @@
       </h3>
       <button
       class="text-white hover:bg-violet-500 bg-violet-600 font-bold py-1 px-2 rounded-md w-36 inline-flex items-center"
-      @click="newRecord"
+      @click="recordFormIsOpen = true"
       >
         <PlusIcon class="w-5 text-left" />
         <span class="mx-auto">Add Record</span>
@@ -57,7 +57,7 @@
       </h3>
       <button
       class="text-white hover:bg-violet-500 bg-violet-600 font-bold py-1 px-2 gap-1 rounded-md w-36 inline-flex items-center justify-center"
-      @click="assignmentFormIsOpen = true"
+      @click="openToAssign"
       >
         <ArrowsRightLeftIcon class="w-5 text-left" />
         <span class="mx-auto">Assignment</span>
@@ -192,8 +192,12 @@
     </div>
     <RecordForm
     v-if="recordFormIsOpen"
-    :form-is-open="recordFormIsOpen" @close-form="closeForm" :editing="false" :preset-data="presetData" :following-step="followingStep" />
-    <AssignmentForm v-if="assignmentFormIsOpen" :form-is-open="assignmentFormIsOpen" @close-form="closeForm" :preset-data="presetData" />
+    @close-form="resetRecordForm"
+    :meta="recordFormOptions.meta"
+    :form-is-open="recordFormIsOpen"
+    :preset="recordFormOptions.preset"
+    />
+
   </div>
 </template>
 
@@ -211,10 +215,9 @@ import Stats from '../components/dashboard/Stats.vue';
 import Balance from '../components/dashboard/Balance.vue';
 import FundsBalances from '../components/dashboard/FundsBalances.vue';
 import TopTags from '../components/dashboard/TopTags.vue';
-import FirstSteps from '../components/dashboard/FirstSteps.vue'
 
+const FirstSteps = defineAsyncComponent(() => import('../components/dashboard/FirstSteps.vue'));
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
-const AssignmentForm = defineAsyncComponent(() => import('../components/record/AssignmentForm.vue'));
 
 const fundStore = useFundStore();
 const accountStore = useAccountStore();
@@ -224,7 +227,6 @@ const { funds } = storeToRefs(fundStore);
 const { records } = storeToRefs(recordStore);
 const { preferences } = storeToRefs(accountStore);
 const recordFormIsOpen = ref(false);
-const assignmentFormIsOpen = ref(false);
 
 const showAllCreditTags = ref(false);
 const showAllDebitTags = ref(false);
@@ -236,8 +238,10 @@ const appliedFilters = ref({
   type: null,
 });
 
-let presetData = null;
-let followingStep = null;
+let recordFormOptions = {
+  meta: {},
+  preset: null,
+}
 
 if (preferences.value.queries[0] !== undefined) appliedFilters.value = preferences.value.queries[0].filters;
 
@@ -254,7 +258,7 @@ const debitsBalance = computed(() => records.value
   .reduce((totalCredits, { amount }) => totalCredits + Number(amount), 0)
 );
 
-const gettingStarted = computed(() => preferences.value.FirstStepsStatus === undefined || preferences.value.FirstStepsStatus?.some(step => step === "Active"))
+const firstStepsVisible = computed(() => preferences.value.FirstStepsStatus.some(step => step === "Active"))
 const creditsByTag = computed(() => {
   const tagsRecords = [];
   const creditRecords = records.value.filter(record => record.type === 1);
@@ -309,17 +313,6 @@ const filteredRecords = computed(() => {
   return resultingRecords;
 });
 
-function newRecord() {
-  presetData = undefined;
-  recordFormIsOpen.value = true
-}
-
-function closeForm() {
-  presetData = undefined;
-  recordFormIsOpen.value = false;
-  assignmentFormIsOpen.value = false;
-}
-
 function amountFormatted(amount) {
   const integer = Math.floor(amount);
   const fractions = amount
@@ -336,16 +329,39 @@ function queryIsApplied({ filters }) {
   return JSON.stringify(filters) === JSON.stringify(appliedFilters.value)
 }
 
-function followStep({ id, preset }) {
-  followingStep = id;
-  presetData = preset;
+function useFirstSteps(step) {
+  recordFormOptions = {
+    meta: {
+      firstSteps: true,
+      stepIndex: step.id,
+    },
+    preset: step.template,
+  };
   recordFormIsOpen.value = true;
 }
 
 function useTemplate({ fields }) {
-  presetData = fields;
-  if (fields.type !== 0) recordFormIsOpen.value = true;
-  else assignmentFormIsOpen.value = true;
+  recordFormOptions = {
+    meta: {},
+    preset: fields,
+  };
+  recordFormIsOpen.value = true;
+}
+
+function resetRecordForm() {
+  recordFormOptions = {
+    meta: {},
+    preset: null,
+  };
+  recordFormIsOpen.value = false;
+}
+
+function openToAssign() {
+  recordFormOptions = {
+    meta: {},
+    preset: { type: 0 },
+  };
+  recordFormIsOpen.value = true;
 }
 
 </script>

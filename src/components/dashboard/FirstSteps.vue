@@ -95,7 +95,7 @@ const steps = ref([
     name: "Starting Balance",
     description: "If you started the year with a positive balance accumulated.",
     status: "Active",
-    preset: {
+    template: {
       amount: 1,
       date: dateFormatted(lastYearLastDay(), "23:59"),
       note: "Starting data: Balance accumulated from past dates.",
@@ -109,7 +109,7 @@ const steps = ref([
     name: "Revenue",
     description: "Record the sum of the income you earned this year.",
     status: "Active",
-    preset: {
+    template: {
       amount: 1,
       date: dateFormatted(currentDate.value, "00:01"),
       note: "Starting data: Total Revenue.",
@@ -123,7 +123,7 @@ const steps = ref([
     name: "Expenditures",
     description: "Save the sum of your expenses this year.",
     status: "Active",
-    preset: {
+    template: {
       amount: -1,
       date: dateFormatted(currentDate.value, "00:02"),
       note: "Starting data: Total Expenditures.",

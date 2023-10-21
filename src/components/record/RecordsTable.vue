@@ -9,18 +9,20 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="border-b-white p-2 bg-stone-100 dark:bg-stone-800 my-1" v-for="record in recordRows" :key="record.id" :class="underLgBreakpoint ? 'grid' : ''">
+        <tr class="border-b-white bg-stone-100 dark:bg-stone-800" v-for="record in recordRows" :key="record.id" :class="underLgBreakpoint ? 'grid' : ''">
           <td class="text-end xl:w-40 lg:px-2">
             {{ getDateFormatted(record) }}
           </td>
           <td class="text-end lg:w-36 lg:px-2">
             {{ getFundName(record) }}
           </td>
-          <td class="items-center flex justify-between 2xl:min-w-96 lg:pl-2">
-            <span class="font-medium text-sm">{{ record.note }}</span>
-            <span class="text-sm bg-stone-200 dark:bg-stone-600 font-medium px-2 py-1 rounded-sm">
-              {{ record.tag }}
-            </span>
+          <td class="px-2 2xl:min-w-96">
+            <div class="flex justify-between">
+              <span class="font-medium text-sm">{{ record.note }}</span>
+              <span v-if="record.tag !== ''" class="text-sm bg-stone-200 dark:bg-stone-700 font-medium px-2 rounded-xl">
+                {{ record.tag }}
+              </span>
+            </div>
           </td>
           <td class="lg:w-40 lg:px-2">
             <div class="flex justify-end lg:justify-between space-x-2 items-center">

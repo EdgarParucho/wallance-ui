@@ -5,10 +5,11 @@
   :icon="editing ? PencilSquareIcon : DocumentPlusIcon"
   title="Record Form"
   :subtitle="`You are ${editing ? 'editing' : 'creating'} a record`"
+  widthClasses="w-96 md:w-2/3 xl:w-1/3"
   >
-    <form class="p-5 w-full">
+    <form class="px-4">
       <fieldset>
-        <div class="my-4 space-y-2 text-left px-1">
+        <div class="mb-4 space-y-2 text-left px-1">
           <div class="w-full">
             <label for="date" class="text-xs font-semibold">
               Date
@@ -19,153 +20,188 @@
             type="date"
             name="date"
             id="date"
-            class="w-1/2 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm"
+            class="w-1/2 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm invalid:text-red-400"
             required
-            v-model="formDate"
+            v-model="form.date"
             >
             <input
             type="time"
             name="time"
             id="time"
-            class="w-1/2 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm"
+            class="w-1/2 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm invalid:text-red-400"
             required
-            v-model="formTime"
+            v-model="form.time"
             >
           </div>
         </div>
 
-        <div class="my-4 flex items-center space-x-6">
-          <div class="flex items-center space-x-2">
-            <input
-              id="credit"
-              name="credit"
-              type="radio"
-              class=" text-violet-500 focus:ring-violet-500 p-2"
-              :value="1"
-              v-model="record.type"
-              required
-            >
-            <label for="credit" class="text-xs font-semibold">
-              Credit
-            </label>
-          </div>
-          <div class="flex items-center space-x-2">
-            <input
-              id="debit"
-              name="debit"
-              type="radio"
-              class=" text-violet-500 focus:ring-violet-500 p-2"
-              :value="2"
-              v-model="record.type"
-              required
-            >
-            <label for="debit" class="text-xs font-semibold">
-              Debit
-            </label>
-          </div>
-        </div>
-
-        <div class="mt-4 flex items-center justify-between">
-          <label for="fundID" class="text-left w-1/3 text-xs font-semibold">
-            Fund
-          </label>
-          <select
-          id="fundID"
-          name="fundID"
-          class="w-2/3 bg-transparent focus:border-transparent focus:ring-0 rounded-sm border-stone-500 dark:border-white focus:border-violet-500"
-          required
-          :disabled="recordIsCredit"
-          v-model="record.fundID"
-          >
-            <option
-            class="text-white bg-stone-800 disabled:text-opacity-50"
-            v-for="fund in fundStore.funds" :key="fund.id"
-            :value="fund.id"
-            >
-              <span>{{ fund.name }}</span>
-            </option>
-          </select>
-
-        </div>
-
-        <div class="flex items-center justify-end space-x-2 mt-2">
-          <small class="text-left w-1/3 text-xs font-semibold">Balance on date:</small>
-          <span class="text-white bg-stone-600 text-sm font-bold rounded-sm px-1">{{ amountFormatted(fundBalanceOnDate) }}</span>
-        </div>
-
-        <div class="my-4 flex items-center">
-          <label for="amount" class="text-left w-1/3 text-xs font-semibold">
-            Amount
-          </label>
-
-          <div class="relative rounded-md w-2/3">
-            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 space-x-2">
-              <div :class="[typeStyles, 'bg-opacity-20 p-1 rounded-full']">
-                <component class="h-4 w-4" :is="typeIcon" />
+        <div class="mb-4 text-left px-1">
+          <div class="lg:flex md:items-center gap-1">
+            <div class="flex items-center space-x-4 w-3/5">
+              <div class="my-2 flex items-center space-x-2">
+                <input
+                  id="credit"
+                  name="credit"
+                  type="radio"
+                  class=" text-violet-500 focus:ring-violet-500 p-2"
+                  :value="1"
+                  v-model="form.type"
+                  required
+                >
+                <label for="credit" class="text-xs font-semibold">
+                  Credit
+                </label>
               </div>
-              <span class="sm:text-md">$</span>
+              <div class="flex items-center space-x-2">
+                <input
+                  id="debit"
+                  name="debit"
+                  type="radio"
+                  class=" text-violet-500 focus:ring-violet-500 p-2"
+                  :value="2"
+                  v-model="form.type"
+                  required
+                >
+                <label for="debit" class="text-xs font-semibold">
+                  Debit
+                </label>
+              </div>
+              <div class="flex items-center space-x-2">
+                <input
+                  id="assignment"
+                  name="assignment"
+                  type="radio"
+                  class=" text-violet-500 focus:ring-violet-500 p-2 disabled:bg-stone-300 dark:disabled:bg-stone-700"
+                  required
+                  :disabled="funds.length < 2"
+                  :value="0"
+                  v-model="form.type"
+                >
+                <label for="assignment" class="text-xs font-semibold">
+                  Assignment
+                </label>
+              </div>
             </div>
-            <input
-              type="number"
-              :disabled="!recordIsCredit && record.fundID === ''"
-              :min="0"
-              id="amount"
-              class="w-full bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm pl-6 text-right"
-              placeholder="0.0"
-              required
-              v-model.number.lazy="formAmount"
-            >
+
+            <div class="relative rounded-md w-2/5">
+              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 space-x-2">
+                <component
+                :class="[operationIconStyles, 'bg-opacity-20 p-1 rounded-full h-5 w-5']"
+                :is="operationIcon" />
+                <span class="sm:text-md">$</span>
+              </div>
+              <input
+                type="number"
+                :min="0"
+                id="amount"
+                class="w-full bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm pl-6 text-right disabled:text-stone-400"
+                :class="{ 'border-b-red-400 dark:border-b-red-400': Number(form.amount) <= 0 }"
+                placeholder="0"
+                required
+                v-model.number.lazy="form.amount"
+              >
+            </div>
           </div>
         </div>
 
-        <div class="my-4 space-y-2 text-left px-1">
-          <label for="tag" class="text-xs font-semibold">
-            Tag
-          </label>
-          <div class="flex justify-between">
-            <select
-            id="tag"
-            name="tag"
-            class="w-1/2 bg-transparent focus:border-violet-500 focus:ring-0 border-stone-500 dark:border-white rounded-sm"
-            required
-            v-model="tagFields.option"
-            >
-              <option class="text-white bg-stone-600 disabled:text-opacity-50 font-medium">
-                <span>Add new</span>
-              </option>
-              <option class="text-white bg-stone-800 disabled:text-opacity-50" v-for="tag, i in tagOptions" :key="i">
-                {{ tag }}
-              </option>
-            </select>
-            <input
+        <div class="mb-4 space-y-2 text-left px-1">
+          <div class="flex items-center gap-1">
+            <div class="grid space-y-2 w-1/2">
+              <label for="fundID" class="text-xs font-semibold">
+                Main Fund
+              </label>
+              <select
+              id="fundID"
+              name="fundID"
+              class="bg-transparent focus:border-violet-500 dark:focus:border-violet-500 focus:ring-0 border-stone-600 dark:border-white rounded-sm invalid:text-red-400 dark:disabled:border-stone-500"
+              required
+              :disabled="isCredit"
+              v-model="form.fundID"
+              >
+                <option
+                class="text-white bg-stone-800 disabled:text-opacity-50 text-sm"
+                v-for="fund in funds" :key="fund.id"
+                :value="fund.id"
+                >
+                  <span>{{ fund.name }}</span>
+                </option>
+              </select>
+            </div>
+            <div class="grid space-y-2 w-1/2">
+              <label for="otherFundID" :class="[{ 'text-stone-400': funds.length < 2 }, 'text-xs font-semibold']">
+                Correlated Fund
+              </label>
+              <select
+              id="otherFundID"
+              name="otherFundID"
+              class="bg-transparent focus:border-violet-500 dark:focus:border-violet-500 focus:ring-0 border-stone-600 dark:border-white rounded-sm invalid:text-red-400 disabled:border-stone-400 dark:disabled:border-stone-500"
+              :disabled="form.type !== 0 || !form.fundID"
+              required
+              v-model="form.otherFundID"
+              >
+                <option
+                class="text-white bg-stone-800 disabled:text-opacity-50 text-sm hover:bg-opacity-95"
+                v-for="fund in funds" :key="fund.id"
+                :value="fund.id"
+                v-show="fund.id !== form.fundID"
+                >
+                  <span>{{ fund.name }}</span>
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="mb-4 text-left px-1 flex items-center gap-2">
+            <div class="w-1/2">
+              <label for="tag" class="text-xs font-semibold">
+                Tag
+              </label>
+              <input
+              @focusin="showTags = true"
+              @focusout="(e) => handleTagList(e)"
+              @keydown.tab="showTags = false"
+              @keydown.backspace="showTags = true"
+              @keydown.arrow-up="focusedTagIndex--"
+              @keydown.arrow-down="focusedTagIndex++"
+              @keydown.enter="handleTagEnter(tags[focusedTagIndex])"
+              id="tag"
               type="text"
-              :disabled="tagFields.option !== 'Add new'"
-              class="w-5/12 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm"
-              placeholder="New tag"
+              name="tag"
+              class="w-full bg-transparent focus:border-transparent focus:outline-none focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white dark:focus:border-b-violet-500 transition-colors rounded-sm"
               required
-              v-model="tagFields.input"
-            >
+              v-model.trim="form.tag"
+              >
+              <div v-show="showTags" class="px-1 text-xs rounded-sm mt-4 bg-white dark:bg-stone-800 border-violet-500 border absolute w-72">
+                <button
+                v-for="tag, i in tags" Key="i"
+                type="button"
+                class="tag hover:text-violet-500 w-full cursor-pointer text-left"
+                :class="{'bg-violet-200 dark:bg-violet-600 dark:bg-opacity-10': focusedTagIndex === i }"
+                @click="form.tag = tag, showTags = false"
+                >
+                  {{ tag }}
+                </button>
+              </div>
+            </div>
+            <div class="w-1/2">
+              <label for="note" class="text-xs font-semibold">
+                Note
+              </label>
+              <input
+              type="text"
+              name="note"
+              id="note"
+              maxlength="240"
+              required
+              v-model.trim="form.note"
+              class="w-full bg-transparent focus:border-transparent focus:outline-none focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white dark:focus:border-b-violet-500 transition-colors rounded-sm"
+              >
+            </div>
           </div>
-        </div>
 
-        <div class="my-4 space-y-2 text-left px-1">
-          <label for="note" class="text-xs font-semibold">
-            Note
-          </label>
-          <textarea
-            type="text"
-            name="note"
-            id="note"
-            class="w-full bg-transparent border-transparent border-b-stone-300 focus:border-violet-500 focus:ring-violet-500 sm:text-md disabled:text-stone-600 disabled:border-b-stone-600"
-            maxlength="100"
-            placeholder="Car fuel"
-            required
-            v-model="record.note"
-          ></textarea>
-        </div>
-
-        <div class="my-2 space-y-2 justify-between flex items-center px-1">
-          <label for="template" class="text-xs font-semibold">
+        <div class="my-2 space-y-2 px-1 text-left">
+          <label for="template" class="text-xs font-semibold block">
             Template name
           </label>
           <input
@@ -194,7 +230,7 @@
       <button
       type="button"
       class="mt-3 inline-flex gap-2 w-full justify-center rounded-md px-4 py-2 text-base font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-white sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm hover:bg-violet-500 bg-violet-600 text-white disabled:bg-stone-300 dark:disabled:bg-stone-700 dark:disabled:text-stone-400"
-      @click="onSave(record, editing)"
+      @click="onSave(form)"
       :disabled="loading || formHasErrors"
       >
         <svg
@@ -213,192 +249,167 @@
 </template>
 
 <script setup>
-import { ref, watch, computed, reactive, inject } from 'vue';
-import { DocumentPlusIcon, PencilSquareIcon, MinusIcon, PlusIcon } from '@heroicons/vue/24/outline';
+import { ref, watch, computed, reactive, inject, onMounted } from 'vue';
+import { DocumentPlusIcon, PencilSquareIcon, MinusIcon, PlusIcon, ArrowsRightLeftIcon } from '@heroicons/vue/24/outline';
 import { useRecordStore } from '../../stores/recordStore';
 import { useAccountStore } from '../../stores/accountStore';
 import { useFundStore } from '../../stores/fundStore';
 import { storeToRefs } from "pinia";
 import Dialog from '../layout/Dialog.vue';
 
-const props = defineProps({
-  formIsOpen: {
-    type: Boolean,
-    required: true,
-    default: false
-  },
-  presetData: {
-    type: Object,
-    required: false,
-    default: undefined
-  },
-  editing: {
-    type: Boolean,
-    required: false,
-    default: false
-  },
-  followingStep: {
-    type: Number,
-    required: false,
-    default: null
-  }
-});
-const emit = defineEmits(['close-form']);
+onMounted(() => setStartingData())
+
 const displayAlert = inject("alert");
-const recordStore = useRecordStore();
-const accountStore = useAccountStore();
+const emit = defineEmits(['close-form']);
+
+const props = defineProps({
+  meta: { type: Object, default: {} },
+  editing: { type: Boolean, default: false },
+  preset: { type: Object, default: undefined },
+  formIsOpen: { type: Boolean, default: false, },
+});
+
 const fundStore = useFundStore();
+const { funds } = storeToRefs(fundStore);
+
+const recordStore = useRecordStore();
 const { recordTags } = storeToRefs(recordStore);
+
+const accountStore = useAccountStore();
 const { preferences } = storeToRefs(accountStore);
 
-const formDate = (props.presetData?.date !== undefined)
-  ? ref(new Intl.DateTimeFormat("en-UK").format(new Date(props.presetData.date)).split("/").reverse().join("-"))
-  : ref(new Intl.DateTimeFormat("en-UK").format(new Date()).split("/").reverse().join("-"));
-const formTime = (props.presetData?.date !== undefined)
-  ? ref(new Date(props.presetData.date).toTimeString().slice(0, 5))
-  : ref(new Date().toTimeString().slice(0, 5));
-
-const tagFields = reactive({
-  option: (props.presetData !== undefined && props.followingStep === null) ? props.presetData.tag : "Add new",
-  input: (props.followingStep !== null) ? props.presetData.tag : null
-});
-const tagOptions = computed(() => {
-  return recordTags.value[record.type];
-});
-
-const formAmount = (props.presetData !== undefined)
-  ? (props.presetData.amount < 0) ? ref(-props.presetData.amount) : ref(props.presetData.amount)
-  : ref(1);
-
-let record = reactive({
-  amount: -1,
-  date: null,
-  note: null,
-  tag: null,
-  fundID: "",
+const form = reactive({
+  amount: 1,
+  date: new Date(),
+  note: "",
+  tag: "",
+  fundID: fundStore.defaultFund.id,
   type: 2,
+  ...props.preset,
 });
-
-if (props.presetData !== undefined) record = { ...record, ...props.presetData };
 
 const loading = ref(false);
 const templateName = ref("");
 
-const recordIsCredit = computed(() => record.type === 1);
-const datetime = computed(() => `${formDate.value}T${formTime.value}:01`);
-
-const fundBalanceOnDate = computed(() => {
-  if (!record.fundID) return 0.00
-  const fundRecordsUntilDate = recordStore.records.filter(r => new Date(r.date) < new Date(datetime.value) && (r.fundID === record.fundID || r.otherFundID === record.fundID));
-  const fundBalanceOnDate = fundRecordsUntilDate.reduce((balance, r) => {
-    const recordAmount = r.fundID === record.fundID ? r.amount : -r.amount;
-    return balance + recordAmount;
-  }, 0);
-  return fundBalanceOnDate;
-});
-
-function amountFormatted(amount) {
-  const integer = Math.floor(amount);
-  const fractions = amount
-    .toString()
-    .split('.')[1] || "0";
-  const recomposed = [integer, fractions.slice(0, 2)].join(".")
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-   }).format(recomposed)
-}
-
-const typeIcon = computed(() => {
-  if (record.type === 1) return PlusIcon
+const isCredit = computed(() => form.type === 1);
+const operationIcon = computed(() => {
+  if (form.type === 0) return ArrowsRightLeftIcon
+  else if (form.type === 1) return PlusIcon
   else return MinusIcon
 });
 
-const typeStyles = computed(() => {
-  if (record.type === 1) return 'text-green-500 bg-green-600'
-  else return 'text-red-500 bg-red-600'
+const operationIconStyles = computed(() => {
+  if (form.type === 0) return 'text-stone-500 bg-stone-600 bg-opacity-20'
+  else if (form.type === 1) return 'text-green-500 bg-green-600 bg-opacity-20'
+  else return 'text-red-500 bg-red-600 bg-opacity-20'
 });
 
 const formHasErrors = computed(() => {
-  const invalidDate = new Date(datetime.value).toString() === "Invalid Date";
-  const invalidAmount = record.amount === 0 || record.amount === "";
-  const invalidFundID = record.fundID === "";
+  const invalidDate = new Date(form.date).toString() === "Invalid Date";
+  const invalidAmount = form.amount <= 0 || form.amount === "";
+  const invalidFundID = form.fundID === "";
   return invalidDate || invalidAmount || invalidFundID;
 });
 
-function onSave(record, editing) {
+function onSave(formValues) {
   loading.value = true;
-  const action = editing ? recordStore.updateRecord : recordStore.createRecord;
-  const body = defineBody(record, editing);
-  action(body)
-  .then((message) => {
-      displayAlert({ title: "Done", type: "success", text: message });
-      if (props.followingStep !== null) updateFirstStepsPreferences();
-    })
+  const action = props.editing ? recordStore.updateRecord : recordStore.createRecord;
+  const data = normalize(formValues);
+  action(data)
+    .then((message) => displayAlert({ title: "Done", type: "success", text: message }))
     .then(() => {
-      if (templateName.value !== "") saveTemplate(record, templateName.value)
-    })
-    .then(() => {
-      emit('close-form');
+      if (props.meta.firstSteps) updateFirstStepsStatus();
+      if (templateName.value !== "") saveTemplate({ formValues: data.body, name: templateName.value });
+      emit('close-form')
     })
     .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
     .finally(() => loading.value = false)
 };
 
-async function saveTemplate(baseRecord, templateName) {
-  const { fundID, otherFundID, amount, tag, note, type } = baseRecord;
-  const fields = { fundID, otherFundID, amount, tag, note, type };
-  preferences.value.templates.push({ fields, name: templateName });
+function normalize({ amount, date, time, ...rest }) {
+  const normalized = {
+    amount: isCredit.value ? -(amount) : amount,
+    date: new Date(`${date}T${time}:01`).toISOString(),
+    ...rest,
+  };
+  if (!props.editing) return { body: normalized };
+  else removeUnaltered(normalized);
+  return { id: props.preset.id, body: normalized };
+}
+
+function removeUnaltered(formValues) {
+  const keys = Object.keys(formValues);
+  for (const key of keys) if (formValues[key] === props.preset[key]) delete formValues[key];
+}
+
+async function saveTemplate({ formValues, name }) {
+  const { fundID, otherFundID, amount, tag, note, type } = formValues;
+  preferences.value.templates.push({
+    fields: { fundID, otherFundID, amount, tag, note, type },
+    name,
+  });
   await accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
 }
 
-function defineBody(record, editing) {
-  record.date = new Date(datetime.value).toISOString();
-  if (record.note === null || record.note === undefined || record.note === "") delete record.note;
-  if (record.otherFundID === null || record.otherFundID === undefined || record.otherFundID === "") delete record.otherFundID;
-  if (tagFields.option === "Add new" && tagFields.input === null) delete record.tag;
-  else record.tag = tagFields.input || tagFields.option;
-  if (!editing) return { body: record };
+const tags = computed(() => {
+  const formTag = form.tag?.toLowerCase() || "";
+  const matchingTags = recordTags.value[form.type].filter(tag => tag.toLowerCase().includes(formTag));
+  return matchingTags;
+});
 
-  const keys = Object.keys(record);
-  const entries = [];
-  const valueUpdated = (key) => record[key] !== props.presetData[key]
-  for (const key of keys) if (valueUpdated(key)) entries.push([key, record[key]])
-  const body = Object.fromEntries(entries);
-  const { id } = props.presetData;
-  return { id, body };
+const showTags = ref(false);
+const focusedTagIndex = ref(0);
+
+function handleTagList(e) {
+  const tagSelected = e.relatedTarget?.className?.includes('tag');
+  if (!tagSelected) return showTags.value = false;
+  form.tag = e.relatedTarget.innerText;
+  showTags.value = false;
 }
 
-async function updateFirstStepsPreferences() {
-  if (preferences.value.FirstStepsStatus === undefined) preferences.value.FirstStepsStatus = ["Active", "Active", "Active"];
-  preferences.value.FirstStepsStatus[props.followingStep] = "Completed";
+function handleTagEnter(tag) {
+  form.tag = tag;
+  focusedTagIndex.value = 0;
+  showTags.value = false;
+}
+
+async function updateFirstStepsStatus() {
+  preferences.value.FirstStepsStatus[props.meta.stepIndex] = "Completed";
   await accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
 }
 
-watch(
-  () => record.type,
-  (recordType) => {
-    record.fundID = recordType === 1 ? fundStore.defaultFund.id : "";
-    record.amount = 0
-  }
-)
-watch(
-  () => tagFields.option,
-  (tagOption) => {
-    if (tagOption !== "Add new") tagFields.input = null;
-  }
-)
-watch(
-  () => formAmount.value,
-  (amountValue) => {
-    const multiplier = (record.type === 1) ? 1 : -1;
-    record.amount = (amountValue * multiplier);
-    const integer = Math.floor(amountValue);
-    const fractions = amountValue
-      .toString()
-      .split('.')[1] || "0";
-    const recomposed = [integer, fractions.slice(0, 2)].join(".")
-    formAmount.value = recomposed
-  }
-)
+function setStartingData() {
+  setStartingDate()
+  normalizeAmount()
+}
+
+function setStartingDate() {
+  const dateOnMounted = new Date(form.date);
+  const offsetMinutes = dateOnMounted.getTimezoneOffset();
+  const currentMinutes = dateOnMounted.getMinutes();
+  dateOnMounted.setMinutes(currentMinutes - offsetMinutes);
+  form.date = dateOnMounted.toISOString().slice(0, 10);
+  form.time = dateOnMounted.toISOString().slice(11, 16);
+}
+
+function normalizeAmount() {
+  if (form.amount < 0) form.amount = -(form.amount);
+  const integer = isCredit.value ? Math.floor(form.amount) : Math.floor(form.amount);
+  const fractions = form.amount
+    .toString()
+    .split('.')[1]?.padEnd(2, "0") || "00"
+    .slice(0, 2)
+  form.amount = `${integer}.${fractions}`
+}
+
+watch(() => form.type, (type) => {
+  form.fundID = type === 1 ? fundStore.defaultFund.id : "";
+  form.otherFundID = "";
+})
+
+watch(focusedTagIndex, (i) => {
+  if (i < 0) focusedTagIndex.value = (tags.value.length - 1)
+  if (i >= tags.value.length) focusedTagIndex.value = 0
+})
+
 </script>
