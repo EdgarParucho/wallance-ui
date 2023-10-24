@@ -1,8 +1,8 @@
 import { defineStore } from 'pinia';
-import API from '../services/API';
 import { RequestOTP, Sign, Login, ResetPassword } from '../services/credentialAPI';
 import { useLocalStorage } from '@vueuse/core';
 
+import API from '../services/API';
 import { useFundStore } from './fundStore';
 import { useAccountStore } from './accountStore';
 import { useRecordStore } from './recordStore';
@@ -14,9 +14,8 @@ export const useCredentialStore = defineStore('credential', () => {
   const credential = useLocalStorage("vueUseCredential", { token: null, exp: null });
 
   const mutations = {
-    login: ({ token, funds, records, preferences }) => {
-      recordStore.setRecords(records);
-      fundStore.setFunds(funds);
+    login: ({ token, funds, preferences }) => {
+      fundStore.mutations.setFunds(funds);
       credential.value = token;
       accountStore.setPreferences(preferences);
       API.defaults.headers.common['Authorization'] = "bearer " + credential.value.token;

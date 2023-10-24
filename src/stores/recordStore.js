@@ -3,10 +3,12 @@ import { useCredentialStore } from "./credentialStore";
 import { Find, Create, Update, Delete } from '../services/recordAPI';
 import { useLocalStorage } from '@vueuse/core';
 import { computed, watch } from 'vue';
+import { useFundStore } from './fundStore';
 
 export const useRecordStore = defineStore('records', () => {
   const records = useLocalStorage('vueUseRecords', []);
   const credentialStore = useCredentialStore();
+  const fundStore = useFundStore();
 
   const assignmentTags = computed(() => Array.from(new Set(records.value
     .filter(r => r.type === 0)
@@ -25,33 +27,28 @@ export const useRecordStore = defineStore('records', () => {
 
   const recordTags = computed(() => {
     return { 0: assignmentTags.value, 1: creditTags.value, 2: debitTags.value }
-  })
+  });
 
   const mutations = {
-    getRecords: (data) => {
-      records.value = [...data]
-      return 'Your records were loaded.'
-    },
     setRecords: (data) => {
-      records.value = [...data]
-      return 'Your records were loaded.'
+      records.value = [...data];
+      return 'Your records were loaded.';
     },
     createRecord: (data) => {
-      records.value.push(...data)
+      records.value.push(data.record)
+      data.funds.forEach((fund) => fundStore.mutations.updateFund(fund));
       return 'Your record was created.'
     },
     updateRecord: (data) => {
-      for (const record of data) {
-        const index = records.value.findIndex(r => r.id === record.id)
-        records.value.splice(index, 1, record)
-      }
+      const index = records.value.findIndex(r => r.id === data.record.id)
+      records.value.splice(index, 1, data.record);
+      data.funds.forEach((fund) => fundStore.mutations.updateFund(fund));
       return 'Your record was updated.'
     },
     deleteRecord: (data) => {
-      data.forEach(dataValue => {
-        const index = records.value.findIndex(record => record.id === dataValue);
-        records.value.splice(index, 1)
-      })
+      const index = records.value.findIndex(r => r.id === data.record.id)
+      records.value.splice(index, 1);
+      data.funds.forEach((fund) => fundStore.mutations.updateFund(fund));
       return 'Your record was deleted.'
     }
   };
@@ -66,10 +63,10 @@ export const useRecordStore = defineStore('records', () => {
     })
   );
 
-  const getRecords = () => useService({
+  const getRecords = (data = { filters: {} }) => useService({
     service: Find,
-    data: { token: credentialStore.credential.token },
-    mutation: mutations.getRecords,
+    data: { ...data, token: credentialStore.credential.token },
+    mutation: mutations.setRecords,
   });
 
   const createRecord = (data) => useService({

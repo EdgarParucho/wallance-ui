@@ -4,11 +4,9 @@ import { Create, Update, Delete } from '../services/fundAPI';
 import { useLocalStorage } from '@vueuse/core';
 import { useRecordStore } from './recordStore';
 import { useCredentialStore } from "./credentialStore";
-import { storeToRefs } from 'pinia';
 
 export const useFundStore = defineStore('fund', () => {
   const recordStore = useRecordStore();
-  const { records } = storeToRefs(recordStore);
   const funds = useLocalStorage('vueUseFunds', []);
   const defaultFund = computed(() => funds.value.find(fund => fund.isDefault));
   const credentialStore = useCredentialStore();
@@ -63,16 +61,7 @@ export const useFundStore = defineStore('fund', () => {
     mutation: mutations.deleteFund
   });
 
-  watch(() => records.value,
-  (records) => {
-    funds.value.forEach(fund => {
-      const fundRecordsAmounts = records.filter(record => record.fundID === fund.id || record.otherFundID === fund.id);
-      fund.balance = fundRecordsAmounts.reduce((balance, record) => {
-        const recordAmount = (record.fundID === fund.id) ? Number(record.amount) : -Number(record.amount);
-        return (balance + recordAmount);
-      }, 0);
-    })
-  }, { immediate: true });
-  
-  return { funds, defaultFund, setFunds: mutations.setFunds, createFund, updateFund, deleteFund }
+  // ! Still need to update balance on records updating, but make it from server side. It is already done there, set the logic to communicate to the client
+
+  return { funds, defaultFund, mutations, createFund, updateFund, deleteFund }
 })

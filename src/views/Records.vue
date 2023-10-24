@@ -44,7 +44,7 @@
       <FundsRecords :funds="funds" :filtered-records="filteredRecords" />
     </div>
 
-    <QueryForm :funds="funds" @runQuery="(filtersConfig) => appliedFilters = filtersConfig" />
+    <QueryForm :funds="funds" @runQuery="(filtersConfig) => updateFilters(filtersConfig)" />
     <RecordsTable
     @edit-record="(record) => editRecord(record)"
     @delete-record="(record) => deleteRecord(record)"
@@ -132,6 +132,10 @@ function deleteRecord(record) {
     })
     .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
     .finally(() => loading.value = false)
+}
+
+function updateFilters(filtersConfig) {
+  appliedFilters.value = filtersConfig;
 }
 
 </script>

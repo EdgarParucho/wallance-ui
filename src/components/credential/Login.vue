@@ -44,6 +44,7 @@
 import { ref, inject, computed } from 'vue'
 import { useRouter } from 'vue-router';
 import { useCredentialStore } from '../../stores/credentialStore';
+import { useRecordStore } from '../../stores/recordStore';
 import { KeyIcon } from '@heroicons/vue/24/outline';
 import Dialog from '../layout/Dialog.vue';
 
@@ -51,6 +52,7 @@ const props = defineProps({ formIsOpen: { type: Boolean, required: true } });
 const emit = defineEmits(['close-form']);
 const displayAlert = inject("alert");
 const credentialStore = useCredentialStore();
+const recordStore = useRecordStore();
 
 const router = useRouter();
 
@@ -69,6 +71,7 @@ function handleSubmit(data) {
   loading.value = true;
   credentialStore.login(data)
     .then((message) => {
+      recordStore.getRecords();
       displayAlert({ title: "You're in", type: "success", text: message });
       router.replace('/dashboard');
     })

@@ -113,7 +113,7 @@
               <select
               id="fundID"
               name="fundID"
-              class="focus:border-violet-500 dark:focus:border-violet-500 shadow-md rounded-full border-none invalid:text-red-400 disabled:border-stone-400 dark:disabled:border-stone-500 bg-transparent focus:ring-0"
+              class="border-transparent dark:focus:border-1 focus:border-violet-500 dark:focus:border-violet-500 shadow-md rounded-full invalid:text-red-400 disabled:border-stone-400 dark:disabled:border-stone-500 bg-transparent focus:ring-0"
               required
               :disabled="isCredit"
               v-model="form.fundID"
@@ -134,7 +134,7 @@
               <select
               id="otherFundID"
               name="otherFundID"
-              class="focus:border-violet-500 dark:focus:border-violet-500 shadow-md rounded-full border-none invalid:text-red-400 disabled:border-stone-400 dark:disabled:border-stone-500 bg-transparent focus:ring-0"
+              class="border-transparent dark:focus:border-1 focus:border-violet-500 dark:focus:border-violet-500 shadow-md rounded-full invalid:text-red-400 disabled:border-stone-400 dark:disabled:border-stone-500 bg-transparent focus:ring-0"
               :disabled="form.type !== 0 || !form.fundID"
               required
               v-model="form.otherFundID"
@@ -284,12 +284,21 @@ const form = reactive({
   note: "",
   tag: "",
   fundID: fundStore.defaultFund.id,
+  otherFundID: null,
   type: 2,
   ...props.preset,
 });
 
 const loading = ref(false);
 const templateName = ref("");
+const showTags = ref(false);
+const focusedTagIndex = ref(0);
+
+const tags = computed(() => {
+  const formTag = form.tag?.toLowerCase() || "";
+  const matchingTags = recordTags.value[form.type].filter(tag => tag.toLowerCase().includes(formTag));
+  return matchingTags;
+});
 
 const isCredit = computed(() => form.type === 1);
 const operationIcon = computed(() => {
@@ -328,7 +337,7 @@ function onSave(formValues) {
 
 function normalize({ amount, date, time, ...rest }) {
   const normalized = {
-    amount: isCredit.value ? -(amount) : amount,
+    amount: (!isCredit.value && form.amount > 0) ? -(amount) : amount,
     date: new Date(`${date}T${time}:01`).toISOString(),
     ...rest,
   };
@@ -350,15 +359,6 @@ async function saveTemplate({ formValues, name }) {
   });
   await accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
 }
-
-const tags = computed(() => {
-  const formTag = form.tag?.toLowerCase() || "";
-  const matchingTags = recordTags.value[form.type].filter(tag => tag.toLowerCase().includes(formTag));
-  return matchingTags;
-});
-
-const showTags = ref(false);
-const focusedTagIndex = ref(0);
 
 function handleTagList(e) {
   const tagSelected = e.relatedTarget?.className?.includes('tag');
@@ -403,8 +403,8 @@ function normalizeAmount() {
 }
 
 watch(() => form.type, (type) => {
-  form.fundID = type === 1 ? fundStore.defaultFund.id : "";
-  form.otherFundID = "";
+  form.fundID = type !== 2 ? fundStore.defaultFund.id : "";
+  form.otherFundID = null;
 })
 
 watch(focusedTagIndex, (i) => {

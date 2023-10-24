@@ -1,12 +1,13 @@
 <template>
   <div class="border rounded-sm border-stone-300 dark:border-stone-500 p-2 2xl:w-2/3 mx-auto">
-    <form @submit.prevent="submitQuery(filters)">
+    <form @submit.prevent="submitQuery(appliedFilters)">
       <div class="sm:flex sm:space-x-1 items-center justify-start">
         <button
         :class="[
           { 'bg-purple-600 dark:bg-purple-600 text-white': currentMonthRange.filterApplied },
           'my-1 w-full sm:w-auto hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex justify-center items-center gap-1'
         ]"
+        type="submit"
         @click="filterByThisMonth">
           <CalendarIcon class="w-4" />
           This month
@@ -16,7 +17,9 @@
           { 'bg-purple-600 dark:bg-purple-600 text-white': currentYearRange.filterApplied },
           'my-1 w-full sm:w-auto hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex justify-center items-center gap-1'
         ]"
-        @click="filterByThisYear">
+        @click="filterByThisYear"
+        type="submit"
+        >
           <CalendarDaysIcon class="w-4" />
           This year
         </button>
@@ -26,7 +29,9 @@
           { 'bg-purple-600 dark:bg-purple-600 text-white': JSON.stringify(query.filters) === JSON.stringify(filters)   },
           'my-1 w-full sm:w-auto hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex justify-center items-center gap-1'
         ]"
-        @click="filters = query.filters">
+        @click="filters = query.filters"
+        type="submit"
+        >
           <FilledBookmarkIcon class="w-4" />
           {{ query.name }}
         </button>
@@ -35,7 +40,7 @@
         <div class="grid lg:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <small class="text-xs font-bold">Find by type</small>
-            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" @click="filters.type = ''">
+            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" type="button" @click="filters.type = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
@@ -54,7 +59,7 @@
         <div class="grid md:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <label for="from-date" class="text-xs font-bold">From date</label>
-            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" @click="filters.fromDate = ''">
+            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" type="button" @click="filters.fromDate = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
@@ -68,7 +73,7 @@
         <div class="grid md:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <label for="to-date" class="text-xs font-bold">To date</label>
-            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" @click="filters.toDate = ''">
+            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" type="button" @click="filters.toDate = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
@@ -84,7 +89,7 @@
         <div class="grid md:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <label for="to-date" class="text-xs font-bold">Fund</label>
-            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" @click="filters.fundID = ''">
+            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" type="button" @click="filters.fundID = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
@@ -103,7 +108,7 @@
         <div class="grid lg:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
             <small class="text-xs font-bold">Find by tag</small>
-            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" @click="filters.tag = ''">
+            <button class="hover:text-black dark:hover:text-white text-stone-500 rounded-full" type="button" @click="filters.tag = ''">
               <XCircleIcon class="w-5" />
             </button>
           </div>
@@ -133,7 +138,7 @@
       <button
       class="rounded-sm gap-1 py-0.5 transition-colors flex items-center w-1/3 xl:w-1/4 justify-center bg-stone-200 hover:bg-stone-300 text-stone-700 dark:bg-stone-700 dark:hover:bg-stone-600 dark:disabled:bg-stone-800 dark:text-white dark:disabled:text-stone-400 disabled:text-stone-400"
       type="button"
-      :disabled="!filtersApplied"
+      :disabled="appliedFilters.length < 1"
       @click="clearFilters"
       >
         <ArrowUturnLeftIcon class="mb-1 w-4" />
@@ -141,7 +146,7 @@
       </button>
       <button
       class="rounded-sm py-0.5 px-2 transition-colors font-bold flex w-1/3 xl:w-1/4 justify-center hover:bg-stone-600 border bg-stone-800 text-white"
-      @click="submitQuery(filters)"
+      @click="submitQuery(appliedFilters)"
       >
         <span class="flex gap-1">
           <MagnifyingGlassIcon class="w-5" />
@@ -151,7 +156,7 @@
       <button
       class="rounded-sm gap-1 py-0.5 transition-colors flex items-center w-1/3 xl:w-1/4 justify-center bg-stone-200 hover:bg-stone-300 text-stone-700 dark:bg-stone-700 dark:hover:bg-stone-600 dark:disabled:bg-stone-800 dark:text-white dark:disabled:text-stone-400 disabled:text-stone-400"
       type="button"
-      :disabled="!filtersApplied"
+      :disabled="appliedFilters.length < 1"
       @click="updatePreferences(filters)"
       >
         <span v-if="queryIsSaved" class="flex gap-2">
@@ -224,10 +229,10 @@ const filters = ref({
 
 const queryName = ref("");
 
-const filtersApplied = computed(() => Object.entries(filters.value)
-  .filter(item => item[1] !== "" && item[1] !== null)
-  .length > 0
-);
+const appliedFilters = computed(() => {
+  const filtersEntries = Object.entries(filters.value);
+  return filtersEntries.filter(([, value]) => value !== "" && value !== null);
+});
 
 const queryIsSaved = computed(() => preferences.value.queries.some(query => JSON.stringify(query.filters).toLocaleLowerCase() === JSON.stringify(filters.value).toLocaleLowerCase()));
 const tagOptions = computed(() => {
@@ -257,11 +262,11 @@ const currentYearRange = computed(() => {
 
 function clearFilters() {
   filters.value = { tag: "", note: "", fromDate: null, toDate: null, type: null };
-  submitQuery(filters.value);
+  submitQuery(appliedFilters.value);
 }
 
-function submitQuery(filters) {
-  emit('runQuery', JSON.parse(JSON.stringify(filters)))
+function submitQuery(appliedFilters) {
+  emit('runQuery', Object.fromEntries(appliedFilters))
 }
 
 function filterByThisMonth() {
@@ -285,8 +290,8 @@ function savePreferredQuery(query) {
   formIsOpen.value = false;
 }
 
-function removePreferredQuery(filtersApplied) {
-  const queryIndex = preferences.value.queries.findIndex(query => JSON.stringify(query.filters) === JSON.stringify(filtersApplied))
+function removePreferredQuery(appliedFilters) {
+  const queryIndex = preferences.value.queries.findIndex(query => JSON.stringify(query.filters) === JSON.stringify(appliedFilters))
   if (queryIndex === -1) return;
   preferences.value.queries.splice(queryIndex, 1);
   accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } })
