@@ -237,7 +237,7 @@ const appliedFilters = computed(() => {
 const queryIsSaved = computed(() => preferences.value.queries.some(query => JSON.stringify(query.filters).toLocaleLowerCase() === JSON.stringify(filters.value).toLocaleLowerCase()));
 const tagOptions = computed(() => {
   const typeTags = (filters.value.type === null) ? Object.values(recordTags.value).flat() : recordTags.value[filters.value.type];
-  return typeTags
+  return typeTags.sort();
 });
 
 const currentMonthRange = computed(() => {

@@ -54,6 +54,9 @@
           <option :value="50">50</option>
         </select>
       </div>
+      <div>
+        <input type="range" v-model="currentPage" :min="1" step="1" :max="totalPages">
+      </div>
       <div class="grid font-bold">
         <small class="text-xs mb-1">Page: {{ currentPage }} / {{ totalPages }}</small>
         <div class="flex space-x-1">

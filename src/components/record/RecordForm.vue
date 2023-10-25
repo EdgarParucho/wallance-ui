@@ -94,7 +94,7 @@
                 type="number"
                 :min="0"
                 id="amount"
-                class="w-full bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-600 dark:border-b-white transition-colors rounded-sm pl-6 text-right disabled:text-stone-400"
+                class="w-full bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-400 dark:border-b-stone-700 rounded-sm pl-6 text-right disabled:text-stone-400"
                 :class="{ 'border-b-red-400 dark:border-b-red-400': Number(form.amount) <= 0 }"
                 placeholder="0"
                 required
@@ -113,7 +113,7 @@
               <select
               id="fundID"
               name="fundID"
-              class="border-transparent dark:focus:border-1 focus:border-violet-500 dark:focus:border-violet-500 shadow-md rounded-full invalid:text-red-400 disabled:border-stone-400 dark:disabled:border-stone-500 bg-transparent focus:ring-0"
+              class="border-transparent dark:focus:border-1 focus:border-violet-500 dark:focus:border-violet-500 shadow-sm shadow-stone-400 dark:shadow-black rounded-full invalid:text-red-400 bg-transparent focus:ring-0"
               required
               :disabled="isCredit"
               v-model="form.fundID"
@@ -134,7 +134,7 @@
               <select
               id="otherFundID"
               name="otherFundID"
-              class="border-transparent dark:focus:border-1 focus:border-violet-500 dark:focus:border-violet-500 shadow-md rounded-full invalid:text-red-400 disabled:border-stone-400 dark:disabled:border-stone-500 bg-transparent focus:ring-0"
+              class="border-transparent dark:focus:border-1 focus:border-violet-500 dark:focus:border-violet-500 shadow-sm shadow-stone-400 dark:shadow-black rounded-full invalid:text-red-400 bg-transparent focus:ring-0"
               :disabled="form.type !== 0 || !form.fundID"
               required
               v-model="form.otherFundID"
@@ -296,7 +296,9 @@ const focusedTagIndex = ref(0);
 
 const tags = computed(() => {
   const formTag = form.tag?.toLowerCase() || "";
-  const matchingTags = recordTags.value[form.type].filter(tag => tag.toLowerCase().includes(formTag));
+  const matchingTags = recordTags.value[form.type]
+    .filter(tag => tag.toLowerCase().includes(formTag))
+    .sort();
   return matchingTags;
 });
 

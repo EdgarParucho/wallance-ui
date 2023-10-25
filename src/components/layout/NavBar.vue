@@ -7,18 +7,26 @@ const route = useRoute();
 const atHome = computed(() => route.fullPath === '/');
 
 const RecordForm = defineAsyncComponent(() => import('../record/RecordForm.vue'));
+let recordFormIsOpen = ref(false);
 
 const links = [
   { hint: "Funds", path: "/funds", icon: ArchiveBoxIcon },
   { hint: "Records", path: "/records", icon: CircleStackIcon },
 ];
-let recordFormIsOpen = ref(false);
+
+function scrollToTop() {
+  setTimeout(() => {
+    window.scrollTo(0,0);
+  }, 250)
+}
+
 </script>
 
 <template>
   <div v-if="!atHome" class="flex justify-around items-center w-full fixed bottom-0 shadow-lg bg-stone-100 border border-stone-300 dark:border-stone-700 dark:bg-stone-800">
     <router-link
     v-for="link, i in links" :key="i"
+    @click.native="scrollToTop"
     :to="link.path"
     class="text-center pt-1 w-full hover:bg-violet-600 hover:text-white dark:hover:bg-stone-700"
     :class="{ 'bg-violet-500 text-white': (route.fullPath === link.path) }"
@@ -32,6 +40,7 @@ let recordFormIsOpen = ref(false);
     >
       <PlusIcon class="w-6 mx-auto" />
       <small>Record</small>
-    </button><RecordForm v-if="recordFormIsOpen" :form-is-open="recordFormIsOpen" @close-form="recordFormIsOpen = false" :editing="false" />
+    </button>
+    <RecordForm v-if="recordFormIsOpen" :form-is-open="recordFormIsOpen" @close-form="recordFormIsOpen = false" :editing="false" />
   </div>
 </template>

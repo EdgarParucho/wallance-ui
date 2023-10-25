@@ -174,7 +174,7 @@
       <div class="h-56 w-72 bg-white dark:bg-stone-800 p-4 rounded-md shadow-md text-center">
         <ArchiveBoxIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
         <p class="my-8">To manage your funds</p>
-        <router-link to="/funds" class="justify-center flex gap-2 underline font-bold text-violet-500 hover:bg-violet-900 hover:bg-opacity-20 transition-colors">
+        <router-link to="/funds" class="justify-center flex gap-2 underline font-bold text-violet-500 hover:bg-violet-900 hover:bg-opacity-20 transition-colors" @click.native="scrollToTop">
           <LinkIcon class="w-5" />
           Go to funds
         </router-link>
@@ -183,7 +183,7 @@
       <div class="h-56 w-72 bg-white dark:bg-stone-800 p-4 rounded-md shadow-md text-center">
         <CircleStackIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
         <p class="my-8">For records details and queries</p>
-        <router-link to="/records" class="justify-center flex gap-2 underline font-bold text-violet-500 hover:bg-violet-900 hover:bg-opacity-20 transition-colors">
+        <router-link to="/records" class="justify-center flex gap-2 underline font-bold text-violet-500 hover:bg-violet-900 hover:bg-opacity-20 transition-colors" @click.native="scrollToTop">
           <LinkIcon class="w-5" />
           Go to records
         </router-link>
@@ -368,6 +368,12 @@ function openToAssign() {
     preset: { type: 0 },
   };
   recordFormIsOpen.value = true;
+}
+
+function scrollToTop() {
+  setTimeout(() => {
+    window.scrollTo(0,0);
+  }, 250)
 }
 
 </script>
