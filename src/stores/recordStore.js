@@ -2,13 +2,14 @@ import { defineStore } from 'pinia';
 import { useCredentialStore } from "./credentialStore";
 import { Find, Create, Update, Delete } from '../services/recordAPI';
 import { useLocalStorage } from '@vueuse/core';
-import { computed, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useFundStore } from './fundStore';
 
 export const useRecordStore = defineStore('records', () => {
   const records = useLocalStorage('vueUseRecords', []);
   const credentialStore = useCredentialStore();
   const fundStore = useFundStore();
+  const requestingRecords = ref(false);
 
   const assignmentTags = computed(() => Array.from(new Set(records.value
     .filter(r => r.type === 0)
@@ -32,6 +33,7 @@ export const useRecordStore = defineStore('records', () => {
   const mutations = {
     setRecords: (data) => {
       records.value = [...data];
+      requestingRecords.value = false;
       return 'Your records were loaded.';
     },
     createRecord: (data) => {
@@ -97,6 +99,7 @@ export const useRecordStore = defineStore('records', () => {
     setRecords: mutations.setRecords,
     createRecord,
     updateRecord,
-    deleteRecord
+    deleteRecord,
+    requestingRecords,
   };
 })

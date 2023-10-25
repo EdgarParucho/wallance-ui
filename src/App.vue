@@ -4,7 +4,7 @@ import NavBar from './components/layout/NavBar.vue';
 import swal from "sweetalert";
 import { provide } from 'vue';
 
-provide("alert", ({ type = "error", title, text, button = false, timer = 2000 }) => swal({
+provide("alert", ({ type = "error", title, text, button = false, timer = 1500 }) => swal({
   icon: type,
   title,
   text,

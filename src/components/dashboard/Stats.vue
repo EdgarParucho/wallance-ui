@@ -5,7 +5,11 @@
       v-for="stat in stats" :key="stat.id"
       class="flex items-center justify-center shadow-md bg-white dark:bg-stone-800 h-36 sm:h-56 w-full lg:w-4/12 xl:w-3/12 2xl:w-2/12"
       >
-        <div class="grid">
+        <div v-if="requestingRecords" class="grid gap-2">
+          <div class="bg-stone-300 w-28 animate-pulse h-12 mx-auto"></div>
+          <div class="bg-stone-300 w-44 animate-pulse h-6 mx-auto"></div>
+        </div>
+        <div class="grid" v-else>
           <dd class="text-3xl font-semibold text-center text-stone-900 dark:text-stone-100 sm:text-5xl">{{ stat.value }}</dd>
           <dt class="leading-7 text-stone-600 dark:text-stone-400">{{ stat.name }}</dt>
         </div>
@@ -22,6 +26,7 @@ import { useRecordStore } from '../../stores/recordStore';
 const props = defineProps(['records']);
 const recordStore = useRecordStore();
 const { records } = storeToRefs(recordStore);
+const { requestingRecords } = storeToRefs(recordStore);
 
 const yearRecords = computed(() => {
   const isFromCurrentYear = (date) => new Date(date).getFullYear() === new Date().getFullYear();

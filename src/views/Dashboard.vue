@@ -69,7 +69,7 @@
       <h2 class="text-4xl font-bold text-center">Tags usage</h2>
       <h3 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">Track your records.</h3>
 
-      <div v-if="creditsByTag.totalTags < 1 && debitsByTag.totalTags < 1" class="text-center my-20">
+      <div v-if="creditsByTag.totalTags === 0 && debitsByTag.totalTags === 0 && !requestinRecords" class="text-center my-20">
         <h3 class="font-bold text-2xl mb-4">
           You may want to<span class="text-violet-500"> start using Tags </span>
         </h3>
@@ -202,7 +202,7 @@
 </template>
 
 <script setup>
-import { computed, ref, defineAsyncComponent } from 'vue';
+import { computed, ref, defineAsyncComponent, onMounted } from 'vue';
 import { useFundStore } from '../stores/fundStore';
 import { useRecordStore } from '../stores/recordStore';
 import { useAccountStore } from '../stores/accountStore';
@@ -216,6 +216,10 @@ import Balance from '../components/dashboard/Balance.vue';
 import FundsBalances from '../components/dashboard/FundsBalances.vue';
 import TopTags from '../components/dashboard/TopTags.vue';
 
+onMounted(async () => {
+  if(recordStore.requestingRecords) recordStore.getRecords();
+})
+
 const FirstSteps = defineAsyncComponent(() => import('../components/dashboard/FirstSteps.vue'));
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
 
@@ -225,6 +229,8 @@ const recordStore = useRecordStore();
 
 const { funds } = storeToRefs(fundStore);
 const { records } = storeToRefs(recordStore);
+const { requestinRecords } = storeToRefs(recordStore);
+
 const { preferences } = storeToRefs(accountStore);
 const recordFormIsOpen = ref(false);
 
