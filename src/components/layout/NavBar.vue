@@ -25,22 +25,29 @@ function scrollToTop() {
 <template>
   <div v-if="!atHome" class="flex justify-around items-center w-full fixed bottom-0 shadow-lg bg-stone-100 border border-stone-300 dark:border-stone-700 dark:bg-stone-800">
     <router-link
-    v-for="link, i in links" :key="i"
     @click.native="scrollToTop"
-    :to="link.path"
-    class="text-center pt-1 w-full hover:bg-violet-600 hover:text-white dark:hover:bg-stone-700"
-    :class="{ 'bg-violet-500 text-white': (route.fullPath === link.path) }"
+    to="/funds"
+    class="text-center pt-1 w-full hover:bg-stone-200 dark:hover:bg-stone-900"
+    :class="{ 'bg-stone-200 dark:bg-stone-700': (route.fullPath === '/funds') }"
     >
-      <component :is="link.icon" class="w-6 mx-auto" />
-      <small>{{ link.hint }}</small>
+      <component :is="ArchiveBoxIcon" class="w-6 mx-auto" />
+      <small>Funds</small>
     </router-link>
     <button
-    class="grid justify-center pt-1 h-full w-full font-semibold hover:text-white hover:bg-violet-500"
+    class="flex items-center rounded-full -mt-4 w-14 h-14 absolute text-white hover:bg-opacity-80 bg-gradient-to-tr from-violet-700 to-violet-400 hover:scale-110 transition-transform"
     @click="recordFormIsOpen = true"
     >
       <PlusIcon class="w-6 mx-auto" />
-      <small>Record</small>
     </button>
+    <router-link
+    @click.native="scrollToTop"
+    to="/records"
+    class="text-center pt-1 w-full hover:bg-stone-200 dark:hover:bg-stone-900"
+    :class="{ 'bg-stone-200 dark:bg-stone-700': (route.fullPath === '/records') }"
+    >
+      <component :is="CircleStackIcon" class="w-6 mx-auto" />
+      <small>Records</small>
+    </router-link>
     <RecordForm v-if="recordFormIsOpen" :form-is-open="recordFormIsOpen" @close-form="recordFormIsOpen = false" :editing="false" />
   </div>
 </template>

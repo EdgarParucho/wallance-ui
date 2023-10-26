@@ -7,10 +7,12 @@
       Find and manage your records from here. Take a look on the dynamic stats when you make your query. 
     </p>
 
+    <QueryForm class="my-20" :funds="funds" @runQuery="(filtersConfig) => updateFilters(filtersConfig)" />
+
     <h4 class="my-10 px-2 mx-auto md:w-2/5 justify-center flex items-center text-violet-500 bg-violet-600 bg-opacity-20 border-l-4 border-violet-700 rounded-sm py-2">
       <InformationCircleIcon class="w-8 text-left" />
       <span class="mx-auto font-bold">
-        Data here is responsive to queries from the panel at the bottom
+        Data here is responsive to queries
       </span>
     </h4>
 
@@ -44,7 +46,6 @@
       <FundsRecords :funds="funds" :filtered-records="filteredRecords" />
     </div>
 
-    <QueryForm :funds="funds" @runQuery="(filtersConfig) => updateFilters(filtersConfig)" />
     <RecordsTable
     @edit-record="(record) => editRecord(record)"
     @delete-record="(record) => deleteRecord(record)"

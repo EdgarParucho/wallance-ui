@@ -44,17 +44,13 @@
 import { ref, inject, computed } from 'vue'
 import { useRouter } from 'vue-router';
 import { useCredentialStore } from '../../stores/credentialStore';
-import { useRecordStore } from '../../stores/recordStore';
 import { KeyIcon } from '@heroicons/vue/24/outline';
 import Dialog from '../layout/Dialog.vue';
-import { storeToRefs } from 'pinia';
 
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } });
 const emit = defineEmits(['close-form']);
 const displayAlert = inject("alert");
 const credentialStore = useCredentialStore();
-const recordStore = useRecordStore();
-const { requestingRecords } = storeToRefs(recordStore);
 
 const router = useRouter();
 
@@ -74,7 +70,6 @@ function handleSubmit(data) {
   credentialStore.login(data)
     .then((message) => {
       router.replace('/dashboard');
-      requestingRecords.value = true;
       displayAlert({ title: "You're in", type: "success", text: message });
     })
     .catch((message) => displayAlert({ title: "Couldn't authenticate you", type: "error", text: message }))

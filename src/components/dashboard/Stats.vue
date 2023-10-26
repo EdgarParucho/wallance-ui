@@ -1,5 +1,7 @@
 <template>
   <div>
+    <h2 class="text-4xl font-bold text-center mt-20">Let's check some stats</h2>
+    <h4 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">Numbers from this year.</h4>
     <dl class="md:flex items-center justify-center gap-1">
       <div
       v-for="stat in stats" :key="stat.id"

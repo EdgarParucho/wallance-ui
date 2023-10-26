@@ -146,11 +146,14 @@
       </button>
       <button
       class="rounded-sm py-0.5 px-2 transition-colors font-bold flex w-1/3 xl:w-1/4 justify-center hover:bg-stone-600 border bg-stone-800 text-white"
+      :class="{ 'animate-pulse': requestingRecords }"
       @click="submitQuery(appliedFilters)"
+      :disabled="requestingRecords"
       >
         <span class="flex gap-1">
-          <MagnifyingGlassIcon class="w-5" />
-          Search
+          <ClockIcon v-if="requestingRecords" class="w-5" />
+          <MagnifyingGlassIcon v-else class="w-5" />
+          {{ requestingRecords ? 'Loading' : 'Search' }}
         </span>
       </button>
       <button
@@ -195,21 +198,23 @@
 
 <script setup>
 import Dialog from '../layout/Dialog.vue';
-import { XCircleIcon, BookmarkIcon, MagnifyingGlassIcon, ArrowUturnLeftIcon, CalendarIcon, CalendarDaysIcon, ArchiveBoxIcon, CircleStackIcon } from '@heroicons/vue/24/outline';
+import { XCircleIcon, BookmarkIcon, MagnifyingGlassIcon, ArrowUturnLeftIcon, CalendarIcon, CalendarDaysIcon, ArchiveBoxIcon, CircleStackIcon, ClockIcon } from '@heroicons/vue/24/outline';
 import { BookmarkIcon as FilledBookmarkIcon } from '@heroicons/vue/24/solid';
 import { useAccountStore } from '../../stores/accountStore';
 import { useRecordStore } from '../../stores/recordStore';
 import { storeToRefs } from "pinia";
-import { ref, computed } from 'vue'
+import { ref, computed, inject } from 'vue'
 
 const accountStore = useAccountStore();
 const recordStore = useRecordStore();
 
 const emit = defineEmits(["runQuery"]);
 const props = defineProps(["funds"]);
+const displayAlert = inject("alert");
 
 const { preferences } = storeToRefs(accountStore);
 const { recordTags } = storeToRefs(recordStore);
+const { requestingRecords } = storeToRefs(recordStore);
 
 let formIsOpen = ref(false);
 const typeOptions = [
@@ -262,11 +267,13 @@ const currentYearRange = computed(() => {
 
 function clearFilters() {
   filters.value = { tag: "", note: "", fromDate: null, toDate: null, type: null };
-  submitQuery(appliedFilters.value);
 }
 
 function submitQuery(appliedFilters) {
-  emit('runQuery', Object.fromEntries(appliedFilters))
+  const filters = Object.fromEntries(appliedFilters);
+  recordStore.getRecords({ filters })
+    .then(() => displayAlert({ title: "Done", type: "success", text: 'Records loaded' }))
+    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
 }
 
 function filterByThisMonth() {

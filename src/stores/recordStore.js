@@ -61,15 +61,18 @@ export const useRecordStore = defineStore('records', () => {
     ))
     .catch((error) => {
       const feedback = error.response?.data?.message || error.response?.data || error.message || error;
+      requestingRecords.value = false;
       reject(feedback);
     })
   );
 
-  const getRecords = (data = { filters: {} }) => useService({
-    service: Find,
-    data: { ...data, token: credentialStore.credential.token },
-    mutation: mutations.setRecords,
-  });
+  const getRecords = (data = { filters: {} }) => {
+    requestingRecords.value = true;
+    return useService({
+      service: Find,
+      data: { ...data, token: credentialStore.credential.token },
+      mutation: mutations.setRecords,
+    })};
 
   const createRecord = (data) => useService({
     service: Create,
@@ -92,6 +95,7 @@ export const useRecordStore = defineStore('records', () => {
   watch(records, () => {
     records.value.sort((a, b) => new Date(b.date) - new Date(a.date))
   }, { immediate: true })
+
   return {
     records,
     recordTags,
