@@ -34,7 +34,7 @@ export const useRecordStore = defineStore('records', () => {
     setRecords: (data) => {
       records.value = [...data];
       requestingRecords.value = false;
-      return 'Your records were loaded.';
+      return records.value.length;
     },
     createRecord: (data) => {
       records.value.push(data.record)

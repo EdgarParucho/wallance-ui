@@ -8,25 +8,29 @@
 import { computed } from 'vue';
 import { Line } from 'vue-chartjs';
 import { Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend } from 'chart.js'
+CategoryScale,
+LinearScale,
+PointElement,
+LineElement,
+Title,
+Tooltip,
+Legend } from 'chart.js';
+import { useRecordStore } from '../../stores/recordStore';
+import { storeToRefs } from 'pinia';
 
-  ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
+ChartJS.register(
+CategoryScale,
+LinearScale,
+PointElement,
+LineElement,
+Title,
+Tooltip,
+Legend,
 );
 
-const props = defineProps(['filteredRecords']);
+const recordStore = useRecordStore();
+const { records } = storeToRefs(recordStore);
+
 const months = [
   'January',
   'February',
@@ -47,7 +51,7 @@ const monthsBalance = computed(() => {
   months.forEach(month => {
     const monthMatch = (date) => new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(date)) === month;
     const yearMatch = (date) => new Date(date).getFullYear() === new Date().getFullYear();
-    const monthRecords = props.filteredRecords.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type !== 0);
+    const monthRecords = records.value.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type !== 0);
     const monthBalance = monthRecords.reduce((acc, record) => acc + record.amount, 0);
     result.push(monthBalance);
   });
@@ -59,7 +63,7 @@ const monthsCredits = computed(() => {
   months.forEach(month => {
     const monthMatch = (date) => new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(date)) === month;
     const yearMatch = (date) => new Date(date).getFullYear() === new Date().getFullYear();
-    const monthRecords = props.filteredRecords.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type === 1);
+    const monthRecords = records.value.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type === 1);
     const monthBalance = monthRecords.reduce((acc, record) => acc + record.amount, 0);
     result.push(monthBalance);
   });
@@ -71,7 +75,7 @@ const monthsDebits = computed(() => {
   months.forEach(month => {
     const monthMatch = (date) => new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(date)) === month;
     const yearMatch = (date) => new Date(date).getFullYear() === new Date().getFullYear();
-    const monthRecords = props.filteredRecords.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type === 2);
+    const monthRecords = records.value.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type === 2);
     const monthBalance = monthRecords.reduce((acc, record) => acc + record.amount, 0);
     result.push(monthBalance);
   });

@@ -89,14 +89,17 @@ import {
   TrashIcon } from '@heroicons/vue/24/outline'
 import { ref, computed, watch } from "vue";
 import { useFundStore } from '../../stores/fundStore';
+import { useRecordStore } from '../../stores/recordStore';
 import { storeToRefs } from "pinia";
 import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
 
-const props = defineProps(['filteredRecords']);
 const emit = defineEmits(['edit-record', 'delete-record']);
 
 const fundStore = useFundStore();
 const { funds } = storeToRefs(fundStore);
+
+const recordStore = useRecordStore();
+const { records } = storeToRefs(recordStore);
 
 const headers = ["Date", "Fund", "Concept", "Amount", "Actions"];
 
@@ -105,10 +108,10 @@ const maxRows = ref(10);
 const breakpoints = useBreakpoints(breakpointsTailwind);
 const underLgBreakpoint = breakpoints.smaller('lg');
 
-const totalPages = computed(() => Math.ceil(props.filteredRecords.length / maxRows.value));
+const totalPages = computed(() => Math.ceil(records.value.length / maxRows.value));
 const startIndex = computed(() => (currentPage.value * maxRows.value) - maxRows.value);
 const endIndex = computed(() => (startIndex.value + maxRows.value));
-const recordRows = computed(() => props.filteredRecords.slice(startIndex.value, endIndex.value));
+const recordRows = computed(() => records.value.slice(startIndex.value, endIndex.value));
 
 function getRecordTypeIcon({ type }) {
   if (type === 0) return ArrowsRightLeftIcon

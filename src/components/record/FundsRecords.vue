@@ -45,30 +45,37 @@
 </template>
 
 <script setup>
-import { ArchiveBoxIcon, InformationCircleIcon, ScaleIcon } from "@heroicons/vue/24/outline";
+import { ArchiveBoxIcon, InformationCircleIcon } from "@heroicons/vue/24/outline";
 import { computed } from "vue";
+import { useFundStore } from '../../stores/fundStore';
+import { useRecordStore } from '../../stores/recordStore';
+import { storeToRefs } from "pinia";
 
-const props = defineProps(["funds", "filteredRecords"]);
+const fundStore = useFundStore();
+const { funds } = storeToRefs(fundStore);
 
-const balanceOnFilters = computed(() => Number(props.filteredRecords
+const recordStore = useRecordStore();
+const { records } = storeToRefs(recordStore);
+
+const balanceOnFilters = computed(() => Number(records.value
   .filter(record => record.type !== 0)
   .reduce((balance, { amount }) => balance + amount, 0)
   .toFixed(2))
 );
 
-const creditsOnFilters = computed(() => Number(props.filteredRecords
+const creditsOnFilters = computed(() => Number(records.value
   .filter(record => record.type === 1)
   .reduce((balance, { amount }) => balance + amount, 0)
   .toFixed(2))
 );
 
-const debitsOnFilters = computed(() => Number(props.filteredRecords
+const debitsOnFilters = computed(() => Number(records.value
   .filter(record => record.type === 2)
   .reduce((balance, { amount }) => balance + amount, 0)
   .toFixed(2))
 );
 
-const currentBalance = computed(() => props.funds.reduce((totalBalance, { balance }) => totalBalance + Number(balance), 0));
+const currentBalance = computed(() => funds.value.reduce((totalBalance, { balance }) => totalBalance + Number(balance), 0));
 
 const balanceDiff = computed(() => {
   if (balanceOnFilters.value < 0) return currentBalance.value - balanceOnFilters.value
@@ -84,7 +91,7 @@ function getAmountFormatted(amount) {
 }
 
 function getFundBalanceOnFilters({ id }) {
-  const fundBalanceOnFilters = props.filteredRecords
+  const fundBalanceOnFilters = records.value
     .filter(record => record.fundID === id || record.otherFundID === id)
     .reduce((balance, { fundID, amount }) => {
       const recordAmount = fundID === id ? amount : -amount;

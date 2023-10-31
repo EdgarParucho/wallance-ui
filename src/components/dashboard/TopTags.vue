@@ -22,7 +22,7 @@ const props = defineProps({
 const recordStore = useRecordStore();
 const { requestingRecords } = storeToRefs(recordStore);
 
-const showing = ref(5);
+const showingAll = ref(false);
 const icon = computed(() => props.type === 1 ? PlusIcon : MinusIcon);
 const title = computed(() => props.type === 1 ? 'Credits' : 'Debits');
 
@@ -49,7 +49,8 @@ const tagsSortedByBalance = computed(() => {
 });
 
 const topTags = computed(() => {
-  const limitedTags = tagsSortedByBalance.value.slice(0, showing.value);
+  const limit = showingAll ? tagsSortedByBalance.length : 5;
+  const limitedTags = tagsSortedByBalance.value.slice(0, limit);
   return limitedTags;
 });
 
@@ -74,9 +75,9 @@ function getAmountFormatted(amount) {
 </script>
 
 <template>
-  <dl class="md:w-1/2 lg:w-1/3 mx-auto">
+  <dl>
 
-    <div class="flex items-center justify-between my-4">
+    <div class="flex items-center justify-between px-4">
       <div class="flex items-center gap-2">
         <component
         :class="[props.type === 1 ? 'text-green-500 bg-green-600' : 'text-red-500 bg-red-600', ' bg-opacity-20 flex p-0.5 rounded-full h-5 w-5']"
@@ -84,15 +85,34 @@ function getAmountFormatted(amount) {
         <h4 class="text-center text-xl font-bold">{{ title }}</h4>
       </div>
       <span class="text-sm">Total: {{ tagsSortedByBalance.length }}</span>
-      <small>
-        <button
-        class="text-stone-500 border border-stone-600 rounded-full px-2 hover:text-black dark:hover:text-white hover:disabled:text-stone-500 dark:hover:disabled:text-stone-500 disabled:text-stone-500"
+      <label
+        for="toggleFour"
+        class="flex items-center cursor-pointer select-none text-dark dark:text-white text-sm"
+        >
+        <div class="relative">
+          <input
+            type="checkbox"
+            id="toggleFour"
+            class="peer sr-only"
+            />
+          <div
+            class="block h-8 rounded-full box bg-dark dark:bg-dark-2 w-14 peer-checked:bg-primary"
+            ></div>
+          <div
+            class="absolute flex items-center justify-center w-6 h-6 transition bg-violet-500 rounded-full dot left-1 top-1 dark:bg-dark-5 peer-checked:translate-x-full peer-checked:dark:bg-white"
+            :class="{ 'bg-stone-300': showAllTags }"
+          ></div>
+        </div>
+        Show All
+      </label>
+      <!-- <small>
+        <input
+        type=""
         :disabled="uniqueTags <= 5"
-        @click="showing = (showing === tagsSortedByBalance.length) ? 5 : tagsSortedByBalance.length"
+        v-model="showingAll"
         >
           Show All
-        </button>
-      </small>
+      </small> -->
     </div>
     <div v-for="tag, i in topTags" :key="i" class="my-1 rounded-md shadow-md bg-white dark:bg-stone-800 flex justify-between items-center">
       <dt class="flex items-center gap-4 p-3">

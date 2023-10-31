@@ -15,6 +15,7 @@ export const useCredentialStore = defineStore('credential', () => {
 
   const mutations = {
     login: ({ token, funds, preferences }) => {
+      recordStore.setRecords([]);
       fundStore.mutations.setFunds(funds);
       credential.value = token;
       accountStore.setPreferences(preferences);

@@ -6,12 +6,16 @@
 
 <script setup>
 import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import { Doughnut } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js';
+import { useRecordStore } from '../../stores/recordStore';
 
 ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
 
-const props = defineProps(['filteredRecords']);
+const recordStore = useRecordStore();
+const { records } = storeToRefs(recordStore);
+
 const colors = [
   // violet
   "#ddd6fe",
@@ -38,19 +42,19 @@ const colors = [
   "#2dd4bf",
 ];
 
-const recordsTags = computed(() => Array.from(new Set([...props.filteredRecords
+const recordsTags = computed(() => Array.from(new Set([...records.value
   .filter(record => record.type === 2)
   .map(record => record.tag)
 ])));
 
-const debitsBalance = computed(() => props.filteredRecords
+const debitsBalance = computed(() => records.value
   .filter(record => record.type === 2)
   .reduce((totalCredits, { amount }) => totalCredits + Number(amount), 0)
 );
 
 const debitsByTag = computed(() => {
   const tagsTotal = [];
-  const debitRecords = props.filteredRecords.filter(record => record.type === 2);
+  const debitRecords = records.value.filter(record => record.type === 2);
   recordsTags.value.forEach(tag => {
     const balance = debitRecords
       .filter(record => record.tag === tag)

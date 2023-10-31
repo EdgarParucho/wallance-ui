@@ -1,41 +1,13 @@
 <template>
-  <div class="border rounded-sm border-stone-300 dark:border-stone-500 p-2 2xl:w-2/3 mx-auto">
-    <form @submit.prevent="submitQuery(appliedFilters)">
-      <div class="sm:flex sm:space-x-1 items-center justify-start">
-        <button
-        :class="[
-          { 'bg-purple-600 dark:bg-purple-600 text-white': currentMonthRange.filterApplied },
-          'my-1 w-full sm:w-auto hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex justify-center items-center gap-1'
-        ]"
-        type="submit"
-        @click="filterByThisMonth">
-          <CalendarIcon class="w-4" />
-          This month
-        </button>
-        <button
-        :class="[
-          { 'bg-purple-600 dark:bg-purple-600 text-white': currentYearRange.filterApplied },
-          'my-1 w-full sm:w-auto hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex justify-center items-center gap-1'
-        ]"
-        @click="filterByThisYear"
-        type="submit"
-        >
-          <CalendarDaysIcon class="w-4" />
-          This year
-        </button>
-        <button
-        v-for="query, i in preferences.queries" :key="i"
-        :class="[
-          { 'bg-purple-600 dark:bg-purple-600 text-white': JSON.stringify(query.filters) === JSON.stringify(filters)   },
-          'my-1 w-full sm:w-auto hover:text-white dark:hover:text-white dark:text-white bg-stone-300 hover:bg-purple-600 dark:bg-stone-700 dark:hover:bg-purple-600 font-bold text-xs py-1 px-3 rounded-full flex justify-center items-center gap-1'
-        ]"
-        @click="filters = query.filters"
-        type="submit"
-        >
-          <FilledBookmarkIcon class="w-4" />
-          {{ query.name }}
-        </button>
-      </div>
+  <Dialog
+  @close-form="$emit('closeForm')"
+  :form-is-open="queryFormIsOpen"
+  :icon="CircleStackIcon"
+  title="Query Form"
+  subtitle="Request your records"
+  widthClasses="w-96 md:w-2/3 xl:w-1/3"
+  >
+    <form @submit.prevent="submitQuery(appliedFilters)" class="p-4">
       <div class="md:flex md:space-x-2 items-center justify-between">
         <div class="grid lg:w-1/3 xl:w-1/4">
           <div class="flex items-center justify-between my-2">
@@ -172,7 +144,7 @@
         </span>
       </button>
     </div>
-    <Dialog :form-is-open="formIsOpen" @close-form="formIsOpen = false" title="Saving Query Config" :icon="CircleStackIcon">
+    <!-- <Dialog :form-is-open="formIsOpen" @close-form="formIsOpen = false" title="Saving Query Config" :icon="CircleStackIcon">
       <div class="py-6 px-8">
         <form @submit.prevent="savePreferredQuery({ filters, name: queryName })">
           <input
@@ -192,29 +164,38 @@
           </button>
         </form>
       </div>
-    </Dialog>
-  </div>
+    </Dialog> -->
+  </dialog>
 </template>
 
 <script setup>
 import Dialog from '../layout/Dialog.vue';
-import { XCircleIcon, BookmarkIcon, MagnifyingGlassIcon, ArrowUturnLeftIcon, CalendarIcon, CalendarDaysIcon, ArchiveBoxIcon, CircleStackIcon, ClockIcon } from '@heroicons/vue/24/outline';
+import { XCircleIcon, BookmarkIcon, MagnifyingGlassIcon, ArrowUturnLeftIcon, CircleStackIcon, ClockIcon } from '@heroicons/vue/24/outline';
 import { BookmarkIcon as FilledBookmarkIcon } from '@heroicons/vue/24/solid';
 import { useAccountStore } from '../../stores/accountStore';
 import { useRecordStore } from '../../stores/recordStore';
+import { useFundStore } from '../../stores/fundStore';
 import { storeToRefs } from "pinia";
 import { ref, computed, inject } from 'vue'
 
+const displayAlert = inject("alert");
+
 const accountStore = useAccountStore();
 const recordStore = useRecordStore();
+const fundStore = useFundStore();
 
-const emit = defineEmits(["runQuery"]);
-const props = defineProps(["funds"]);
-const displayAlert = inject("alert");
+const emit = defineEmits(["runQuery", "closeForm"]);
+const props = defineProps({
+  queryFormIsOpen: {
+    type: Boolean,
+    default: false,
+  }
+});
 
 const { preferences } = storeToRefs(accountStore);
 const { recordTags } = storeToRefs(recordStore);
 const { requestingRecords } = storeToRefs(recordStore);
+const { funds } = storeToRefs(fundStore);
 
 let formIsOpen = ref(false);
 const typeOptions = [
@@ -236,7 +217,8 @@ const queryName = ref("");
 
 const appliedFilters = computed(() => {
   const filtersEntries = Object.entries(filters.value);
-  return filtersEntries.filter(([, value]) => value !== "" && value !== null);
+  const validEntries = filtersEntries.filter(([key, value]) => value !== "" && value !== null);
+  return Object.fromEntries(validEntries);
 });
 
 const queryIsSaved = computed(() => preferences.value.queries.some(query => JSON.stringify(query.filters).toLocaleLowerCase() === JSON.stringify(filters.value).toLocaleLowerCase()));
@@ -245,45 +227,14 @@ const tagOptions = computed(() => {
   return typeTags.sort();
 });
 
-const currentMonthRange = computed(() => {
-  const yyyy = new Intl.DateTimeFormat("en-US", { year: "numeric" }).format(new Date())
-  const MM = new Intl.DateTimeFormat("en-US", { month: "2-digit" }).format(new Date())
-  const dd = "01";
-  let nextMonth = MM === "12" ? "01" : Number(MM) + 1;
-  if (typeof nextMonth !== "string") nextMonth = nextMonth < 10 ? "0" + nextMonth : nextMonth;
-  const start = [yyyy, MM, dd].join("-");
-  const end = [yyyy, nextMonth, dd].join("-");
-  const filterApplied = (filters.value.fromDate === start && filters.value.toDate === end);
-  return { start, end, filterApplied }
-});
-
-const currentYearRange = computed(() => {
-  const yyyy = new Intl.DateTimeFormat("en-US", { year: "numeric" }).format(new Date())
-  const start = [yyyy, "01", "01"].join("-");
-  const end = [Number(yyyy) + 1, "01", "01"].join("-");
-  const filterApplied = (filters.value.fromDate === start && filters.value.toDate === end);
-  return { start, end, filterApplied }
-});
-
 function clearFilters() {
   filters.value = { tag: "", note: "", fromDate: null, toDate: null, type: null };
 }
 
-function submitQuery(appliedFilters) {
-  const filters = Object.fromEntries(appliedFilters);
+function submitQuery(filters) {
   recordStore.getRecords({ filters })
     .then(() => displayAlert({ title: "Done", type: "success", text: 'Records loaded' }))
     .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
-}
-
-function filterByThisMonth() {
-  filters.value.fromDate = currentMonthRange.value.start;
-  filters.value.toDate = currentMonthRange.value.end;
-}
-
-function filterByThisYear() {
-  filters.value.fromDate = currentYearRange.value.start;
-  filters.value.toDate = currentYearRange.value.end;
 }
 
 function updatePreferences(updatingFilters) {
