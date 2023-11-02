@@ -32,9 +32,9 @@ export const useRecordStore = defineStore('records', () => {
 
   const mutations = {
     setRecords: (data) => {
-      records.value = [...data];
+      if (data.length > 0) records.value = [...data];
       requestingRecords.value = false;
-      return records.value.length;
+      return data.length;
     },
     createRecord: (data) => {
       records.value.push(data.record)

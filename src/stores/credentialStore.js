@@ -15,7 +15,7 @@ export const useCredentialStore = defineStore('credential', () => {
 
   const mutations = {
     login: ({ token, funds, preferences }) => {
-      recordStore.setRecords([]);
+      resetStores();
       fundStore.mutations.setFunds(funds);
       credential.value = token;
       accountStore.setPreferences(preferences);
@@ -71,7 +71,7 @@ export const useCredentialStore = defineStore('credential', () => {
   });
 
   const logout = () => mutations.logout();
-  
+
   const resetPassword = (body) => new Promise((resolve, reject) => ResetPassword(body)
     .then((response) => resolve(response.data))
     .catch((error) => {

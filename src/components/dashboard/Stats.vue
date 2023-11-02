@@ -25,7 +25,6 @@ import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRecordStore } from '../../stores/recordStore';
 
-const props = defineProps(['records']);
 const recordStore = useRecordStore();
 const { records } = storeToRefs(recordStore);
 const { requestingRecords } = storeToRefs(recordStore);

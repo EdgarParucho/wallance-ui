@@ -3,32 +3,28 @@
     <form class="my-10 p-8 shadow-md bg-white dark:bg-stone-800 2xl:w-2/5 mx-auto">
       <div>
         <QuestionMarkCircleIcon class="text-stone-600 dark:text-white w-10 mx-auto my-4 p-2 bg-white dark:bg-stone-800 rounded-full shadow-md" />
-        <h2 class="font-bold text-lg mb-6 text-center">What are we looking for?</h2>
+        <h2 class="font-bold text-lg text-center">What are we looking for?</h2>
       </div>
 
-      <div class="mb-4 mt-2">
-        <div class="flex items-center gap-2 justify-center mb-1">
-          <BookmarkIcon class="w-5 sm:mx-0" />
-          <h6 class="font-bold">Saved Queries</h6>
-        </div>
+      <div class="my-6">
         <div class="sm:flex sm:items-center sm:space-x-1 sm:justify-center">
           <div
             v-for="query, i in preferences.queries" :key="i"
-            class="text-sm my-1 h-6 w-full shadow-md sm:w-auto dark:bg-stone-900 font-bold rounded-full flex items-center justify-between pl-2"
+            class="text-sm my-2 h-6 w-full shadow-sm sm:w-auto dark:bg-stone-900 font-bold rounded-full flex items-center justify-between pl-2"
           >
             <label :for="'query' + i" class="mx-2">{{ query.name }}</label>
             <div class="flex">
               <button :id="'query' + i" type="button" class="px-1" @click="queryFromPreset(query.filters)">
-                <MagnifyingGlassIcon class="w-5" />
+                <MagnifyingGlassIcon class="w-4" />
               </button>
               <button type="button" class="px-1" @click="removePreferredQuery(i)">
-                <XMarkIcon class="text-red-500 w-5" />
+                <XMarkIcon class="text-red-500 w-4" />
               </button>
             </div>
           </div>
         </div>
       </div>
-      
+
       <fieldset class="grid space-y-4 justify-center">
         <div class="sm:flex sm:flex-row space-y-4 sm:space-y-0 w-full gap-2">
           <div class="flex items-center gap-2">
@@ -40,7 +36,7 @@
               </option>
             </select>
           </div>
-          
+
           <div class="flex items-center gap-2">
             <span class="italic">related to</span>
             <select class="py-0 w-52 text-center bg-transparent border-transparent border-b-stone-500 font-bold" v-model="filters.fundID">
@@ -184,13 +180,6 @@
       </div>
     </form>
 
-    <!-- Right now, there are no records to show -->
-    <QueryForm
-    class="my-20"
-    :query-form-is-open="queryFormIsOpen"
-    @close-form="queryFormIsOpen = false"
-    />
-
   </div>
 </template>
 
@@ -204,7 +193,6 @@ import { useAccountStore } from '../../stores/accountStore';
 import { useRecordStore } from '../../stores/recordStore';
 import { useFundStore } from '../../stores/fundStore';
 
-import QueryForm from './QueryForm.vue';
 import Dialog from '../layout/Dialog.vue';
 import { ArrowUturnLeftIcon, CalendarDaysIcon } from '@heroicons/vue/24/outline';
 
@@ -240,8 +228,6 @@ const tags = computed(() => {
   return typeTags.sort();
 });
 
-const queryFormIsOpen = ref(false);
-
 const appliedFilters = computed(() => {
   const filtersEntries = Object.entries(filters.value);
   const validEntries = filtersEntries.filter(([key, value]) => value !== "" && value !== null);
@@ -274,7 +260,7 @@ function resetForm() {
 function savePreferredQuery(query) {
   preferences.value.queries.push(query);
   accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
-  formIsOpen.value = false;
+  savingQueryFormIsOpen.value = false;
 }
 
 function removePreferredQuery(queryIndex) {

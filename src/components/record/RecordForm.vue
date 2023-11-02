@@ -310,9 +310,9 @@ const operationIcon = computed(() => {
 });
 
 const operationIconStyles = computed(() => {
-  if (form.type === 0) return 'text-stone-500 bg-stone-600 bg-opacity-20'
-  else if (form.type === 1) return 'text-green-500 bg-green-600 bg-opacity-20'
-  else return 'text-red-500 bg-red-600 bg-opacity-20'
+  if (form.type === 2) return 'text-red-500 bg-red-600'
+  else if (form.type === 1) return 'text-green-500 bg-green-600'
+  else return 'text-stone-500 bg-stone-600'
 });
 
 const formHasErrors = computed(() => {

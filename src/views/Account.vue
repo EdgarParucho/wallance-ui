@@ -69,7 +69,7 @@
 
 <script setup>
 import { ref, inject } from 'vue';
-import { Cog6ToothIcon, KeyIcon } from '@heroicons/vue/24/outline'
+import { Cog6ToothIcon } from '@heroicons/vue/24/outline'
 import { useCredentialStore } from '../stores/credentialStore';
 import UpdateEmail from '../components/account/UpdateEmail.vue';
 import UpdatePassword from '../components/account/UpdatePassword.vue';

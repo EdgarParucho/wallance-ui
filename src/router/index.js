@@ -52,6 +52,7 @@ router.beforeEach(async (to, from) => {
   const tokenIsBlank = (credentialStore.credential.token === "" || credentialStore.credential.token === null || credentialStore.credential.token === undefined);
   const tokenExpired = new Date(credentialStore.credential.exp * 1000) < new Date();
   if ((tokenIsBlank) && to.name !== 'Index') {
+    credentialStore.logout();
     swal({
       icon: "info",
       title: "Welcome",
@@ -61,6 +62,7 @@ router.beforeEach(async (to, from) => {
     return { name: 'Index' }
   }
   if ((tokenExpired) && to.name !== 'Index') {
+    credentialStore.logout();
     swal({
       icon: "info",
       title: "Please log in",

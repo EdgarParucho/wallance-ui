@@ -1,38 +1,35 @@
 <script setup>
-import { TagIcon, PlusIcon, MinusIcon } from '@heroicons/vue/24/outline';
-import { storeToRefs } from 'pinia';
-import { useRecordStore } from '../../stores/recordStore';
+import { TagIcon, PlusIcon, MinusIcon, ArrowsRightLeftIcon } from '@heroicons/vue/24/outline';
 import { computed, ref } from 'vue';
 
 const props = defineProps({
-  type: {
-    type: Number,
-    default: 2
-  },
-  showAllTags: {
-    type: Boolean,
-    default: false
-  },
   records: {
     type: Array,
     required: true,
   }
 });
 
-const recordStore = useRecordStore();
-const { requestingRecords } = storeToRefs(recordStore);
+const type = ref(2);
 
-const showingAll = ref(false);
-const icon = computed(() => props.type === 1 ? PlusIcon : MinusIcon);
-const title = computed(() => props.type === 1 ? 'Credits' : 'Debits');
+const icon = computed(() => {
+  if (type.value === 2) return MinusIcon
+  else if (type.value === 1) return PlusIcon
+  else return ArrowsRightLeftIcon
+});
 
-const typeRecords = computed(() => props.records.filter(record => record.type === props.type));
+
+const iconStyles = computed(() => {
+  if (type.value === 2) return 'text-red-500 bg-red-600'
+  else if (type.value === 1) return 'text-green-500 bg-green-600'
+  else return 'text-stone-500 bg-stone-600'
+});
+const typeRecords = computed(() => props.records.filter(record => record.type === type.value));
 
 const typeBalance = computed(() => typeRecords.value
   .reduce((balance, { amount }) => balance + amount, 0)
 );
 
-const tagsSortedByBalance = computed(() => {
+const tagsSorted = computed(() => {
   const tagsInfo = [];
 
   for (const tag of uniqueTags.value) {
@@ -44,14 +41,8 @@ const tagsSortedByBalance = computed(() => {
     tagInfo.percentage = (tagInfo.balance / typeBalance.value * 100).toFixed();
     tagsInfo.push(tagInfo);
   }
-  tagsInfo.sort((t1, t2) => t1.balance - t2.balance);
+  tagsInfo.sort((t1, t2) => type.value === 1 ? (t2.balance - t1.balance) : (t1.balance - t2.balance));
   return tagsInfo;
-});
-
-const topTags = computed(() => {
-  const limit = showingAll ? tagsSortedByBalance.length : 5;
-  const limitedTags = tagsSortedByBalance.value.slice(0, limit);
-  return limitedTags;
 });
 
 const uniqueTags = computed(() => {
@@ -75,59 +66,38 @@ function getAmountFormatted(amount) {
 </script>
 
 <template>
-  <dl>
-
-    <div class="flex items-center justify-between px-4">
-      <div class="flex items-center gap-2">
-        <component
-        :class="[props.type === 1 ? 'text-green-500 bg-green-600' : 'text-red-500 bg-red-600', ' bg-opacity-20 flex p-0.5 rounded-full h-5 w-5']"
-        :is="icon"></component>
-        <h4 class="text-center text-xl font-bold">{{ title }}</h4>
-      </div>
-      <span class="text-sm">Total: {{ tagsSortedByBalance.length }}</span>
-      <label
-        for="toggleFour"
-        class="flex items-center cursor-pointer select-none text-dark dark:text-white text-sm"
-        >
-        <div class="relative">
-          <input
-            type="checkbox"
-            id="toggleFour"
-            class="peer sr-only"
-            />
-          <div
-            class="block h-8 rounded-full box bg-dark dark:bg-dark-2 w-14 peer-checked:bg-primary"
-            ></div>
-          <div
-            class="absolute flex items-center justify-center w-6 h-6 transition bg-violet-500 rounded-full dot left-1 top-1 dark:bg-dark-5 peer-checked:translate-x-full peer-checked:dark:bg-white"
-            :class="{ 'bg-stone-300': showAllTags }"
-          ></div>
+  <div>
+    <TagIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+    <h4 class="text-xl font-bold text-center text-stone-600 dark:text-stone-300">
+      Tags usage
+    </h4>
+    <p class="text-sm text-center text-stone-500 dark:text-stone-400">
+      Measure your records
+    </p>    
+    <dl>
+      <div class="flex items-center justify-between px-4">
+        <div class="flex items-center gap-2">
+          <component
+          :class="[iconStyles, ' bg-opacity-20 flex p-0.5 rounded-full h-5 w-5']"
+          :is="icon"></component>
+          <select class="font-bold flex my-4 mx-auto text-lg border-none bg-transparent shadow-md rounded-full focus:ring-violet-500 focus:outline-none" v-model="type">
+            <option class="bg-stone-700 text-white" :value="2">Debits</option>
+            <option class="bg-stone-700 text-white" :value="1">Credits</option>
+            <option class="bg-stone-700 text-white" :value="0">Assignments</option>
+          </select>
         </div>
-        Show All
-      </label>
-      <!-- <small>
-        <input
-        type=""
-        :disabled="uniqueTags <= 5"
-        v-model="showingAll"
-        >
-          Show All
-      </small> -->
-    </div>
-    <div v-for="tag, i in topTags" :key="i" class="my-1 rounded-md shadow-md bg-white dark:bg-stone-800 flex justify-between items-center">
-      <dt class="flex items-center gap-4 p-3">
-        <TagIcon class="w-8 mx-auto p-1.5 rounded-full shadow-md text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
-
-        <div v-if="requestingRecords" class="w-44 h-8 p-4 rounded-sm bg-stone-300 animate-pulse" />
-        <span v-else>{{ tag.name }}</span>
-
-      </dt>
-      <dd class="justify-end flex items-baseline my-2 mr-3">
-        <div v-if="requestingRecords" class="w-20 h-8 p-4 rounded-sm bg-stone-300 animate-pulse" />
-        <span v-else class="text-stone-500 dark:text-stone-300">{{ getAmountFormatted(tag.balance) }}</span>
-        <div v-if="requestingRecords" class="mx-2 w-10 h-8 p-4 rounded-sm bg-stone-300 animate-pulse" />
-        <strong v-else class="bg-stone-100 dark:bg-stone-900 rounded-sm px-2 w-16 text-center mx-4">{{ tag.percentage }}%</strong>
-      </dd>
-    </div>
-  </dl>
+        <span class="text-sm">Total: {{ tagsSorted.length }}</span>
+      </div>
+      <div v-for="tag, i in tagsSorted" :key="i" class="my-1 rounded-md shadow-md bg-white dark:bg-stone-800 flex justify-between items-center">
+        <dt class="flex items-center gap-4 p-3">
+          <TagIcon class="w-8 mx-auto p-1.5 rounded-full shadow-md text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+          <span>{{ tag.name }}</span>
+        </dt>
+        <dd class="justify-end flex items-baseline my-2 mr-3">
+          <span class="text-stone-500 dark:text-stone-300">{{ getAmountFormatted(tag.balance) }}</span>
+          <strong class="bg-stone-100 dark:bg-stone-900 rounded-sm px-2 w-16 text-center mx-4">{{ tag.percentage }}%</strong>
+        </dd>
+      </div>
+    </dl>
+  </div>
 </template>
