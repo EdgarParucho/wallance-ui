@@ -1,23 +1,19 @@
 <template>
-  <div>
-    <h2 class="text-4xl font-bold text-center mt-20">Let's check some stats</h2>
-    <h4 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">Numbers from this year.</h4>
-    <dl class="md:flex items-center justify-center gap-1">
-      <div
-      v-for="stat in stats" :key="stat.id"
-      class="flex items-center justify-center shadow-md bg-white dark:bg-stone-800 h-36 sm:h-56 w-full lg:w-4/12 xl:w-3/12 2xl:w-2/12"
-      >
-        <div v-if="requestingRecords" class="grid gap-2">
-          <div class="bg-stone-300 w-28 animate-pulse h-12 mx-auto"></div>
-          <div class="bg-stone-300 w-44 animate-pulse h-6 mx-auto"></div>
-        </div>
-        <div class="grid" v-else>
-          <dd class="text-3xl font-semibold text-center text-stone-900 dark:text-stone-100 sm:text-5xl">{{ stat.value }}</dd>
-          <dt class="leading-7 text-stone-600 dark:text-stone-400">{{ stat.name }}</dt>
-        </div>
+  <dl class="md:flex items-center justify-center gap-4">
+    <div
+    v-for="stat in stats" :key="stat.id"
+    class="flex items-center justify-center shadow-md bg-white dark:bg-stone-800 h-36 sm:h-56 w-full lg:w-4/12 xl:w-3/12 2xl:w-2/12"
+    >
+      <div v-if="requestingRecords" class="grid gap-2">
+        <div class="bg-stone-300 w-28 animate-pulse h-12 mx-auto"></div>
+        <div class="bg-stone-300 w-44 animate-pulse h-6 mx-auto"></div>
       </div>
-    </dl>
-  </div>
+      <div class="grid" v-else>
+        <dd class="text-3xl font-semibold text-center text-stone-900 dark:text-stone-100 sm:text-5xl">{{ stat.value }}</dd>
+        <dt class="leading-7 text-stone-600 dark:text-stone-400">{{ stat.name }}</dt>
+      </div>
+    </div>
+  </dl>
 </template>
 
 <script setup>
@@ -45,9 +41,9 @@ const yearSavings = computed(() => (creditsBalance.value > 0) ? (yearBalance.val
 const averageMonthSaving = computed(() => (yearBalance.value / (currentMonth - 1)).toFixed());
 
 const stats = computed(() => [
-  { id: 1, name: 'Your savings from this year', value: yearSavings.value.toFixed() + '%'},
-  { id: 2, name: 'Saved on average monthly', value: '$' + averageMonthSaving.value },
-  { id: 3, name: 'The full year estimated savings', value: '$' + (averageMonthSaving.value * 12).toFixed() },
+  { id: 1, name: 'Saved until now', value: yearSavings.value.toFixed() + '%'},
+  { id: 2, name: 'Saved monthly', value: '$' + averageMonthSaving.value },
+  { id: 3, name: 'Estimated savings from this year', value: '$' + (averageMonthSaving.value * 12).toFixed() },
 ]);
 
 </script>

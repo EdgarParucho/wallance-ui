@@ -1,3 +1,33 @@
+<template>
+  <div>
+    <dl>
+      <div class="flex items-center justify-between px-4">
+        <div class="flex items-center gap-2">
+          <component
+          :class="[iconStyles, ' bg-opacity-20 flex p-0.5 rounded-full h-5 w-5']"
+          :is="icon"></component>
+          <select class="font-bold flex my-4 mx-auto text-lg border-none bg-transparent shadow-md rounded-full focus:ring-violet-500 focus:outline-none" v-model="type">
+            <option class="bg-stone-700 text-white" :value="2">Debits</option>
+            <option class="bg-stone-700 text-white" :value="1">Credits</option>
+            <option class="bg-stone-700 text-white" :value="0">Assignments</option>
+          </select>
+        </div>
+        <span class="text-sm">Total: {{ tagsSorted.length }}</span>
+      </div>
+      <div v-for="tag, i in tagsSorted" :key="i" class="my-1 rounded-md shadow-md bg-white dark:bg-stone-800 flex justify-between items-center">
+        <dt class="flex items-center gap-4 p-3">
+          <TagIcon class="w-8 mx-auto p-1.5 rounded-full shadow-md text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+          <span>{{ tag.name }}</span>
+        </dt>
+        <dd class="justify-end flex items-baseline my-2 mr-3">
+          <span class="text-stone-500 dark:text-stone-300">{{ getAmountFormatted(tag.balance) }}</span>
+          <strong class="bg-stone-100 dark:bg-stone-900 rounded-sm px-2 w-16 text-center mx-4">{{ tag.percentage }}%</strong>
+        </dd>
+      </div>
+    </dl>
+  </div>
+</template>
+
 <script setup>
 import { TagIcon, PlusIcon, MinusIcon, ArrowsRightLeftIcon } from '@heroicons/vue/24/outline';
 import { computed, ref } from 'vue';
@@ -64,40 +94,3 @@ function getAmountFormatted(amount) {
 }
 
 </script>
-
-<template>
-  <div>
-    <TagIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
-    <h4 class="text-xl font-bold text-center text-stone-600 dark:text-stone-300">
-      Tags usage
-    </h4>
-    <p class="text-sm text-center text-stone-500 dark:text-stone-400">
-      Measure your records
-    </p>    
-    <dl>
-      <div class="flex items-center justify-between px-4">
-        <div class="flex items-center gap-2">
-          <component
-          :class="[iconStyles, ' bg-opacity-20 flex p-0.5 rounded-full h-5 w-5']"
-          :is="icon"></component>
-          <select class="font-bold flex my-4 mx-auto text-lg border-none bg-transparent shadow-md rounded-full focus:ring-violet-500 focus:outline-none" v-model="type">
-            <option class="bg-stone-700 text-white" :value="2">Debits</option>
-            <option class="bg-stone-700 text-white" :value="1">Credits</option>
-            <option class="bg-stone-700 text-white" :value="0">Assignments</option>
-          </select>
-        </div>
-        <span class="text-sm">Total: {{ tagsSorted.length }}</span>
-      </div>
-      <div v-for="tag, i in tagsSorted" :key="i" class="my-1 rounded-md shadow-md bg-white dark:bg-stone-800 flex justify-between items-center">
-        <dt class="flex items-center gap-4 p-3">
-          <TagIcon class="w-8 mx-auto p-1.5 rounded-full shadow-md text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
-          <span>{{ tag.name }}</span>
-        </dt>
-        <dd class="justify-end flex items-baseline my-2 mr-3">
-          <span class="text-stone-500 dark:text-stone-300">{{ getAmountFormatted(tag.balance) }}</span>
-          <strong class="bg-stone-100 dark:bg-stone-900 rounded-sm px-2 w-16 text-center mx-4">{{ tag.percentage }}%</strong>
-        </dd>
-      </div>
-    </dl>
-  </div>
-</template>

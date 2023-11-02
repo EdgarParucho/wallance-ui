@@ -59,7 +59,7 @@ const chartData = computed(() => {
 const chartOptions = computed(() => {
   return {
     responsive: true,
-    indexAxis: 'y',
+    indexAxis: 'x',
     plugins: {
       legend: {
         display: false

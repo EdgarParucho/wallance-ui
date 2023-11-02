@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <Line id="monthly-balance-chart" :options="chartOptions" :data="chartData" />
-  </div>
+  <Line id="monthly-balance-chart" :options="chartOptions" :data="chartData" />
 </template>
 
 <script setup>
@@ -76,7 +74,7 @@ const monthsDebits = computed(() => {
     const monthMatch = (date) => new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(date)) === month;
     const yearMatch = (date) => new Date(date).getFullYear() === new Date().getFullYear();
     const monthRecords = records.value.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type === 2);
-    const monthBalance = monthRecords.reduce((acc, record) => acc + record.amount, 0);
+    const monthBalance = monthRecords.reduce((acc, record) => acc - record.amount, 0);
     result.push(monthBalance);
   });
   return result;
@@ -86,7 +84,7 @@ const chartData = computed(() => {
   return {
     labels: months,
     datasets: [
-    {
+      {
         label: "Credits",
         backgroundColor: '#22c55e',
         borderColor: "#bbf7d0",
@@ -110,24 +108,10 @@ const chartData = computed(() => {
 const chartOptions = computed(() => {
   return {
     responsive: true,
+    // indexAxis: 'y',
     plugins: {
-      legend: {
-        labels: { color: "#5d5d5d" }
-      },
-      title: {
-        display: false,
-        text: "Balance by month",
-        color: "#5d5d5d",
-      },
+      // legend: { display: false }
     },
-    scales: {
-      x: {
-        ticks: { color: '#5d5d5d' }
-      },
-      y: {
-        ticks: { color: '#5d5d5d' }
-      }
-    }
   }
 });
 </script>

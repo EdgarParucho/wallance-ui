@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <Doughnut id="debits-tags-chart" :options="chartOptions" :data="chartData" />
-  </div>
+  <Doughnut id="debits-tags-chart" :options="chartOptions" :data="chartData" />
 </template>
 
 <script setup>

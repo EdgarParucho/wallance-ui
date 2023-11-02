@@ -124,12 +124,8 @@
         </div>
       </fieldset>
 
-      <div class="sm:flex sm:justify-center sm:gap-2 mt-10">
-        <button type="button" class="w-full sm:w-36 flex items-center bg-white dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 rounded-sm px-4" @click="resetForm">
-          <ArrowUturnLeftIcon class="w-4 text-left" />
-          <span class="mx-auto">Reset form</span>
-        </button>
-        <button type="button" class="w-full sm:w-36 bg-violet-500 hover:bg-violet-600 text-white rounded-sm px-4" @click="submitQuery(appliedFilters)">
+      <div class="sm:flex sm:justify-center sm:items-center sm:gap-2 mt-10">
+        <button type="button" class="my-4 w-full h-6 sm:w-36 bg-violet-500 hover:bg-violet-600 text-white rounded-sm px-4" @click="submitQuery(appliedFilters)">
           <div class="flex items-center gap-1" v-if="loading">
             <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -142,10 +138,16 @@
             <span class="mx-auto">Search</span>
           </div>
         </button>
-        <button type="button" class="w-full sm:w-36 flex items-center bg-white dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 rounded-sm px-4" @click="savingQueryFormIsOpen = true">
-          <BookmarkIcon class="w-4 text-left" />
-          <span class="mx-auto">Save config</span>
-        </button>
+        <div class="flex">
+          <button type="button" class="w-full h-6 sm:w-36 flex items-center bg-white dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 rounded-sm px-4" @click="resetForm">
+            <ArrowUturnLeftIcon class="w-4 text-left" />
+            <span class="mx-auto">Reset form</span>
+          </button>
+          <button type="button" class="w-full h-6 sm:w-36 flex items-center bg-white dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 rounded-sm px-4" @click="savingQueryFormIsOpen = true">
+            <BookmarkIcon class="w-4 text-left" />
+            <span class="mx-auto">Save config</span>
+          </button>
+        </div>
         <Dialog :form-is-open="savingQueryFormIsOpen" @close-form="savingQueryFormIsOpen = false" title="Saving Query Config" subtitle="Name and confirm to save" :icon="BookmarkIcon">
           <div class="py-6 px-8">
             <form @submit.prevent="savePreferredQuery({ filters, name: queryName })">
