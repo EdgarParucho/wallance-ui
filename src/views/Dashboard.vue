@@ -1,30 +1,25 @@
 <template>
   <div class="py-26 pb-8">
     <Logo class="mx-auto" size="lg" />
-    <blockquote class="text-center mt-20 italic" cite="http://www.worldwildlife.org/who/index.html">
-      Money is only a tool. It will take you wherever you wish, but it will not replace you as the driver. - Ayn Rand
-    </blockquote>
 
     <FirstSteps v-if="firstStepsVisible" @follow-step="step => useFirstSteps(step)" />
 
-    <section class="my-20">
+    <section class="mt-20">
       <h2 class="text-4xl font-bold text-center mt-20">Balance</h2>
-      <h4 class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">Your overall balance on date.</h4>
-      <Balance :balance="balance" />
-      <FundsBalances :funds="funds" />
-      <div class="flex items-end justify-center mx-auto my-20 space-x-2">
-        <h3 class="font-bold text-2xl">
-          Not<span class="text-violet-500"> updated</span>?
-        </h3>
-        <button
-        class="text-white hover:bg-violet-600 bg-violet-500 font-bold py-1 px-2 rounded-md w-28 inline-flex items-center"
-        @click="recordFormIsOpen = true"
-        >
-          <PlusIcon class="w-5 text-left" />
-          <span class="mx-auto">Record</span>
-        </button>
+      <p class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">Overall result of your management</p>
+      <div class="mt-4 md:w-1/2 lg:w-1/3 xl:w-1/4 p-16 mx-auto rounded-xl text-center shadow-md bg-white dark:bg-stone-800">
+        <h2 class="text-5xl">{{ balance }}</h2>
       </div>
+      <FundsList class="md:w-1/2 lg:w-1/3 xl:w-1/4 mx-auto" />
     </section>
+
+    <div class="flex items-end justify-center mx-auto my-20 space-x-2">
+      <h3 class="font-bold text-2xl">Not updated?</h3>
+      <button class="text-white hover:bg-violet-600 bg-violet-500 font-bold py-1 px-2 rounded-md w-36 inline-flex items-center" @click="recordFormIsOpen = true">
+        <PlusIcon class="w-5 text-left" />
+        <span class="mx-auto">Add Record</span>
+      </button>
+    </div>
 
     <div v-if="funds.length < 2" class="flex items-end justify-center mx-auto mb-20 space-x-2">
       <h3 class="font-bold text-2xl">
@@ -39,19 +34,18 @@
       </a>
     </div>
 
-    <section v-if="preferences.templates.length > 0" class="my-28 lg:flex lg:items-center dark:shadow-black shadow-md rounded-sm py-24 px-4">
-
+    <section v-if="preferences.templates.length > 0" class="my-20 lg:flex lg:items-center dark:shadow-black shadow-md rounded-sm py-24 px-4">
       <div class="text-center lg:text-left mx-auto lg:w-1/3 lg:ml-20 mb-10">
         <div class="text-center lg:text-left items-start justify-center lg:justify-between gap-2">
           <DocumentDuplicateIcon class="mx-auto lg:mx-0 my-4 w-12 p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
           <div>
             <h2 class="text-4xl font-bold">Templates</h2>
-            <h3 class="text-lg text-stone-500 dark:text-stone-400 mb-6">Simplify. Time is priceless.</h3>
+            <p class="text-lg text-stone-500 dark:text-stone-400 mb-6">Simplify. Time is priceless.</p>
           </div>
         </div>
         <p>Find here a shortcut to add frequent records.</p>
       </div>
-      
+
       <div class="lg:w-2/3">
         <Templates @use-template="(template) => useTemplate(template)" :templates="preferences.templates" />
       </div>
@@ -84,15 +78,17 @@
 </template>
 
 <script setup>
-import { computed, ref, defineAsyncComponent } from 'vue';
-import { useFundStore } from '../stores/fundStore';
-import { useAccountStore } from '../stores/accountStore';
 import { storeToRefs } from 'pinia';
+import { computed, ref, defineAsyncComponent } from 'vue';
 import { CircleStackIcon, PlusIcon, LinkIcon, ArchiveBoxIcon, DocumentDuplicateIcon } from '@heroicons/vue/24/solid';
+
 import Logo from '../components/layout/Logo.vue';
 import Templates from '../components/dashboard/Templates.vue';
-import Balance from '../components/dashboard/Balance.vue';
-import FundsBalances from '../components/dashboard/FundsBalances.vue';
+import FundsList from '../components/fund/FundsList.vue';
+
+import { useFundStore } from '../stores/fundStore';
+import { useAccountStore } from '../stores/accountStore';
+
 
 const FirstSteps = defineAsyncComponent(() => import('../components/dashboard/FirstSteps.vue'));
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));

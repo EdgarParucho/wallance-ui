@@ -27,11 +27,8 @@
       </div>
     </div>
 
-    <div class="lg:flex lg:justify-center space-y-10 mt-10">
-      <div v-if="funds.length > 1" class="sm:w-3/4 lg:w-2/4 xl:w-1/3 mx-auto mt-24">
-        <BalanceByFundChart />
-      </div>
-      <div class="lg:w-2/4 space-y-4 pb-6">
+    <div class="space-y-10 mt-10">
+      <div class="mx-auto lg:w-2/4 space-y-4 pb-6">
         <div class="flex justify-center rounded-md md:relative w-full h-10 space-x-4 py-2">
           <button
           class="rounded-sm px-3 py-4 outline-none w-44 font-bold flex items-center focus:outline-violet-400 focus:outline-1 text-white hover:bg-violet-500 bg-violet-600"
@@ -55,15 +52,14 @@
 </template>
 
 <script setup>
+import { storeToRefs } from 'pinia';
 import { ref, defineAsyncComponent, inject } from 'vue';
 import { PlusIcon } from '@heroicons/vue/24/outline';
-import { storeToRefs } from 'pinia';
 import { useFundStore } from '../stores/fundStore';
 import FundCard from '../components/fund/FundCard.vue';
 import swal from "sweetalert";
 
 const FundForm = defineAsyncComponent(() => import('../components/fund/FundForm.vue'))
-const BalanceByFundChart = defineAsyncComponent(() => import('../components/chart/BalanceByFundChart.vue'))
 
 const displayAlert = inject("alert");
 const fundStore = useFundStore();

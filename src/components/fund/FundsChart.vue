@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue';
+import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { Bar } from 'vue-chartjs'
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js'
@@ -21,12 +21,8 @@ const { records } = storeToRefs(recordStore);
 const fundsNames = computed(() => funds.value.map(fund => fund.name));
 
 const fundsBalances = computed(() => {
-  const totalCreditsByFund = Object.fromEntries(funds.value.map(fund => {
-    return [fund.id, 0 ]
-  }));
-  const totalDebitsByFund = Object.fromEntries(funds.value.map(fund => {
-    return [fund.id, 0 ]
-  }));
+  const totalCreditsByFund = Object.fromEntries(funds.value.map(fund => [fund.id, 0 ]));
+  const totalDebitsByFund = Object.fromEntries(funds.value.map(fund => [fund.id, 0 ]));
 
   for (const record of records.value) {
     if (record.type === 1) totalCreditsByFund[record.fundID] += record.amount;

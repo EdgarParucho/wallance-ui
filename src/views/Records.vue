@@ -36,8 +36,8 @@
           <ArchiveBoxIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
           <h2 class="mb-2 text-3xl font-bold text-center">Funds management</h2>
           <p class="text-center">Credits, debits, and balance by fund</p>
-          <BalanceByFundChart class="p-2 shadow-md" />
-          <FundsRecords :funds="funds" />
+          <FundsChart class="p-2 shadow-md" />
+          <FundsList :balance-on-records="true" />
         </div>
         <div class="hidden xl:inline w-full md:w-1/2 xl:w-2/3 p-10 shadow-md rounded-md bg-white dark:bg-stone-800">
           <CalendarIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
@@ -74,15 +74,15 @@ import { storeToRefs } from "pinia";
 import { useFundStore } from '../stores/fundStore';
 import { useRecordStore } from '../stores/recordStore';
 
+import Stats from '../components/record/Stats.vue'
+import TopTags from '../components/record/TopTags.vue'
+import FundsList from '../components/fund/FundsList.vue';
 import QueryPanel from '../components/query/QueryPanel.vue';
-import RecordsTable from '../components/record/RecordsTable.vue';
-import FundsRecords from '../components/record/FundsRecords.vue';
-import TagsEquivalenceChart from '../components/chart/TagsEquivalenceChart.vue';
-import BalanceByFundChart from '../components/chart/BalanceByFundChart.vue';
-import MonthlyBalanceChart from '../components/chart/MonthlyBalanceChart.vue';
-import TopTags from '../components/dashboard/TopTags.vue'
 import QueryTotals from '../components/query/QueryTotals.vue'
-import Stats from '../components/dashboard/Stats.vue'
+import RecordsTable from '../components/record/RecordsTable.vue';
+import FundsChart from '../components/fund/FundsChart.vue';
+import MonthlyBalanceChart from '../components/record/MonthlyBalanceChart.vue';
+import TagsEquivalenceChart from '../components/record/TagsEquivalenceChart.vue';
 
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
 
