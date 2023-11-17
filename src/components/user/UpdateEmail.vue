@@ -14,11 +14,11 @@
         placeholder="example@newemail.com"
         required
         v-model.trim="email"
-        >
+                >
         <input
         v-if="validatingEmail"
         type="text"
-        class="block my-2 p-3 w-72 mx-auto rounded-sm text-stone-800"
+        class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
         placeholder="OTP"
         required
         v-model="OTP"
@@ -40,8 +40,8 @@
       </button>
       <button
       v-if="validatingEmail"
-      class="block rounded-sm my-2 px-3 mx-auto w-72 text-sm text-cyan-300 hover:text-cyan-100 bg-stone-800 disabled:text-stone-400 disabled:hover:bg-stone-800"
-      @click="validateEmail"
+      class="flex items-center gap-1 mx-auto mb-3 px-3 py-1 text-xs hover:border-stone-500 text-stone-600 hover:scale-110 transition-all hover:text-black dark:hover:text-white"
+      @click="validateEmail({ email })"
       :disabled="loading || countDown > 0"
       type="button"
       >
@@ -56,16 +56,17 @@
 
 <script setup>
 import { computed, ref, inject } from 'vue';
-import { useAccountStore } from '../../stores/accountStore';
-import { useCredentialStore } from '../../stores/credentialStore';
-import Dialog from '../layout/Dialog.vue';
 import { AtSymbolIcon } from '@heroicons/vue/24/outline';
+import { useUserStore } from '../../stores/userStore';
+import { useAuthStore } from '../../stores/authStore';
+import Dialog from '../layout/Dialog.vue';
 
 const emit = defineEmits(['close-form'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
 const displayAlert = inject("alert");
-const accountStore = useAccountStore();
-const credentialStore = useCredentialStore();
+
+const userStore = useUserStore();
+const authStore = useAuthStore();
 
 const loading = ref(false)
 const countDown = ref(0);
@@ -92,7 +93,7 @@ const emailFormatIsValid = computed(() => {
 
 function updateEmail(OTP, email) {
   loading.value = true
-  accountStore.updateAccount({ OTP, updateEntries: { email } })
+  userStore.updateUser({ OTP, updateEntries: { email } })
   .then((message) => {
     displayAlert({ title: "Done", type: "success", text: message });
     emit('close-form');
@@ -103,7 +104,7 @@ function updateEmail(OTP, email) {
 
 function validateEmail({ email }) {
   loading.value = true
-  credentialStore.requestOTPValidation({ email, emailShouldBeStored: false, action: "update" })
+  authStore.requestOTP({ email, emailShouldBeStored: false, action: "update" })
     .then((message) => {
       displayAlert({ title: "Check your inbox", type: "info", text: message });
       validatingEmail.value = true;

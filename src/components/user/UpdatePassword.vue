@@ -61,14 +61,14 @@
 <script setup>
 
 import { computed, ref, inject } from 'vue'
-import { useAccountStore } from '../../stores/accountStore';
-import Dialog from '../layout/Dialog.vue';
+import { useUserStore } from '../../stores/userStore';
 import { KeyIcon } from '@heroicons/vue/24/outline';
+import Dialog from '../layout/Dialog.vue';
 
 const emit = defineEmits(['close-form', 'request-otp'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
 const displayAlert = inject("alert");
-const accountStore = useAccountStore()
+const userStore = useUserStore()
 
 const OTP = ref("");
 const newPassword = ref("");
@@ -90,7 +90,7 @@ function reSendOTP() {
 }
 function onSubmit(OTP, newPassword) {
   loading.value = true
-  accountStore.updateAccount({ OTP, updateEntries: { password: newPassword } })
+  userStore.updateUser({ OTP, updateEntries: { password: newPassword } })
     .then((message) => {
       displayAlert({ title: "Done", type: "success", text: message });
       emit('close-form')

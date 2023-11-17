@@ -1,25 +1,25 @@
 import { defineStore } from 'pinia';
-import { RequestOTP, Sign, Login, ResetPassword } from '../services/credentialAPI';
+import { RequestOTP, Sign, Login } from '../services/authAPI';
 import { useLocalStorage } from '@vueuse/core';
 
 import API from '../services/API';
 import { useFundStore } from './fundStore';
-import { useAccountStore } from './accountStore';
+import { useUserStore } from './userStore';
 import { useRecordStore } from './recordStore';
 
-export const useCredentialStore = defineStore('credential', () => {
-  const accountStore = useAccountStore();
+export const useAuthStore = defineStore('auth', () => {
+  const userStore = useUserStore();
   const recordStore = useRecordStore();
   const fundStore = useFundStore();
-  const credential = useLocalStorage("vueUseCredential", { token: null, exp: null });
+  const auth = useLocalStorage("vueUseAuth", { token: null, exp: null });
 
   const mutations = {
     login: ({ token, funds, preferences }) => {
       resetStores();
       fundStore.mutations.setFunds(funds);
-      credential.value = token;
-      accountStore.setPreferences(preferences);
-      API.defaults.headers.common['Authorization'] = "bearer " + credential.value.token;
+      auth.value = token;
+      userStore.setPreferences(preferences);
+      API.defaults.headers.common['Authorization'] = "bearer " + auth.value.token;
       return 'Good to have you. Get the most and enjoy.';
     },
     logout: () => {
@@ -29,8 +29,9 @@ export const useCredentialStore = defineStore('credential', () => {
   };
 
   function resetStores() {
-    credential.value.token = null;
-    credential.value.exp = null;
+    auth.value.token = null;
+    auth.value.exp = null;
+    userStore.preferences = { templates: [], queries: [], darkMode: false, FirstStepsStatus: [], language: null };
     recordStore.records = [];
     fundStore.funds = [];
   }
@@ -47,7 +48,7 @@ export const useCredentialStore = defineStore('credential', () => {
     })
   );
 
-  const requestOTPValidation = (body) => new Promise((resolve, reject) => RequestOTP({ body, token: credential.value.token })
+  const requestOTP = (body) => new Promise((resolve, reject) => RequestOTP({ body, token: auth.value.token })
     .then(({ data }) => {
       resolve(data)})
     .catch((error) => {
@@ -72,13 +73,5 @@ export const useCredentialStore = defineStore('credential', () => {
 
   const logout = () => mutations.logout();
 
-  const resetPassword = (body) => new Promise((resolve, reject) => ResetPassword(body)
-    .then((response) => resolve(response.data))
-    .catch((error) => {
-      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
-      reject(feedback);
-    })
-  )
-
-  return { credential, requestOTPValidation, sign, login, logout, resetPassword };
+  return { auth, requestOTP, sign, login, logout };
 });

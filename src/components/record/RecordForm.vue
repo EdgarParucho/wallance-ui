@@ -249,12 +249,12 @@
 </template>
 
 <script setup>
+import { storeToRefs } from "pinia";
 import { ref, watch, computed, reactive, inject, onMounted } from 'vue';
 import { DocumentPlusIcon, PencilSquareIcon, MinusIcon, PlusIcon, ArrowsRightLeftIcon } from '@heroicons/vue/24/outline';
 import { useRecordStore } from '../../stores/recordStore';
-import { useAccountStore } from '../../stores/accountStore';
+import { useUserStore } from '../../stores/userStore';
 import { useFundStore } from '../../stores/fundStore';
-import { storeToRefs } from "pinia";
 import Dialog from '../layout/Dialog.vue';
 
 onMounted(() => setStartingData())
@@ -275,8 +275,8 @@ const { funds } = storeToRefs(fundStore);
 const recordStore = useRecordStore();
 const { recordTags } = storeToRefs(recordStore);
 
-const accountStore = useAccountStore();
-const { preferences } = storeToRefs(accountStore);
+const userStore = useUserStore();
+const { preferences } = storeToRefs(userStore);
 
 const form = reactive({
   amount: 1,
@@ -355,11 +355,14 @@ function removeUnaltered(formValues) {
 
 async function saveTemplate({ formValues, name }) {
   const { fundID, otherFundID, amount, tag, note, type } = formValues;
-  preferences.value.templates.push({
+  const payload = JSON.parse(JSON.stringify(preferences.value));
+  payload.templates.push({
     fields: { fundID, otherFundID, amount, tag, note, type },
     name,
   });
-  await accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
+  userStore.updateUser({ OTP: null, updateEntries: { preferences: payload } })
+    .then(() => preferences.value = payload)
+    .catch((error) => console.error(error))
 }
 
 function handleTagList(e) {
@@ -376,8 +379,11 @@ function handleTagEnter(tag) {
 }
 
 async function updateFirstStepsStatus() {
-  preferences.value.FirstStepsStatus[props.meta.stepIndex] = "Completed";
-  await accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
+  const payload = JSON.parse(JSON.stringify(preferences.value));
+  payload.FirstStepsStatus[props.meta.stepIndex] = "Completed";
+  userStore.updateUser({ OTP: null, updateEntries: { preferences: payload } })
+    .then(() => preferences.value = payload)
+    .catch((error) => console.error(error))
 }
 
 function setStartingData() {

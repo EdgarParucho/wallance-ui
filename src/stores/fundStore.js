@@ -1,15 +1,16 @@
+import { computed } from 'vue';
 import { defineStore } from 'pinia';
-import { computed, watch } from 'vue';
-import { Create, Update, Delete } from '../services/fundAPI';
 import { useLocalStorage } from '@vueuse/core';
+
+import { useAuthStore } from "./authStore";
 import { useRecordStore } from './recordStore';
-import { useCredentialStore } from "./credentialStore";
+import { Create, Update, Delete } from '../services/fundAPI';
 
 export const useFundStore = defineStore('fund', () => {
   const recordStore = useRecordStore();
   const funds = useLocalStorage('vueUseFunds', []);
   const defaultFund = computed(() => funds.value.find(fund => fund.isDefault));
-  const credentialStore = useCredentialStore();
+  const authStore = useAuthStore();
 
   const mutations = {
     setFunds: (data) => {
@@ -45,23 +46,21 @@ export const useFundStore = defineStore('fund', () => {
 
   const createFund = (data) => useService({
     service: Create,
-    data: { ...data, token: credentialStore.credential.token },
+    data: { ...data, token: authStore.auth.token },
     mutation: mutations.createFund
   });
 
   const updateFund = (data) => useService({
     service: Update,
-    data: { ...data, token: credentialStore.credential.token },
+    data: { ...data, token: authStore.auth.token },
     mutation: mutations.updateFund
   });
 
   const deleteFund = (data) => useService({
     service: Delete,
-    data: { ...data, token: credentialStore.credential.token },
+    data: { ...data, token: authStore.auth.token },
     mutation: mutations.deleteFund
   });
-
-  // ! Still need to update balance on records updating, but make it from server side. It is already done there, set the logic to communicate to the client
 
   return { funds, defaultFund, mutations, createFund, updateFund, deleteFund }
 })

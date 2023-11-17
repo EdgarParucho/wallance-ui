@@ -24,7 +24,7 @@
     <div class="flex justify-center mt-10">
       <button
       class="flex items-center gap-1 mx-auto mb-3 px-3 py-1 text-xs hover:scale-110 transition-all hover:text-black hover:border-stone-500 text-stone-600 dark:text-stone-400 dark:hover:text-white"
-      @click="recoverPassword"
+      @click="resetPassword"
       >
         <KeyIcon class="w-4" />
         Recover my password
@@ -71,9 +71,9 @@
 
 <script setup>
 import { KeyIcon, LinkIcon } from '@heroicons/vue/24/outline';
-import Login from '../components/credential/Login.vue';
+import Login from '../components/auth/Login.vue';
 import Logo from '../components/layout/Logo.vue';
-import Sign from '../components/credential/Sign.vue';
+import Sign from '../components/auth/Sign.vue';
 import { ref, watch } from 'vue';
 
 const signFormIsOpen = ref(false);
@@ -86,7 +86,7 @@ const links = [
   { URL: 'https://www.github.com/EdgarParucho', title: "GitHub", icon: "https://img.icons8.com/ios-filled/50/github--v1.png",  }
 ]        
         
- function recoverPassword() {
+ function resetPassword() {
   recoveringPassword.value = true;
   signFormIsOpen.value = true;
 }

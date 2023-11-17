@@ -67,9 +67,9 @@
  
 <script setup>
 import { ref, computed, inject } from 'vue'
+import { PlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline';
 import { useFundStore } from '../../stores/fundStore';
 import Dialog from '../layout/Dialog.vue';
-import { PlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps(['form-is-open', 'editing-fund']);
 const emit = defineEmits(['close-form']);

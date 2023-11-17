@@ -67,18 +67,18 @@
 </template>
 
 <script setup>
-import { CheckIcon } from '@heroicons/vue/24/solid';
 import { computed, ref } from 'vue';
-import { useFundStore } from '../../stores/fundStore';
-import { useAccountStore } from '../../stores/accountStore';
 import { storeToRefs } from 'pinia';
+import { CheckIcon } from '@heroicons/vue/24/solid';
+import { useFundStore } from '../../stores/fundStore';
+import { useUserStore } from '../../stores/userStore';
 
 const emit = defineEmits(['followStep']);
 const fundStore = useFundStore();
-const accountStore = useAccountStore();
+const userStore = useUserStore();
 
 const { defaultFund } = storeToRefs(fundStore);
-const { preferences } = storeToRefs(accountStore);
+const { preferences } = storeToRefs(userStore);
 
 const lastYearLastDay = () => {
   const yyyy = new Intl.DateTimeFormat("en-US", { year: "numeric" }).format(new Date()) - 1;
@@ -134,22 +134,22 @@ const steps = ref([
   }
 ]);
 
-if (preferences.value.FirstStepsStatus) steps.value.forEach(step => step.status = preferences.value.FirstStepsStatus[step.id]);
+steps.value.forEach(step => step.status = preferences.value.FirstStepsStatus[step.id]);
 
 function StepIsHidden(stepID) {
-  if (preferences.value.FirstStepsStatus === undefined) return false
   return preferences.value.FirstStepsStatus[stepID] === 'Hidden';
 }
 
 function StepIsCompleted(stepID) {
-  if (preferences.value.FirstStepsStatus === undefined) return false
   return preferences.value.FirstStepsStatus[stepID] === 'Completed';
 }
 
 async function dontShowAgain(stepNumber, stepStatus) {
-  if (preferences.value.FirstStepsStatus === undefined) preferences.value.FirstStepsStatus = ["Active", "Active", "Active"];
-  preferences.value.FirstStepsStatus[stepNumber] = stepStatus;
-  await accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
+  const payload = JSON.parse(JSON.stringify(preferences.value));
+  payload.FirstStepsStatus[stepNumber] = stepStatus;
+  userStore.updateUser({ OTP: null, updateEntries: { preferences: payload} })
+    .then(() => preferences.value = payload)
+    .catch((error) => console.error(error))
 }
 
 </script>

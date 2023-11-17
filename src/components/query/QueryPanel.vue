@@ -191,7 +191,7 @@ import { BookmarkIcon } from '@heroicons/vue/24/solid';
 import { ref, computed, inject } from 'vue';
 import { storeToRefs } from "pinia";
 
-import { useAccountStore } from '../../stores/accountStore';
+import { useUserStore } from '../../stores/userStore';
 import { useRecordStore } from '../../stores/recordStore';
 import { useFundStore } from '../../stores/fundStore';
 
@@ -206,8 +206,8 @@ const { funds } = storeToRefs(fundStore);
 const recordStore = useRecordStore();
 const { recordTags } = storeToRefs(recordStore);
 
-const accountStore = useAccountStore();
-const { preferences } = storeToRefs(accountStore);
+const userStore = useUserStore();
+const { preferences } = storeToRefs(userStore);
 
 const filters = ref({
   tag: null,
@@ -260,16 +260,22 @@ function resetForm() {
 }
 
 function savePreferredQuery(query) {
-  preferences.value.queries.push(query);
-  accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
+  const payload = JSON.parse(JSON.stringify(preferences.value));
+  payload.queries.push(query);
+  userStore.updateUser({ OTP: null, updateEntries: { preferences: payload } })
+    .then(() => preferences.value = payload)
+    .catch((error) => console.log(error))
   savingQueryFormIsOpen.value = false;
 }
 
 function removePreferredQuery(queryIndex) {
   const queryDeletionConfirmed = confirm("Please confirm to remove this query from your preferences");
   if (!queryDeletionConfirmed) return
-  preferences.value.queries.splice(queryIndex, 1);
-  accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } })
+  const payload = JSON.parse(JSON.stringify(preferences.value));
+  payload.queries.splice(queryIndex, 1);
+  userStore.updateUser({ OTP: null, updateEntries: { preferences: payload } })
+    .then(() => preferences.value = payload)
+    .catch((error) => console.log(error))
 }
 
 function queryFromPreset(queryFilters) {

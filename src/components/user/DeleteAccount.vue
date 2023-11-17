@@ -49,17 +49,17 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { computed, ref, inject } from 'vue'
-import { useAccountStore } from '../../stores/accountStore';
-import { useCredentialStore } from '../../stores/credentialStore';
-import Dialog from '../layout/Dialog.vue';
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
 
+import { useUserStore } from '../../stores/userStore';
+import { useAuthStore } from '../../stores/authStore';
+import Dialog from '../layout/Dialog.vue';
 
 const emit = defineEmits(['close-form', 'request-otp'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
 const displayAlert = inject("alert");
-const accountStore = useAccountStore();
-const credentialStore = useCredentialStore();
+const userStore = useUserStore();
+const authStore = useAuthStore();
 const router = useRouter()
 
 const OTP = ref('')
@@ -76,18 +76,13 @@ function reSendOTP() {
 
 function onSubmit(OTP) {
   loading.value = true
-  accountStore.erase({ OTP })
+  userStore.deleteUser({ OTP })
     .then((message) => {
       displayAlert({ title: "Done", type: "success", text: message });
-      logout()
+      router.replace('/')
     })
     .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
     .finally(() => loading.value = false)
-}
-
-function logout() {
-  credentialStore.logout()
-  router.replace('/')
 }
 
 function startCountDown() {

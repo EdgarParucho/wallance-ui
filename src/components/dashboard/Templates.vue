@@ -16,20 +16,19 @@
         </div>
       </div>
     </dl>
-
   </div>
 </template>
 
 <script setup>
 import { DocumentTextIcon } from "@heroicons/vue/24/outline";
-import { useAccountStore } from '../../stores/accountStore';
+import { useUserStore } from '../../stores/userStore';
 import { storeToRefs } from 'pinia';
 
 const props = defineProps(["templates"]);
 const emit = defineEmits(['useTemplate']);
 
-const accountStore = useAccountStore();
-const { preferences } = storeToRefs(accountStore);
+const userStore = useUserStore();
+const { preferences } = storeToRefs(userStore);
 
 async function confirmDeletion(index) {
   const deletionIsConfirmed = await swal({
@@ -44,7 +43,7 @@ async function confirmDeletion(index) {
 
 async function removeTemplate(index) {
   preferences.value.templates.splice(index, 1)
-  await accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
+  await userStore.updateUser({ OTP: null, updateEntries: { preferences: preferences.value } });
 }
 
 </script>

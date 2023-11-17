@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 import swal from "sweetalert";
-import { useCredentialStore } from "../stores/credentialStore";
-import Dashboard from "../views/Dashboard.vue";
 import Index from "../views/Index.vue";
+import Dashboard from "../views/Dashboard.vue";
 import Records from "../views/Records.vue";
 import Funds from "../views/Funds.vue";
 import Account from "../views/Account.vue";
 import NotFound from "../views/NotFound.vue";
+import { useAuthStore } from "../stores/authStore";
 
 const routes = [
   {
@@ -48,11 +48,11 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from) => {
-  const credentialStore = useCredentialStore();
-  const tokenIsBlank = (credentialStore.credential.token === "" || credentialStore.credential.token === null || credentialStore.credential.token === undefined);
-  const tokenExpired = new Date(credentialStore.credential.exp * 1000) < new Date();
+  const authStore = useAuthStore();
+  const tokenIsBlank = (authStore.auth.token === "" || authStore.auth.token === null || authStore.auth.token === undefined);
+  const tokenExpired = new Date(authStore.auth.exp * 1000) < new Date();
   if ((tokenIsBlank) && to.name !== 'Index') {
-    credentialStore.logout();
+    authStore.logout();
     swal({
       icon: "info",
       title: "Welcome",
@@ -62,7 +62,7 @@ router.beforeEach(async (to, from) => {
     return { name: 'Index' }
   }
   if ((tokenExpired) && to.name !== 'Index') {
-    credentialStore.logout();
+    authStore.logout();
     swal({
       icon: "info",
       title: "Please log in",

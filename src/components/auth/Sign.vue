@@ -76,10 +76,13 @@
 
 <script setup>
 import { computed, ref, inject } from 'vue';
-import { useCredentialStore } from '../../stores/credentialStore';
 import { IdentificationIcon, ArrowUturnLeftIcon, } from '@heroicons/vue/24/outline';
+
+import { useUserStore } from '../../stores/userStore';
+import { useAuthStore } from '../../stores/authStore';
 import Dialog from '../layout/Dialog.vue';
 
+const emit = defineEmits(['close-form']);
 const props = defineProps({
   formIsOpen: {
     type: Boolean,
@@ -91,9 +94,11 @@ const props = defineProps({
     required: true,
   },
 });
-const emit = defineEmits(['close-form']);
+
 const displayAlert = inject("alert");
-const credentialStore = useCredentialStore();
+
+const authStore = useAuthStore();
+const userStore = useUserStore();
 
 const form = ref({ email: '', password: '' });
 const reEnteredPassword = ref('');
@@ -121,7 +126,7 @@ function startCountDown() {
 function requestOTP(email, action) {
   loading.value = true
   const emailShouldBeStored = (action === "recovery");
-  credentialStore.requestOTPValidation({ email, emailShouldBeStored, action })
+  authStore.requestOTP({ email, emailShouldBeStored, action })
     .then((message) => {
       displayAlert({ title: "Check your inbox", type: "info", text: message });
       OTPSent.value = true
@@ -133,7 +138,7 @@ function requestOTP(email, action) {
 
 function sign(OTP, form) {
   loading.value = true
-  credentialStore.sign({ OTP, body: { ...form } })
+  authStore.sign({ OTP, body: { ...form } })
     .then((message) => {
       displayAlert({ title: "You're in", type: "success", text: message });
       emit('close-form');
@@ -150,7 +155,7 @@ function onSubmit(OTPSent, action) {
 
 function resetPassword({ OTP, email, password }) {
   loading.value = true
-  credentialStore.resetPassword({ OTP, email, password })
+  userStore.resetPassword({ OTP, email, password })
     .then((message) => {
       displayAlert({ title: "Done", type: "success", text: message });
       emit('close-form')

@@ -87,18 +87,17 @@ import Templates from '../components/dashboard/Templates.vue';
 import FundsList from '../components/fund/FundsList.vue';
 
 import { useFundStore } from '../stores/fundStore';
-import { useAccountStore } from '../stores/accountStore';
-
+import { useUserStore } from '../stores/userStore';
 
 const FirstSteps = defineAsyncComponent(() => import('../components/dashboard/FirstSteps.vue'));
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
 
 const fundStore = useFundStore();
-const accountStore = useAccountStore();
+const userStore = useUserStore();
 
 const { funds } = storeToRefs(fundStore);
 
-const { preferences } = storeToRefs(accountStore);
+const { preferences } = storeToRefs(userStore);
 const recordFormIsOpen = ref(false);
 
 let recordFormOptions = {

@@ -4,7 +4,7 @@
       <Cog6ToothIcon class="h-6 w-6" aria-hidden="true" />
     </div>
     <h3 class="text-lg font-bold text-center mt-8">
-      Account Settings
+      User Settings
     </h3>
     <p class="text-sm text-center">
       Check and update what you need from the form
@@ -70,12 +70,12 @@
 <script setup>
 import { ref, inject } from 'vue';
 import { Cog6ToothIcon } from '@heroicons/vue/24/outline'
-import { useCredentialStore } from '../stores/credentialStore';
-import UpdateEmail from '../components/account/UpdateEmail.vue';
-import UpdatePassword from '../components/account/UpdatePassword.vue';
-import DeleteAccount from '../components/account/DeleteAccount.vue';
+import { useAuthStore } from '../stores/authStore';
+import UpdateEmail from '../components/user/UpdateEmail.vue';
+import UpdatePassword from '../components/user/UpdatePassword.vue';
+import DeleteAccount from '../components/user/DeleteAccount.vue';
 
-const credentialStore = useCredentialStore();
+const authStore = useAuthStore();
 const displayAlert = inject("alert");
 
 const emailFormIsOpen = ref(false);
@@ -93,7 +93,7 @@ async function requestOTP(action) {
   });
   if (!deletionIsConfirmed) return
   requestingOTP.value = true;
-  credentialStore.requestOTPValidation({
+  authStore.requestOTP({
     action,
     emailShouldBeStored: true
   })

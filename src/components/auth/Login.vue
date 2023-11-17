@@ -43,14 +43,14 @@
 <script setup>
 import { ref, inject, computed } from 'vue'
 import { useRouter } from 'vue-router';
-import { useCredentialStore } from '../../stores/credentialStore';
 import { KeyIcon } from '@heroicons/vue/24/outline';
+import { useAuthStore } from '../../stores/authStore';
 import Dialog from '../layout/Dialog.vue';
 
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } });
 const emit = defineEmits(['close-form']);
 const displayAlert = inject("alert");
-const credentialStore = useCredentialStore();
+const authStore = useAuthStore();
 
 const router = useRouter();
 
@@ -67,7 +67,7 @@ const formIsValid = computed(() => form.value.email !== "" && emailFormatIsValid
 
 function handleSubmit(data) {
   loading.value = true;
-  credentialStore.login(data)
+  authStore.login(data)
     .then((message) => {
       router.replace('/dashboard');
       displayAlert({ title: "You're in", type: "success", text: message });

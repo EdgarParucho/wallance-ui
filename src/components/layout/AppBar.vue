@@ -1,36 +1,40 @@
 <script setup>
-import { watch, computed } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from 'vue-router';
-import { useAccountStore } from '../../stores/accountStore';
-import { useCredentialStore } from '../../stores/credentialStore';
+import { useUserStore } from '../../stores/userStore';
+import { useAuthStore } from '../../stores/authStore';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 import { UserIcon, ScaleIcon, MoonIcon, SunIcon } from '@heroicons/vue/24/outline';
 
 const route = useRoute();
 const router = useRouter();
-const accountStore = useAccountStore();
-const credentialStore = useCredentialStore();
-const { preferences } = storeToRefs(accountStore);
+const userStore = useUserStore();
+const authStore = useAuthStore();
+const { preferences } = storeToRefs(userStore);
 
 const atHome = computed(() => route.fullPath === '/');
 const darkMode = computed(() => preferences.value.darkMode);
 
-function updateDarkModePreference(isDarkMode) {
-  document.querySelector("html").className = isDarkMode ? "dark" : "";
-}
+const darkModeIsActive = ref(darkMode.value);
 
-function updateUI() {
-  accountStore.updateAccount({ OTP: null, updateEntries: { preferences: preferences.value } });
+document.querySelector("html").className = darkMode.value ? "dark" : "";
+
+function updateThemePreference(darkModeIsActive) {
+  document.querySelector("html").className = darkModeIsActive ? "dark" : ""
+  const payload = JSON.parse(JSON.stringify(preferences.value));
+  payload.darkMode = darkModeIsActive;
+  userStore.updateUser({ OTP: null, updateEntries: { preferences: payload }})
+    .then(() => preferences.value = payload)
+    .catch((error) => console.error(error))
 }
 
 function logout() {
-  credentialStore.logout()
+  authStore.logout()
   router.replace('/')
 }
 
-watch(darkMode, (newDarkModePreference) => updateUI(newDarkModePreference))
-watch(darkMode, (newDarkModePreference) => updateDarkModePreference(newDarkModePreference), { immediate: true })
+watch(darkModeIsActive, (darkModeIsActive) => updateThemePreference(darkModeIsActive))
 
 </script>
 
@@ -48,7 +52,7 @@ watch(darkMode, (newDarkModePreference) => updateDarkModePreference(newDarkModeP
       <label for="toogleButton" class="flex items-center cursor-pointer space-x-2">
         <SunIcon :class="[darkMode ? 'text-stone-400' : 'text-black', 'transition delay-75 w-5']" />
         <div class="relative">
-          <input id="toogleButton" type="checkbox" class="hidden" v-model="preferences.darkMode">
+          <input id="toogleButton" type="checkbox" class="hidden" v-model="darkModeIsActive">
           <div class="toggle-path bg-stone-500 w-9 h-5 rounded-full shadow-inner" />
           <div class="toggle-circle absolute w-3.5 h-3.5 bg-stone-200 rounded-full shadow inset-y-0 left-0" />
         </div>

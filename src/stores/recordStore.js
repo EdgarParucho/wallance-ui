@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia';
-import { useCredentialStore } from "./credentialStore";
-import { Find, Create, Update, Delete } from '../services/recordAPI';
-import { useLocalStorage } from '@vueuse/core';
 import { ref, computed, watch } from 'vue';
+import { useLocalStorage } from '@vueuse/core';
+
+import { useAuthStore } from "./authStore";
 import { useFundStore } from './fundStore';
+import { Find, Create, Update, Delete } from '../services/recordAPI';
 
 export const useRecordStore = defineStore('records', () => {
   const records = useLocalStorage('vueUseRecords', []);
-  const credentialStore = useCredentialStore();
+  const authStore = useAuthStore();
   const fundStore = useFundStore();
   const requestingRecords = ref(false);
 
@@ -70,25 +71,25 @@ export const useRecordStore = defineStore('records', () => {
     requestingRecords.value = true;
     return useService({
       service: Find,
-      data: { ...data, token: credentialStore.credential.token },
+      data: { ...data, token: authStore.auth.token },
       mutation: mutations.setRecords,
     })};
 
   const createRecord = (data) => useService({
     service: Create,
-    data: { ...data, token: credentialStore.credential.token },
+    data: { ...data, token: authStore.auth.token },
     mutation: mutations.createRecord
   });
 
   const updateRecord = (data) => useService({
     service: Update,
-    data: { ...data, token: credentialStore.credential.token },
+    data: { ...data, token: authStore.auth.token },
     mutation: mutations.updateRecord
   });
 
   const deleteRecord = (data) => useService({
     service: Delete,
-    data: { ...data, token: credentialStore.credential.token  },
+    data: { ...data, token: authStore.auth.token  },
     mutation: mutations.deleteRecord
   });
 
