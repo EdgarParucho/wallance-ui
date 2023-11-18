@@ -12,23 +12,14 @@ export const useRecordStore = defineStore('records', () => {
   const fundStore = useFundStore();
   const requestingRecords = ref(false);
 
-  const assignmentTags = computed(() => Array.from(new Set(records.value
-    .filter(r => r.type === 0)
-    .map(r => r.tag)))
-  );
-
-  const creditTags = computed(() => Array.from(new Set(records.value
-    .filter(r => r.type === 1)
-    .map(r => r.tag)))
-  );
-
-  const debitTags = computed(() => Array.from(new Set(records.value
-    .filter(r => r.type === 2)
-    .map(r => r.tag)))
-  );
-
-  const recordTags = computed(() => {
-    return { 0: assignmentTags.value, 1: creditTags.value, 2: debitTags.value }
+  const tags = computed(() => {
+    const recordWithTags = records.value.filter(r => r.tag);
+    const filteredRecords = { 0: [], 1: [], 2: [] };
+    recordWithTags.forEach(record => {
+      const notIncluded = !filteredRecords[record.type].includes(record.tag);
+      if (notIncluded) filteredRecords[record.type].push(record.tag)
+    })
+    return filteredRecords;
   });
 
   const mutations = {
@@ -99,7 +90,7 @@ export const useRecordStore = defineStore('records', () => {
 
   return {
     records,
-    recordTags,
+    tags,
     getRecords,
     setRecords: mutations.setRecords,
     createRecord,

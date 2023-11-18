@@ -164,7 +164,7 @@
               @keydown.backspace="showTags = true"
               @keydown.arrow-up="focusedTagIndex--"
               @keydown.arrow-down="focusedTagIndex++"
-              @keydown.enter="handleTagEnter(tags[focusedTagIndex])"
+              @keydown.enter="handleTagEnter(typeTags[focusedTagIndex])"
               id="tag"
               type="text"
               name="tag"
@@ -174,7 +174,7 @@
               >
               <div v-show="showTags" class="px-1 text-sm rounded-sm mt-4 bg-white dark:bg-stone-800 border-violet-500 border absolute w-72">
                 <button
-                v-for="tag, i in tags" Key="i"
+                v-for="tag, i in typeTags" Key="i"
                 type="button"
                 class="tag hover:text-violet-500 w-full cursor-pointer text-left"
                 :class="{'bg-violet-200 dark:bg-violet-600 dark:bg-opacity-10': focusedTagIndex === i }"
@@ -273,7 +273,7 @@ const fundStore = useFundStore();
 const { funds } = storeToRefs(fundStore);
 
 const recordStore = useRecordStore();
-const { recordTags } = storeToRefs(recordStore);
+const { tags } = storeToRefs(recordStore);
 
 const userStore = useUserStore();
 const { preferences } = storeToRefs(userStore);
@@ -294,9 +294,9 @@ const templateName = ref("");
 const showTags = ref(false);
 const focusedTagIndex = ref(0);
 
-const tags = computed(() => {
+const typeTags = computed(() => {
   const formTag = form.tag?.toLowerCase() || "";
-  const matchingTags = recordTags.value[form.type]
+  const matchingTags = tags.value[form.type]
     .filter(tag => tag.toLowerCase().includes(formTag))
     .sort();
   return matchingTags;
@@ -416,8 +416,8 @@ watch(() => form.type, (type) => {
 })
 
 watch(focusedTagIndex, (i) => {
-  if (i < 0) focusedTagIndex.value = (tags.value.length - 1)
-  if (i >= tags.value.length) focusedTagIndex.value = 0
+  if (i < 0) focusedTagIndex.value = (typeTags.value.length - 1)
+  if (i >= typeTags.value.length) focusedTagIndex.value = 0
 })
 
 </script>

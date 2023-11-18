@@ -1,12 +1,7 @@
 <template>
   <div class="py-4">
-    <h1 class="text-4xl font-bold px-4">
-      Records History
-    </h1>
-    <p class="text-xl my-4 px-4">
-      Find and manage your records from here.
-    </p>
-
+    <h1 class="text-4xl font-bold px-4">Records History</h1>
+    <p class="text-xl my-4 px-4">Find and manage your records from here.</p>
     <QueryPanel />
     
     <div v-if="records.length > 0">
@@ -20,7 +15,7 @@
       <div class="my-20">
         <TagIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
         <h2 class="mb-2 text-3xl font-bold text-center">Tags Measurement</h2>
-        <p class="text-center">Check your records query tags</p>
+        <p class="text-center">Check the tags among the results</p>
         <div class="md:flex my-10 justify-center space-x-1">
           <div class="md:w-1/2 xl:w-1/3 p-4 shadow-md rounded-md bg-white dark:bg-stone-800">
             <TopTags :records="records" />
@@ -74,16 +69,15 @@ import { storeToRefs } from "pinia";
 import { useFundStore } from '../stores/fundStore';
 import { useRecordStore } from '../stores/recordStore';
 
-import Stats from '../components/record/Stats.vue'
-import TopTags from '../components/record/TopTags.vue'
-import FundsList from '../components/fund/FundsList.vue';
 import QueryPanel from '../components/query/QueryPanel.vue';
-import QueryTotals from '../components/query/QueryTotals.vue'
-import RecordsTable from '../components/record/RecordsTable.vue';
-import FundsChart from '../components/fund/FundsChart.vue';
-import MonthlyBalanceChart from '../components/record/MonthlyBalanceChart.vue';
-import TagsEquivalenceChart from '../components/record/TagsEquivalenceChart.vue';
-
+const Stats = defineAsyncComponent(() => import('../components/query/QueryStats.vue'));
+const TopTags = defineAsyncComponent(() => import('../components/query/QueryTagsList.vue'));
+const FundsList = defineAsyncComponent(() => import('../components/fund/FundsList.vue'));
+const QueryTotals = defineAsyncComponent(() => import('../components/query/QueryTotals.vue'));
+const RecordsTable = defineAsyncComponent(() => import('../components/query/QueryResultsTable.vue'));
+const FundsChart = defineAsyncComponent(() => import('../components/query/QueryFundsChart.vue'));
+const MonthlyBalanceChart = defineAsyncComponent(() => import('../components/query/QueryYearlyChart.vue'));
+const TagsEquivalenceChart = defineAsyncComponent(() => import('../components/query/QueryTagsChart.vue'));
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
 
 const recordStore = useRecordStore();

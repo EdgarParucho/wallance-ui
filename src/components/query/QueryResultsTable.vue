@@ -1,22 +1,26 @@
 <template>
   <div class="my-4">
-    <table class="border-separate border-spacing-2 border border-stone-300 dark:border-stone-500 mx-auto w-full 2xl:w-2/3 text-sm">
+    <table class="shadow-md mx-auto w-full 2xl:w-2/3 text-sm">
       <thead v-if="!underLgBreakpoint">
-        <tr>
-          <th class="px-4 bg-stone-200 dark:bg-stone-800" v-for="header in headers" :key="header">
+        <tr class="bg-stone-100 dark:bg-stone-700">
+          <th v-for="header in headers" :key="header">
             {{ header }}
           </th>
         </tr>
       </thead>
       <tbody>
-        <tr class="border-b-white bg-stone-100 dark:bg-stone-800" v-for="record in recordRows" :key="record.id" :class="underLgBreakpoint ? 'grid' : ''">
-          <td class="text-end xl:w-40 lg:px-2">
+        <tr class="bg-stone-100 dark:bg-stone-800" v-for="record in recordRows" :key="record.id" :class="underLgBreakpoint ? 'grid' : ''">
+          <td class="text-end h-8 xl:w-40 lg:px-2 border-2 border-stone-200 dark:border-stone-900">
             {{ getDateFormatted(record) }}
           </td>
-          <td class="text-end lg:w-36 lg:px-2">
-            {{ getFundName(record) }}
+          <td class="h-8 lg:w-36 lg:px-2 border-2 border-stone-200 dark:border-stone-900">
+            <div class="flex items-center justify-between">
+              <span>{{ getFundName(record.fundID) }}</span>
+              <ArrowRightCircleIcon class="w-5" v-if="record.type === 0" />
+              <span v-if="record.type === 0">{{ getFundName(record.otherFundID) }}</span>
+            </div>
           </td>
-          <td class="px-2 2xl:min-w-96">
+          <td class="px-2 h-8 2xl:min-w-96 border-2 border-stone-200 dark:border-stone-900">
             <div class="flex justify-between">
               <span class="font-medium text-sm">{{ record.note }}</span>
               <span v-if="record.tag !== ''" class="text-sm bg-stone-200 dark:bg-stone-700 font-medium px-2 rounded-xl">
@@ -24,7 +28,7 @@
               </span>
             </div>
           </td>
-          <td class="lg:w-40 lg:px-2">
+          <td class="lg:w-40 lg:px-2 h-8 border-2 border-stone-200 dark:border-stone-900">
             <div class="flex justify-end lg:justify-between space-x-2 items-center">
               <div :class="[getRecordTypeStyles(record), 'p-1 rounded-full']">
                 <component class="h-3 w-3" :is="getRecordTypeIcon(record)" />
@@ -32,8 +36,8 @@
               <span>{{ getAmountFormatted(record) }}</span>
             </div>
           </td>
-          <td class="lg:w-24">
-            <div class="flex justify-around items-center">
+          <td class="lg:w-24 h-8 border-2 border-stone-200 dark:border-stone-900">
+            <div class="flex justify-around items-center gap-0.5">
               <button class="p-1 rounded-sm bg-stone-200 hover:bg-stone-300 dark:bg-stone-800 dark:hover:bg-stone-700 w-1/2" @click="$emit('edit-record', record)">
                 <PencilSquareIcon class="h-4 w-4 mx-auto" />
               </button>
@@ -82,6 +86,7 @@
 import {
   ArrowsRightLeftIcon,
   ArrowLeftIcon,
+  ArrowRightCircleIcon,
   ArrowRightIcon,
   MinusIcon,
   PlusIcon,
@@ -125,10 +130,8 @@ function getRecordTypeStyles({ type }) {
   else return 'text-red-500 bg-red-600 bg-opacity-20'
 };
 
-function getFundName({ fundID, otherFundID }) {
-  const primaryFund = funds.value.find(fund => fund.id === fundID).name;
-  const secondaryFund = funds.value.find(fund => fund.id === otherFundID)?.name;
-  return [primaryFund, secondaryFund].join(' | ');
+function getFundName(fundID) {
+  return funds.value.find(fund => fund.id === fundID).name;
 }
 
 function getAmountFormatted({ amount }) {
