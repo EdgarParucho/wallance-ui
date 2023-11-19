@@ -12,7 +12,8 @@ export const useUserStore = defineStore('user', () => {
   const setPreferences = (preferencesValues) => preferences.value = preferencesValues;
   const updateUser = (data) => {
     return new Promise((resolve, reject) => Update({ ...data, token: authStore.auth.token })
-      .then(() => {
+      .then((response) => {
+        if (response.data?.token) authStore.refreshToken(response.data);
         resolve('Account updated successfully');
       })
       .catch((error) => {

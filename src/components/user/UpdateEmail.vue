@@ -104,7 +104,7 @@ function updateEmail(OTP, email) {
 
 function validateEmail({ email }) {
   loading.value = true
-  authStore.requestOTP({ email, emailShouldBeStored: false, action: "update" })
+  authStore.requestOTP({ email, emailShouldBeStored: false })
     .then((message) => {
       displayAlert({ title: "Check your inbox", type: "info", text: message });
       validatingEmail.value = true;

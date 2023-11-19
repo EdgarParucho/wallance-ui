@@ -29,7 +29,7 @@
 
     <div class="my-2">
       <button
-      @click="requestOTP('update')"
+      @click="requestOTP"
       class="flex w-full justify-center rounded-md dark:bg-stone-800 mt-2 p-2 text-sm shadow-md bg-stone-100 hover:bg-stone-50 dark:hover:bg-stone-700 font-semibold disabled:text-stone-500"
       :disabled="requestingOTP"
       >
@@ -39,18 +39,18 @@
       v-if="passwordFormIsOpen"
       :form-is-open="passwordFormIsOpen"
       @close-form="passwordFormIsOpen = false"
-      @request-otp="requestOTP('update')" />
+      @request-otp="requestOTP" />
     </div>
 
     <div class="my-2">
       <button
-      @click="requestOTP('delete')"
+      @click="requestOTP({ deleting: true })"
       class="flex w-full justify-center rounded-md dark:bg-stone-800 mt-2 p-2 text-sm shadow-md bg-stone-100 hover:bg-stone-50 dark:hover:bg-stone-700 font-semibold disabled:text-stone-500"
       :disabled="requestingOTP"
       >
         Delete My Account
       </button>
-      <DeleteAccount v-if="deleteFormIsOpen" :form-is-open="deleteFormIsOpen" @close-form="deleteFormIsOpen = false" @request-otp="requestOTP('delete')" />
+      <DeleteAccount v-if="deleteFormIsOpen" :form-is-open="deleteFormIsOpen" @close-form="deleteFormIsOpen = false" @request-otp="requestOTP({ deleting: true })" />
     </div>
     <div v-if="requestingOTP" class="flex items-center justify-center space-x-3 py-1 font-bold bg-stone-900">
       <svg
@@ -83,7 +83,7 @@ const passwordFormIsOpen = ref(false);
 const deleteFormIsOpen = ref(false);
 const requestingOTP = ref(false);
 
-async function requestOTP(action) {
+async function requestOTP({ deleting = false }) {
   const deletionIsConfirmed = await swal({
     icon: "warning",
     title: "Caution",
@@ -93,13 +93,10 @@ async function requestOTP(action) {
   });
   if (!deletionIsConfirmed) return
   requestingOTP.value = true;
-  authStore.requestOTP({
-    action,
-    emailShouldBeStored: true
-  })
+  authStore.requestOTP({ emailShouldBeStored: true })
     .then((message) => {
       displayAlert({ title: "Check your inbox", type: "info", text: message });
-      if (action === "delete") deleteFormIsOpen.value = true;
+      if (deleting) deleteFormIsOpen.value = true;
       else passwordFormIsOpen.value = true;
     })
     .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))

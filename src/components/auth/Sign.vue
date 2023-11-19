@@ -6,7 +6,7 @@
   :form-is-open="formIsOpen"
   @close-form="$emit('close-form')"
   >
-    <form @submit.prevent="onSubmit(OTPSent, action)" class="rounded-md px-8 pb-10">
+    <form @submit.prevent="onSubmit(OTPSent, passwordForgotten)" class="rounded-md px-8 pb-10">
       <fieldset class="my-6">
         <input
         type="email"
@@ -61,7 +61,7 @@
     <button
     v-if="OTPSent"
     class="flex items-center gap-1 mx-auto mb-3 px-3 py-1 text-xs hover:border-stone-500 text-stone-600 hover:scale-110 transition-all hover:text-black dark:hover:text-white"
-    @click="requestOTP(form.email, action)"
+    @click="requestOTP(form.email, passwordForgotten)"
     :disabled="loading || countDown > 0 || !emailFormatIsValid || emailIsBlank"
     type="button"
     >
@@ -88,10 +88,9 @@ const props = defineProps({
     type: Boolean,
     required: true
   },
-  action: {
-    type: String,
-    default: "sign",
-    required: true,
+  passwordForgotten: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -108,7 +107,7 @@ const OTPSent = ref(false);
 const countDown = ref(0);
 const emailformat = new RegExp(/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/);
 
-const title = computed(() => (props.action === "sign") ? 'First step towards your command post' : 'Recover your access');
+const title = computed(() => (props.passwordForgotten) ? 'Recover your access' : 'First step towards your command post');
 const emailIsBlank = computed(() => form.value.email === '');
 const emailFormatIsValid = computed(() => emailformat.test(form.value.email));
 const passwordMismatch = computed(() => form.value.password !== reEnteredPassword.value);
@@ -123,10 +122,10 @@ function startCountDown() {
   }, 1000);
 };
 
-function requestOTP(email, action) {
+function requestOTP(email, passwordForgotten) {
   loading.value = true
-  const emailShouldBeStored = (action === "recovery");
-  authStore.requestOTP({ email, emailShouldBeStored, action })
+  const emailShouldBeStored = passwordForgotten;
+  authStore.requestOTP({ email, emailShouldBeStored })
     .then((message) => {
       displayAlert({ title: "Check your inbox", type: "info", text: message });
       OTPSent.value = true
@@ -147,10 +146,10 @@ function sign(OTP, form) {
     .finally(() => loading.value = false)
 }
 
-function onSubmit(OTPSent, action) {
-  if (!OTPSent) requestOTP(form.value.email, action);
-  else if (action === "sign") sign(OTP.value, form.value); 
-  else resetPassword({ OTP: OTP.value, ...form.value });
+function onSubmit(OTPSent, passwordForgotten) {
+  if (!OTPSent) requestOTP(form.value.email, passwordForgotten);
+  else if (passwordForgotten) resetPassword({ OTP: OTP.value, ...form.value }); 
+  else sign(OTP.value, form.value);
 }
 
 function resetPassword({ OTP, email, password }) {

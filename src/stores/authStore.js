@@ -25,7 +25,8 @@ export const useAuthStore = defineStore('auth', () => {
     logout: () => {
       resetStores();
       return 'Your Session finished.';
-    }
+    },
+    refreshToken: (token) => auth.value = token
   };
 
   function resetStores() {
@@ -73,5 +74,5 @@ export const useAuthStore = defineStore('auth', () => {
 
   const logout = () => mutations.logout();
 
-  return { auth, requestOTP, sign, login, logout };
+  return { auth, requestOTP, sign, login, logout, refreshToken: mutations.refreshToken };
 });

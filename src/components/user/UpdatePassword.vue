@@ -4,20 +4,12 @@
       <form @submit.prevent="onSubmit(OTP, newPassword)">
         <fieldset class="my-6">
           <input
-          type="text"
-          class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
-          placeholder="Code"
-          required
-          autocomplete="ignore"
-          v-model="OTP"
-          >
-          <input
           type="password"
           class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
           placeholder="New password"
           required
           v-model="newPassword"
-          autocomplete="ignore"
+          autocomplete="off"
           >
           <input
           type="password"
@@ -25,7 +17,15 @@
           placeholder="New password confirmation"
           required
           v-model="reEnteredPassword"
-          autocomplete="ignore"
+          autocomplete="off"
+          >
+          <input
+          type="text"
+          class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
+          placeholder="Code"
+          required
+          autocomplete="off"
+          v-model="OTP"
           >
         </fieldset>
         <button

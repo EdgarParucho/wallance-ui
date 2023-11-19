@@ -34,7 +34,7 @@
     <Sign
       v-if="signFormIsOpen"
       :form-is-open="signFormIsOpen"
-      :action="recoveringPassword ? 'recovery' : 'sign'"
+      :password-forgotten="passwordForgotten"
       @close-form="signFormIsOpen = false"
     />
     <div class="flex justify-center">
@@ -78,7 +78,7 @@ import { ref, watch } from 'vue';
 
 const signFormIsOpen = ref(false);
 const loginFormIsOpen = ref(false);
-const recoveringPassword = ref(false);
+const passwordForgotten = ref(false);
 
 const links = [
   { URL: 'https://www.linkedin.com/in/edgarparucho/', title: "Linkedin", icon: "https://img.icons8.com/ios-filled/50/linkedin-circled--v1.png" },
@@ -87,13 +87,13 @@ const links = [
 ]        
         
  function resetPassword() {
-  recoveringPassword.value = true;
+  passwordForgotten.value = true;
   signFormIsOpen.value = true;
 }
 
 watch(() => signFormIsOpen.value,
 (signFormIsOpen) => {
-  if (!signFormIsOpen) recoveringPassword.value = false;
+  if (!signFormIsOpen) passwordForgotten.value = false;
 });
 
 </script>
