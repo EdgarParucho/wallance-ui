@@ -23,33 +23,34 @@ export const useRecordStore = defineStore('records', () => {
   });
 
   const mutations = {
-    setRecords: (data) => {
+    setRecords: ({ data, message }) => {
       if (data.length > 0) records.value = [...data];
       requestingRecords.value = false;
-      return data.length;
+      const alertStyle = data.length > 0 ? "success" : "info";
+      return { alertStyle, message };
     },
-    createRecord: (data) => {
+    createRecord: ({ data, message }) => {
       records.value.push(data.record)
-      data.funds.forEach((fund) => fundStore.mutations.updateFund(fund));
-      return 'Your record was created.'
+      data.funds.forEach((fund) => fundStore.mutations.updateFund({ data: fund }));
+      return message;
     },
-    updateRecord: (data) => {
+    updateRecord: ({ data, message }) => {
       const index = records.value.findIndex(r => r.id === data.record.id)
       records.value.splice(index, 1, data.record);
-      data.funds.forEach((fund) => fundStore.mutations.updateFund(fund));
-      return 'Your record was updated.'
+      data.funds.forEach((fund) => fundStore.mutations.updateFund({ data: fund }));
+      return message;
     },
-    deleteRecord: (data) => {
+    deleteRecord: ({ data, message }) => {
       const index = records.value.findIndex(r => r.id === data.record.id)
       records.value.splice(index, 1);
-      data.funds.forEach((fund) => fundStore.mutations.updateFund(fund));
-      return 'Your record was deleted.'
+      data.funds.forEach((fund) => fundStore.mutations.updateFund({ data: fund }));
+      return message;
     }
   };
 
   const useService = ({ service, data, mutation }) => new Promise((resolve, reject) => service(data)
-    .then((response) => resolve(
-      mutation(response.data)
+    .then(({ data }) => resolve(
+      mutation(data)
     ))
     .catch((error) => {
       const feedback = error.response?.data?.message || error.response?.data || error.message || error;

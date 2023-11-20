@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { RequestOTP, Sign, Login } from '../services/authAPI';
+import { RequestOTP, Login } from '../services/authAPI';
 import { useLocalStorage } from '@vueuse/core';
 
 import API from '../services/API';
@@ -14,13 +14,13 @@ export const useAuthStore = defineStore('auth', () => {
   const auth = useLocalStorage("vueUseAuth", { token: null, exp: null });
 
   const mutations = {
-    login: ({ token, funds, preferences }) => {
+    login: ({ data, message }) => {
       resetStores();
-      fundStore.mutations.setFunds(funds);
-      auth.value = token;
-      userStore.setPreferences(preferences);
+      fundStore.mutations.setFunds(data.funds);
+      auth.value = data.token;
+      userStore.setPreferences(data.preferences);
       API.defaults.headers.common['Authorization'] = "bearer " + auth.value.token;
-      return 'Good to have you. Get the most and enjoy.';
+      return message;
     },
     logout: () => {
       resetStores();
@@ -38,11 +38,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const useService = ({ service, data, mutation }) => new Promise((resolve, reject) => service(data)
-    .then((response) => {
-      resolve(
-        mutation(response.data)
-      )
-    })
+    .then(({ data }) => resolve(mutation(data)))
     .catch((error) => {
       const feedback = error.response?.data?.message || error.response?.data || error.message || error;
       reject(feedback);
@@ -50,16 +46,7 @@ export const useAuthStore = defineStore('auth', () => {
   );
 
   const requestOTP = (body) => new Promise((resolve, reject) => RequestOTP({ body, token: auth.value.token })
-    .then(({ data }) => {
-      resolve(data)})
-    .catch((error) => {
-      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
-      reject(feedback);
-    })
-  );
-
-  const sign = (data) => new Promise((resolve, reject) => Sign(data)
-    .then((response) => resolve(response.data))
+    .then(({ data }) => resolve(data))
     .catch((error) => {
       const feedback = error.response?.data?.message || error.response?.data || error.message || error;
       reject(feedback);
@@ -74,5 +61,5 @@ export const useAuthStore = defineStore('auth', () => {
 
   const logout = () => mutations.logout();
 
-  return { auth, requestOTP, sign, login, logout, refreshToken: mutations.refreshToken };
+  return { auth, requestOTP, login, logout, refreshToken: mutations.refreshToken };
 });

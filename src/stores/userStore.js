@@ -4,17 +4,27 @@ import { useLocalStorage } from '@vueuse/core';
 
 import { useAuthStore } from './authStore';
 import { Update, Delete, ResetPassword } from '../services/userAPI'
+import { Sign } from '../services/authAPI';
 
 export const useUserStore = defineStore('user', () => {
   const preferences = useLocalStorage("vueUsePreferences", { templates: [], queries: [], darkMode: false, FirstStepsStatus: [], language: null });
   const authStore = useAuthStore();
 
   const setPreferences = (preferencesValues) => preferences.value = preferencesValues;
+  
+  const createUser = (data) => new Promise((resolve, reject) => Sign(data)
+    .then(({ data }) => resolve(data))
+    .catch((error) => {
+      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
+      reject(feedback);
+    })
+  );
+  
   const updateUser = (data) => {
     return new Promise((resolve, reject) => Update({ ...data, token: authStore.auth.token })
-      .then((response) => {
-        if (response.data?.token) authStore.refreshToken(response.data);
-        resolve('Account updated successfully');
+      .then(({ data }) => {
+        if (data.data?.token) authStore.refreshToken(data.data);
+        resolve(data.message);
       })
       .catch((error) => {
         const feedback = error.response?.data?.message || error.response?.data || error.message || error;
@@ -24,9 +34,9 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const deleteUser = (data) => new Promise((resolve, reject) => Delete({ ...data, token: authStore.auth.token })
-    .then(() => {
+    .then(({ data }) => {
       authStore.logout();
-      resolve('Your account was deleted.');
+      resolve(data);
     })
     .catch((error) => {
       const feedback = error.response?.data?.message || error.response?.data || error.message || error;
@@ -35,7 +45,7 @@ export const useUserStore = defineStore('user', () => {
   )
 
   const resetPassword = (body) => new Promise((resolve, reject) => ResetPassword(body)
-    .then((response) => resolve(response.data))
+    .then(({ data }) => resolve(data))
     .catch((error) => {
       const feedback = error.response?.data?.message || error.response?.data || error.message || error;
       reject(feedback);
@@ -48,5 +58,5 @@ export const useUserStore = defineStore('user', () => {
     }, { immediate: true }
   )
 
-  return { preferences, updateUser, deleteUser, setPreferences, resetPassword };
+  return { preferences, createUser, updateUser, deleteUser, setPreferences, resetPassword };
 });

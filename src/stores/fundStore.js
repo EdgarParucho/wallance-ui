@@ -15,28 +15,28 @@ export const useFundStore = defineStore('fund', () => {
   const mutations = {
     setFunds: (data) => {
       funds.value = [...data]
-      return 'Your funds were loaded.'
+      return
     },
-    createFund: (data) => {
+    createFund: ({ data, message }) => {
       funds.value.push(data)
-      return 'Your fund was created.'
+      return message;
     },
-    updateFund: (data) => {
+    updateFund: ({ data, message = "Fund updated." }) => {
       const index = funds.value.findIndex(fund => fund.id === data.id);
       funds.value.splice(index, 1, data);
-      return `Fund updated: ${data.name}.`
+      return message;
     },
-    deleteFund: (data) => {
+    deleteFund: ({ data, message }) => {
       const index = funds.value.findIndex(fund => fund.id === data);
       funds.value.splice(index, 1);
       recordStore.getRecords();
-      return 'Your fund was deleted.';
+      return message;
     }
   };
 
   const useService = ({ service, data, mutation }) => new Promise((resolve, reject) => service(data)
-    .then((response) => resolve(
-      mutation(response.data)
+    .then(({ data }) => resolve(
+      mutation(data)
     ))
     .catch((error) => {
       const feedback = error.response?.data?.message || error.response?.data || error.message || error;

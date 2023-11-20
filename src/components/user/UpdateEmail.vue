@@ -41,7 +41,7 @@
       <button
       v-if="validatingEmail"
       class="flex items-center gap-1 mx-auto mb-3 px-3 py-1 text-xs hover:border-stone-500 text-stone-600 hover:scale-110 transition-all hover:text-black dark:hover:text-white"
-      @click="validateEmail({ email })"
+      @click="requestOTP({ email })"
       :disabled="loading || countDown > 0"
       type="button"
       >
@@ -82,7 +82,7 @@ const OTP = ref('');
 
 function onSubmit() {
   if (validatingEmail.value) updateEmail(OTP.value, email.value);
-  else validateEmail({ email: email.value })
+  else requestOTP({ email: email.value })
 }
 
 const emailFormatIsValid = computed(() => {
@@ -102,11 +102,11 @@ function updateEmail(OTP, email) {
   .finally(() => loading.value = false)
 }
 
-function validateEmail({ email }) {
+function requestOTP({ email }) {
   loading.value = true
   authStore.requestOTP({ email, emailShouldBeStored: false })
-    .then((message) => {
-      displayAlert({ title: "Check your inbox", type: "info", text: message });
+    .then(({ message }) => {
+      displayAlert({ type: "info", text: message });
       validatingEmail.value = true;
       startCountDown();
     })

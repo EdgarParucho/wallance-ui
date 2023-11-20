@@ -126,23 +126,23 @@ function requestOTP(email, passwordForgotten) {
   loading.value = true
   const emailShouldBeStored = passwordForgotten;
   authStore.requestOTP({ email, emailShouldBeStored })
-    .then((message) => {
-      displayAlert({ title: "Check your inbox", type: "info", text: message });
+    .then(({ message }) => {
+      displayAlert({ type: "info", text: message });
       OTPSent.value = true
       startCountDown()
     })
-    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .catch((message) => displayAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 
 function sign(OTP, form) {
   loading.value = true
-  authStore.sign({ OTP, body: { ...form } })
-    .then((message) => {
-      displayAlert({ title: "You're in", type: "success", text: message });
+  userStore.createUser({ OTP, body: { ...form } })
+    .then(({ message }) => {
+      displayAlert({ type: "success", text: message });
       emit('close-form');
     })
-    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .catch((message) => displayAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 
@@ -155,11 +155,11 @@ function onSubmit(OTPSent, passwordForgotten) {
 function resetPassword({ OTP, email, password }) {
   loading.value = true
   userStore.resetPassword({ OTP, email, password })
-    .then((message) => {
-      displayAlert({ title: "Done", type: "success", text: message });
+    .then(({ message }) => {
+      displayAlert({ type: "success", text: message });
       emit('close-form')
     })
-    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .catch((message) => displayAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 

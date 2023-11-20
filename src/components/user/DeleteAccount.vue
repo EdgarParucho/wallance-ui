@@ -77,9 +77,9 @@ function reSendOTP() {
 function onSubmit(OTP) {
   loading.value = true
   userStore.deleteUser({ OTP })
-    .then((message) => {
-      displayAlert({ title: "Done", type: "success", text: message });
-      router.replace('/')
+    .then(({ message }) => {
+      displayAlert({ type: "success", text: message });
+      router.replace('/');
     })
     .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
     .finally(() => loading.value = false)

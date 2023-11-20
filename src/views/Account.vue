@@ -94,8 +94,8 @@ async function requestOTP({ deleting = false }) {
   if (!deletionIsConfirmed) return
   requestingOTP.value = true;
   authStore.requestOTP({ emailShouldBeStored: true })
-    .then((message) => {
-      displayAlert({ title: "Check your inbox", type: "info", text: message });
+    .then(({ message }) => {
+      displayAlert({ type: "info", text: message });
       if (deleting) deleteFormIsOpen.value = true;
       else passwordFormIsOpen.value = true;
     })

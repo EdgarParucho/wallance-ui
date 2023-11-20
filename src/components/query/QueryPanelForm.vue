@@ -194,14 +194,8 @@ const appliedFilters = computed(() => {
 function submitQuery(filters) {
   loading.value = true;
   recordStore.getRecords({ filters })
-    .then((recordsLength) => {
-      displayAlert({
-        title: "Done",
-        type: recordsLength > 0 ? 'success' : "info",
-        text: recordsLength > 0 ? 'Your records were loaded.' : "Filters didn't match any record."
-      })
-    })
-    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .then(({ alertStyle, message }) => displayAlert({ type: alertStyle, text: message }))
+    .catch((message) => displayAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 
