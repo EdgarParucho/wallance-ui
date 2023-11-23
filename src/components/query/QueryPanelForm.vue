@@ -159,16 +159,21 @@
 <script setup>
 import { ref, computed, inject } from 'vue';
 import { storeToRefs } from "pinia";
-import { BookmarkIcon, CalendarIcon, MagnifyingGlassIcon, QuestionMarkCircleIcon, XMarkIcon } from '@heroicons/vue/24/solid';
+import { BookmarkIcon, CalendarIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/solid';
 import { ArrowUturnLeftIcon, CalendarDaysIcon } from '@heroicons/vue/24/outline';
 import { useRecordStore } from '../../stores/recordStore';
 import { useFundStore } from '../../stores/fundStore';
 import Dialog from '../layout/Dialog.vue';
+import { useUserStore } from '../../stores/userStore';
 
-const displayAlert = inject("alert");
+const showAlert = inject("showAlert");
+const showToast = inject("showToast");
+
 const fundStore = useFundStore();
 const recordStore = useRecordStore();
+const userStore = useUserStore();
 const { funds } = storeToRefs(fundStore);
+const { preferences } = storeToRefs(userStore);
 
 const queryName = ref("");
 const dateFormIsOpen = ref(false);
@@ -194,8 +199,8 @@ const appliedFilters = computed(() => {
 function submitQuery(filters) {
   loading.value = true;
   recordStore.getRecords({ filters })
-    .then(({ alertStyle, message }) => displayAlert({ type: alertStyle, text: message }))
-    .catch((message) => displayAlert({ type: "error", text: message }))
+    .then((message) => showToast(message))
+    .catch((message) => showAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 
@@ -214,7 +219,10 @@ function savePreferredQuery(query) {
   const payload = JSON.parse(JSON.stringify(preferences.value));
   payload.queries.push(query);
   userStore.updateUser({ OTP: null, updateEntries: { preferences: payload } })
-    .then(() => preferences.value = payload)
+    .then((message) => {
+      showToast(message);
+      preferences.value = payload;
+    })
     .catch((error) => console.log(error))
   savingQueryFormIsOpen.value = false;
 }

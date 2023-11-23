@@ -67,7 +67,8 @@ import Dialog from '../layout/Dialog.vue';
 
 const emit = defineEmits(['close-form', 'request-otp'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
-const displayAlert = inject("alert");
+const showAlert = inject("showAlert");
+const showToast = inject("showToast");
 const userStore = useUserStore()
 
 const OTP = ref("");
@@ -92,10 +93,10 @@ function onSubmit(OTP, newPassword) {
   loading.value = true
   userStore.updateUser({ OTP, updateEntries: { password: newPassword } })
     .then((message) => {
-      displayAlert({ title: "Done", type: "success", text: message });
+      showToast(message);
       emit('close-form')
     })
-    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .catch((message) => showAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 

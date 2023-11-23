@@ -91,7 +91,8 @@ import {
   MinusIcon,
   PlusIcon,
   PencilSquareIcon,
-  TrashIcon } from '@heroicons/vue/24/outline'
+  TrashIcon
+} from '@heroicons/vue/24/outline'
 import { ref, computed, watch } from "vue";
 import { useFundStore } from '../../stores/fundStore';
 import { useRecordStore } from '../../stores/recordStore';

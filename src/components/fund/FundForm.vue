@@ -73,7 +73,9 @@ import Dialog from '../layout/Dialog.vue';
 
 const props = defineProps(['form-is-open', 'editing-fund']);
 const emit = defineEmits(['close-form']);
-const displayAlert = inject("alert");
+const showAlert = inject("showAlert");
+const showToast = inject("showToast");
+
 const fundStore = useFundStore();
 
 const fund = ref({
@@ -100,10 +102,10 @@ function createFund(fund) {
   loading.value = true
   fundStore.createFund(fund)
     .then((message) => {
-      displayAlert({ type: "success", title: "Done", text: message });
+      showToast(message);
       emit('close-form');
   })
-    .catch((message) => displayAlert({ type: "error", title: "Something went wrong", text: message }))
+    .catch((message) => showAlert({ type: "error", title: "Something went wrong", text: message }))
     .finally(() => loading.value = false)
 }
 
@@ -111,10 +113,10 @@ function updateFund(id, body) {
   loading.value = true
   fundStore.updateFund({ id, body })
     .then((message) => {
-      displayAlert({ type: "success", title: "Done", text: message });
+      showToast(message);
       emit('close-form');
     })
-    .catch((message) => displayAlert({ type: "error", title: "Something went wrong", text: message }))
+    .catch((message) => showAlert({ type: "error", title: "Something went wrong", text: message }))
     .finally(() => loading.value = false)
 }
  </script>

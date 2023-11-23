@@ -1,21 +1,25 @@
 <script setup>
+import { CheckIcon } from '@heroicons/vue/24/outline';
 import AppBar from './components/layout/AppBar.vue';
 import NavBar from './components/layout/NavBar.vue';
 import swal from "sweetalert";
 import { provide } from 'vue';
+import { useToast } from "vue-toastification";
 
 const alertTitleOnType = {
-  success: "Done!",
   info: "Attention",
   error: "Something went wrong",
 };
 
-provide("alert", ({ type, text, button = false, timer = 1500 }) => swal({
+const toast = useToast();
+
+provide("showToast", (text) => toast(text, { icon: CheckIcon }));
+provide("showAlert", ({ type, text }) => swal({
   icon: type,
   title: alertTitleOnType[type],
   text,
-  button: type !== "success" ? "Dismiss" : button,
-  timer: type !== "success" ? null : timer
+  button: "Dismiss",
+  timer: null,
 }));
 
 </script>

@@ -20,12 +20,14 @@
 </template>
 
 <script setup>
+import { inject } from "vue";
 import { DocumentTextIcon } from "@heroicons/vue/24/outline";
 import { useUserStore } from '../../stores/userStore';
 import { storeToRefs } from 'pinia';
 
 const props = defineProps(["templates"]);
 const emit = defineEmits(['useTemplate']);
+const showToast = inject("showToast");
 
 const userStore = useUserStore();
 const { preferences } = storeToRefs(userStore);
@@ -41,9 +43,15 @@ async function confirmDeletion(index) {
   if (deletionIsConfirmed) removeTemplate(index)
 }
 
-async function removeTemplate(index) {
-  preferences.value.templates.splice(index, 1)
-  await userStore.updateUser({ OTP: null, updateEntries: { preferences: preferences.value } });
-}
+function removeTemplate(index) {
+  const payload = JSON.parse(JSON.stringify(preferences.value));
+  payload.templates.splice(index, 1)
+  userStore.updateUser({ OTP: null, updateEntries: { preferences: payload } })
+    .then(({ message }) => {
+      preferences.value = payload
+      showToast(message);
+    })
+    .catch((error) => console.error(error))
+  }
 
 </script>

@@ -94,7 +94,8 @@ const props = defineProps({
   },
 });
 
-const displayAlert = inject("alert");
+const showAlert = inject("showAlert");
+const showToast = inject("showToast");
 
 const authStore = useAuthStore();
 const userStore = useUserStore();
@@ -127,11 +128,11 @@ function requestOTP(email, passwordForgotten) {
   const emailShouldBeStored = passwordForgotten;
   authStore.requestOTP({ email, emailShouldBeStored })
     .then(({ message }) => {
-      displayAlert({ type: "info", text: message });
+      showAlert({ type: "info", text: message });
       OTPSent.value = true
       startCountDown()
     })
-    .catch((message) => displayAlert({ type: "error", text: message }))
+    .catch((message) => showAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 
@@ -139,10 +140,10 @@ function sign(OTP, form) {
   loading.value = true
   userStore.createUser({ OTP, body: { ...form } })
     .then(({ message }) => {
-      displayAlert({ type: "success", text: message });
+      showToast(message);
       emit('close-form');
     })
-    .catch((message) => displayAlert({ type: "error", text: message }))
+    .catch((message) => showAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 
@@ -156,10 +157,10 @@ function resetPassword({ OTP, email, password }) {
   loading.value = true
   userStore.resetPassword({ OTP, email, password })
     .then(({ message }) => {
-      displayAlert({ type: "success", text: message });
+      showToast(message);
       emit('close-form')
     })
-    .catch((message) => displayAlert({ type: "error", text: message }))
+    .catch((message) => showAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 

@@ -49,7 +49,8 @@ import Dialog from '../layout/Dialog.vue';
 
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } });
 const emit = defineEmits(['close-form']);
-const displayAlert = inject("alert");
+const showAlert = inject("showAlert");
+const showToast = inject("showToast");
 const authStore = useAuthStore();
 
 const router = useRouter();
@@ -70,9 +71,9 @@ function handleSubmit(data) {
   authStore.login(data)
     .then((message) => {
       router.replace('/dashboard');
-      displayAlert({ title: "You're in", type: "success", text: message });
+      showToast(message);
     })
-    .catch((message) => displayAlert({ title: "Couldn't authenticate you", type: "error", text: message }))
+    .catch((message) => showAlert({ title: "Couldn't authenticate you", type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 

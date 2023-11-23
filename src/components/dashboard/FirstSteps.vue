@@ -67,16 +67,17 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { ref, computed, inject } from 'vue';
 import { storeToRefs } from 'pinia';
 import { CheckIcon } from '@heroicons/vue/24/solid';
 import { useFundStore } from '../../stores/fundStore';
 import { useUserStore } from '../../stores/userStore';
 
 const emit = defineEmits(['followStep']);
+const showToast = inject("showToast");
+
 const fundStore = useFundStore();
 const userStore = useUserStore();
-
 const { defaultFund } = storeToRefs(fundStore);
 const { preferences } = storeToRefs(userStore);
 
@@ -148,7 +149,10 @@ async function dontShowAgain(stepNumber, stepStatus) {
   const payload = JSON.parse(JSON.stringify(preferences.value));
   payload.FirstStepsStatus[stepNumber] = stepStatus;
   userStore.updateUser({ OTP: null, updateEntries: { preferences: payload} })
-    .then(() => preferences.value = payload)
+    .then(({ message }) => {
+      preferences.value = payload
+      showToast(message);
+    })
     .catch((error) => console.error(error))
 }
 

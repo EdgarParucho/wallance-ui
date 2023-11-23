@@ -31,15 +31,14 @@
 import { MagnifyingGlassIcon, XMarkIcon, DocumentMagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 import { ref, computed, inject } from 'vue';
 import { storeToRefs } from "pinia";
-
 import { useUserStore } from '../../stores/userStore';
 import { useRecordStore } from '../../stores/recordStore';
-
 import QueryPanelForm from './QueryPanelForm.vue';
 
-const displayAlert = inject("alert");
-const recordStore = useRecordStore();
+const showAlert = inject("showAlert");
+const showToast = inject("showToast");
 
+const recordStore = useRecordStore();
 const userStore = useUserStore();
 const { preferences } = storeToRefs(userStore);
 
@@ -64,11 +63,10 @@ function submitQuery(filters) {
   loading.value = true;
   recordStore.getRecords({ filters })
     .then((recordsLength) => {
-      const text = recordsLength > 0 ? 'Your records were loaded.' : "Filters didn't match any record.";
-      const type = recordsLength > 0 ? 'success' : "info";
-      displayAlert({ title: "Done", type, text })
+      if (recordsLength > 0) showToast('Your records were loaded.');
+      else showAlert({ type: "info", text: "Filters didn't match any record." });
     })
-    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .catch((message) => showAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 

@@ -26,8 +26,7 @@ export const useRecordStore = defineStore('records', () => {
     setRecords: ({ data, message }) => {
       if (data.length > 0) records.value = [...data];
       requestingRecords.value = false;
-      const alertStyle = data.length > 0 ? "success" : "info";
-      return { alertStyle, message };
+      return message;
     },
     createRecord: ({ data, message }) => {
       records.value.push(data.record)

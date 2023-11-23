@@ -50,16 +50,14 @@
 import { useRouter } from 'vue-router';
 import { computed, ref, inject } from 'vue'
 import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
-
 import { useUserStore } from '../../stores/userStore';
-import { useAuthStore } from '../../stores/authStore';
 import Dialog from '../layout/Dialog.vue';
 
 const emit = defineEmits(['close-form', 'request-otp'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
-const displayAlert = inject("alert");
+const showAlert = inject("showAlert");
+const showToast = inject("showToast");
 const userStore = useUserStore();
-const authStore = useAuthStore();
 const router = useRouter()
 
 const OTP = ref('')
@@ -78,10 +76,10 @@ function onSubmit(OTP) {
   loading.value = true
   userStore.deleteUser({ OTP })
     .then(({ message }) => {
-      displayAlert({ type: "success", text: message });
+      showToast(message);
       router.replace('/');
     })
-    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .catch((message) => showAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 

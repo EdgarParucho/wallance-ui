@@ -259,7 +259,8 @@ import Dialog from '../layout/Dialog.vue';
 
 onMounted(() => setStartingData())
 
-const displayAlert = inject("alert");
+const showAlert = inject("showAlert");
+const showToast = inject("showToast");
 const emit = defineEmits(['close-form']);
 
 const props = defineProps({
@@ -327,13 +328,13 @@ function onSave(formValues) {
   const action = props.editing ? recordStore.updateRecord : recordStore.createRecord;
   const data = normalize(formValues);
   action(data)
-    .then((message) => displayAlert({ title: "Done", type: "success", text: message }))
+    .then((message) => showToast(message))
     .then(() => {
       if (props.meta.firstSteps) updateFirstStepsStatus();
       if (templateName.value !== "") saveTemplate({ formValues: data.body, name: templateName.value });
       emit('close-form')
     })
-    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .catch((message) => showAlert({ title: "Something went wrong", type: "error", text: message }))
     .finally(() => loading.value = false)
 };
 
@@ -361,7 +362,10 @@ async function saveTemplate({ formValues, name }) {
     name,
   });
   userStore.updateUser({ OTP: null, updateEntries: { preferences: payload } })
-    .then(() => preferences.value = payload)
+    .then((message) => {
+      showToast(message)
+      preferences.value = payload
+    })
     .catch((error) => console.error(error))
 }
 
@@ -382,7 +386,10 @@ async function updateFirstStepsStatus() {
   const payload = JSON.parse(JSON.stringify(preferences.value));
   payload.FirstStepsStatus[props.meta.stepIndex] = "Completed";
   userStore.updateUser({ OTP: null, updateEntries: { preferences: payload } })
-    .then(() => preferences.value = payload)
+    .then((message) => {
+      showToast(message)
+      preferences.value = payload
+    })
     .catch((error) => console.error(error))
 }
 

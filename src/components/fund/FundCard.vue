@@ -34,7 +34,7 @@ import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
 const emit = defineEmits(['edit-fund', 'confirm-deletion']);
 const props = defineProps(['fund']);
-const displayAlert = inject("alert");
+const showAlert = inject("showAlert");
 
 function amountFormatted(amount = 0) {
   const integer = Math.floor(amount);
@@ -49,15 +49,15 @@ function amountFormatted(amount = 0) {
 }
 
 function validateDeletion(fund) {
-  if (props.fund.isDefault) return displayAlert({
+  if (props.fund.isDefault) return showAlert({
     type: "info",
     title: "Can't complete the action",
-    text: 'Cannot delete the default fund.'
+    text: "The default fund can't be deleted. It helps to work the consistency and logic of your records."
   });
-  else if (props.fund.balance > 0) return displayAlert({
+  else if (props.fund.balance > 0) return showAlert({
     type: "info",
     title: "Can't complete the action",
-    text: 'The fund has a positive balance. You can move the balance to another fund, then retry this action.'
+    text: 'First, move the balance to another fund, then retry this action.'
   });
   emit('confirm-deletion', fund);
 }

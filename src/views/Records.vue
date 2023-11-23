@@ -64,12 +64,10 @@
 <script setup>
 import { ArchiveBoxIcon, TagIcon, CalendarIcon, LightBulbIcon } from '@heroicons/vue/24/outline';
 import { ref, inject, defineAsyncComponent } from 'vue'
-
 import { storeToRefs } from "pinia";
-import { useFundStore } from '../stores/fundStore';
 import { useRecordStore } from '../stores/recordStore';
-
 import QueryPanel from '../components/query/QueryPanel.vue';
+
 const Stats = defineAsyncComponent(() => import('../components/query/QueryStats.vue'));
 const TopTags = defineAsyncComponent(() => import('../components/query/QueryTagsList.vue'));
 const FundsList = defineAsyncComponent(() => import('../components/fund/FundsList.vue'));
@@ -80,17 +78,13 @@ const MonthlyBalanceChart = defineAsyncComponent(() => import('../components/que
 const TagsEquivalenceChart = defineAsyncComponent(() => import('../components/query/QueryTagsChart.vue'));
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
 
+const showAlert = inject("showAlert");
+const showToast = inject("showToast");
+
 const recordStore = useRecordStore();
 const { records } = storeToRefs(recordStore);
-
-const fundStore = useFundStore();
-const { funds } = storeToRefs(fundStore);
-
-const displayAlert = inject("alert");
-
 const loading = ref(false);
 const recordFormIsOpen = ref(false);
-
 let originalRecord = null;
 
 function editRecord(record) {
@@ -107,10 +101,10 @@ function deleteRecord(record) {
   loading.value = true;
   recordStore.deleteRecord({ id: record.id })
     .then((message) => {
-      displayAlert({ type: "success", title: "Done", text: message });
+      showToast(message);
       recordFormIsOpen.value = false;
     })
-    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .catch((message) => showAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 

@@ -1,11 +1,13 @@
 <script setup>
-import { ref, watch, computed } from 'vue';
+import { ref, watch, computed, inject } from 'vue';
 import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from 'vue-router';
 import { useUserStore } from '../../stores/userStore';
 import { useAuthStore } from '../../stores/authStore';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 import { UserIcon, ScaleIcon, MoonIcon, SunIcon } from '@heroicons/vue/24/outline';
+
+const showToast = inject("showToast");
 
 const route = useRoute();
 const router = useRouter();
@@ -25,7 +27,10 @@ function updateThemePreference(darkModeIsActive) {
   const payload = JSON.parse(JSON.stringify(preferences.value));
   payload.darkMode = darkModeIsActive;
   userStore.updateUser({ OTP: null, updateEntries: { preferences: payload }})
-    .then(() => preferences.value = payload)
+    .then((message) => {
+      showToast(message);
+      preferences.value = payload;
+    })
     .catch((error) => console.error(error))
 }
 

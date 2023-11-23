@@ -61,7 +61,8 @@ import swal from "sweetalert";
 
 const FundForm = defineAsyncComponent(() => import('../components/fund/FundForm.vue'))
 
-const displayAlert = inject("alert");
+const showAlert = inject("showAlert");
+const showToast = inject("showToast");
 const fundStore = useFundStore();
 
 const { funds } = storeToRefs(fundStore);
@@ -80,8 +81,8 @@ async function confirmDeletion(fund) {
   });
   if(!deleteIsConfirmed) return loading.value = false;
   fundStore.deleteFund({ id: fund.id })
-    .then((message) => displayAlert({ title: "Done", type: "success", text: message }))
-    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .then((message) => showToast(message))
+    .catch((message) => showAlert({ title: "Something went wrong", type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 

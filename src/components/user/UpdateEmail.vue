@@ -63,7 +63,8 @@ import Dialog from '../layout/Dialog.vue';
 
 const emit = defineEmits(['close-form'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
-const displayAlert = inject("alert");
+const showAlert = inject("showAlert");
+const showToast = inject("showToast");
 
 const userStore = useUserStore();
 const authStore = useAuthStore();
@@ -95,10 +96,10 @@ function updateEmail(OTP, email) {
   loading.value = true
   userStore.updateUser({ OTP, updateEntries: { email } })
   .then((message) => {
-    displayAlert({ title: "Done", type: "success", text: message });
+    showToast(message);
     emit('close-form');
   })
-  .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+  .catch((message) => showAlert({ type: "error", text: message }))
   .finally(() => loading.value = false)
 }
 
@@ -106,11 +107,11 @@ function requestOTP({ email }) {
   loading.value = true
   authStore.requestOTP({ email, emailShouldBeStored: false })
     .then(({ message }) => {
-      displayAlert({ type: "info", text: message });
+      showAlert({ type: "info", text: message });
       validatingEmail.value = true;
       startCountDown();
     })
-    .catch((message) => displayAlert({ title: "Couldn't sign in", type: "error", text: message }))
+    .catch((message) => showAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
 }
 

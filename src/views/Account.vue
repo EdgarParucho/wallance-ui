@@ -76,7 +76,7 @@ import UpdatePassword from '../components/user/UpdatePassword.vue';
 import DeleteAccount from '../components/user/DeleteAccount.vue';
 
 const authStore = useAuthStore();
-const displayAlert = inject("alert");
+const showAlert = inject("showAlert");
 
 const emailFormIsOpen = ref(false);
 const passwordFormIsOpen = ref(false);
@@ -95,11 +95,11 @@ async function requestOTP({ deleting = false }) {
   requestingOTP.value = true;
   authStore.requestOTP({ emailShouldBeStored: true })
     .then(({ message }) => {
-      displayAlert({ type: "info", text: message });
+      showAlert({ type: "info", text: message });
       if (deleting) deleteFormIsOpen.value = true;
       else passwordFormIsOpen.value = true;
     })
-    .catch((message) => displayAlert({ title: "Something went wrong", type: "error", text: message }))
+    .catch((message) => showAlert({ type: "error", text: message }))
     .finally(() => requestingOTP.value = false)
 }
 </script>
