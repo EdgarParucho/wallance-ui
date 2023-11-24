@@ -5,26 +5,25 @@
 <script setup>
 import { computed } from 'vue';
 import { storeToRefs } from 'pinia';
-import { Bar } from 'vue-chartjs'
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js'
+import { Bar } from 'vue-chartjs';
 import { useFundStore } from '../../stores/fundStore';
-import { useRecordStore } from '../../stores/recordStore';
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
+const props = defineProps({
+  records: {
+    type: Array,
+    required:  true,
+  }
+})
 
 const fundStore = useFundStore();
 const { funds } = storeToRefs(fundStore);
 
-const recordStore = useRecordStore();
-const { records } = storeToRefs(recordStore);
-
 const fundsNames = computed(() => funds.value.map(fund => fund.name));
-
 const fundsBalances = computed(() => {
   const totalCreditsByFund = Object.fromEntries(funds.value.map(fund => [fund.id, 0 ]));
   const totalDebitsByFund = Object.fromEntries(funds.value.map(fund => [fund.id, 0 ]));
 
-  for (const record of records.value) {
+  for (const record of props.records) {
     if (record.type === 1) totalCreditsByFund[record.fundID] += record.amount;
     else if (record.type === 2) totalDebitsByFund[record.fundID] -= record.amount;
     if (record.type === 0) {

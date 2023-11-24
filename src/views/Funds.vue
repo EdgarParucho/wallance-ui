@@ -47,53 +47,20 @@
       </div>
     </div>
 
-    <FundForm v-if="fundFormIsOpen" :form-is-open="fundFormIsOpen" @close-form="closeForm" :editing-fund="editingFund" />
+    <FundForm v-if="fundFormIsOpen" :form-is-open="fundFormIsOpen" @close-form="fundFormIsOpen = false" />
   </div>
 </template>
 
 <script setup>
 import { storeToRefs } from 'pinia';
-import { ref, defineAsyncComponent, inject } from 'vue';
+import { ref, defineAsyncComponent } from 'vue';
 import { PlusIcon } from '@heroicons/vue/24/outline';
 import { useFundStore } from '../stores/fundStore';
 import FundCard from '../components/fund/FundCard.vue';
-import swal from "sweetalert";
-
 const FundForm = defineAsyncComponent(() => import('../components/fund/FundForm.vue'))
 
-const showAlert = inject("showAlert");
-const showToast = inject("showToast");
 const fundStore = useFundStore();
-
 const { funds } = storeToRefs(fundStore);
 let fundFormIsOpen = ref(false);
-let editingFund = null;
-const loading = ref(false);
-
-async function confirmDeletion(fund) {
-  loading.value = true
-  const deleteIsConfirmed = await swal({
-    icon: "warning",
-    title: "Caution",
-    text: `Please confirm to delete "${fund.name}". The action is irreversible.`,
-    buttons: true,
-    timer: null,
-  });
-  if(!deleteIsConfirmed) return loading.value = false;
-  fundStore.deleteFund({ id: fund.id })
-    .then((message) => showToast(message))
-    .catch((message) => showAlert({ title: "Something went wrong", type: "error", text: message }))
-    .finally(() => loading.value = false)
-}
-
-function editFund(fund) {
-  editingFund = fund
-  fundFormIsOpen.value = true
-}
-
-function closeForm() {
-  editingFund = null
-  fundFormIsOpen.value = false
-}
 
 </script>

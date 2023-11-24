@@ -81,11 +81,9 @@
 import { storeToRefs } from 'pinia';
 import { computed, ref, defineAsyncComponent } from 'vue';
 import { CircleStackIcon, PlusIcon, LinkIcon, ArchiveBoxIcon, DocumentDuplicateIcon } from '@heroicons/vue/24/solid';
-
 import Logo from '../components/layout/Logo.vue';
 import Templates from '../components/dashboard/Templates.vue';
 import FundsList from '../components/fund/FundsList.vue';
-
 import { useFundStore } from '../stores/fundStore';
 import { useUserStore } from '../stores/userStore';
 
@@ -96,7 +94,6 @@ const fundStore = useFundStore();
 const userStore = useUserStore();
 
 const { funds } = storeToRefs(fundStore);
-
 const { preferences } = storeToRefs(userStore);
 const recordFormIsOpen = ref(false);
 
@@ -118,7 +115,7 @@ const links = [
     text: 'Go to records',
     icon: CircleStackIcon,
   }
-]
+];
 
 const balance = computed(() => {
   const total = funds.value.reduce((totalBalance, { balance }) => totalBalance + Number(balance), 0);

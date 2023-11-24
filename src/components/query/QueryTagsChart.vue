@@ -4,15 +4,14 @@
 
 <script setup>
 import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
 import { Doughnut } from 'vue-chartjs'
-import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement } from 'chart.js';
-import { useRecordStore } from '../../stores/recordStore';
 
-ChartJS.register(Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale, ArcElement)
-
-const recordStore = useRecordStore();
-const { records } = storeToRefs(recordStore);
+const props = defineProps({
+  tagsData: {
+    type: Array,
+    default: [],
+  },
+})
 
 const colors = [
   // violet
@@ -27,9 +26,9 @@ const colors = [
   "#d946ef",
   // indigo
   "#6366f1",
-  // // blue
+  // blue
   "#60a5fa",
-  // // sky
+  // sky
   "#38bdf8",
   // pink
   "#f472b6",
@@ -40,35 +39,14 @@ const colors = [
   "#2dd4bf",
 ];
 
-const recordsTags = computed(() => Array.from(new Set([...records.value
-  .filter(record => record.type === 2)
-  .map(record => record.tag)
-])));
-
-const debitsBalance = computed(() => records.value
-  .filter(record => record.type === 2)
-  .reduce((totalCredits, { amount }) => totalCredits + Number(amount), 0)
-);
-
-const debitsByTag = computed(() => {
-  const tagsTotal = [];
-  const debitRecords = records.value.filter(record => record.type === 2);
-  recordsTags.value.forEach(tag => {
-    const balance = debitRecords
-      .filter(record => record.tag === tag)
-      .reduce((balance, { amount }) => balance + amount, 0)
-      .toFixed();
-    const percentage = (balance / debitsBalance.value * 100).toFixed();
-    tagsTotal.push(percentage);
-  })
-  return tagsTotal;
-});
+const tagsNames = computed(() => props.tagsData.map(tag => tag.name));
+const tagsBalance = computed(() => props.tagsData.map(tag => tag.balance));
 
 const chartData = computed(() => {
   return {
-    labels: recordsTags.value,
+    labels: tagsNames.value,
     datasets: [
-      { label: " %", data: debitsByTag.value, backgroundColor: colors },
+      { label: " %", data: tagsBalance.value, backgroundColor: colors },
     ],
   }
 });
@@ -83,4 +61,5 @@ const chartOptions = computed(() => {
     }
   }
 });
+
 </script>

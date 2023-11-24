@@ -12,9 +12,9 @@
             <option class="bg-stone-700 text-white" :value="0">Assignments</option>
           </select>
         </div>
-        <span class="text-sm">Total: {{ tagsSorted.length }}</span>
+        <span class="text-sm">Total: {{ tagsData.length }}</span>
       </div>
-      <div v-for="tag, i in tagsSorted" :key="i" class="my-1 rounded-md shadow-md bg-white dark:bg-stone-800 flex justify-between items-center">
+      <div v-for="tag, i in tagsData" :key="i" class="my-1 rounded-md shadow-md bg-white dark:bg-stone-800 flex justify-between items-center">
         <dt class="flex items-center gap-4 p-3">
           <TagIcon class="w-8 mx-auto p-1.5 rounded-full shadow-md text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
           <span>{{ tag.name }}</span>
@@ -59,7 +59,7 @@ const typeBalance = computed(() => typeRecords.value
   .reduce((balance, { amount }) => balance + amount, 0)
 );
 
-const tagsSorted = computed(() => {
+const tagsData = computed(() => {
   const tagsInfo = [];
 
   for (const tag of uniqueTags.value) {
@@ -93,4 +93,5 @@ function getAmountFormatted(amount) {
   }).format(recomposed)
 }
 
+defineExpose({ tagsData });
 </script>

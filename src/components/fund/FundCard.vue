@@ -13,7 +13,7 @@
     <div class="flex align-bottom">
       <button
       class="w-1/2 py-1 hover:bg-stone-100 dark:hover:bg-stone-700 focus:bg-stone-100 dark:focus:bg-stone-700 focus:outline-none transition-colors"
-      @click="$emit('edit-fund', fund)"
+      @click="editFund(fund)"
       >
         <PencilSquareIcon class="w-4 mx-auto" aria-hidden="true" />
       </button>
@@ -25,16 +25,23 @@
         <TrashIcon class="w-4 mx-auto" aria-hidden="true" />
       </button>
     </div>
+    <FundForm v-if="fundFormIsOpen" :form-is-open="fundFormIsOpen" @close-form="closeForm" :editing-fund="editingFund" />
   </div>
 </template>
 
 <script setup>
-import { inject } from "vue";
+import { ref, inject } from "vue";
 import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { useFundStore } from "../../stores/fundStore";
+import FundForm from "./FundForm.vue";
+import swal from "sweetalert";
 
-const emit = defineEmits(['edit-fund', 'confirm-deletion']);
 const props = defineProps(['fund']);
 const showAlert = inject("showAlert");
+const showToast = inject("showToast");
+const fundStore = useFundStore();
+let fundFormIsOpen = ref(false);
+let editingFund = null;
 
 function amountFormatted(amount = 0) {
   const integer = Math.floor(amount);
@@ -59,6 +66,31 @@ function validateDeletion(fund) {
     title: "Can't complete the action",
     text: 'First, move the balance to another fund, then retry this action.'
   });
-  emit('confirm-deletion', fund);
+  confirmDeletion(fund);
 }
+
+async function confirmDeletion(fund) {
+  const deleteIsConfirmed = await swal({
+    icon: "warning",
+    title: "Caution",
+    text: `Please confirm to delete "${fund.name}". The action is irreversible.`,
+    buttons: true,
+    timer: null,
+  });
+  if(!deleteIsConfirmed) return;
+  fundStore.deleteFund({ id: fund.id })
+    .then((message) => showToast(message))
+    .catch((message) => showAlert({ type: "error", text: message }))
+}
+
+function editFund(fund) {
+  editingFund = fund
+  fundFormIsOpen.value = true
+}
+
+function closeForm() {
+  editingFund = null
+  fundFormIsOpen.value = false
+}
+
 </script>

@@ -64,26 +64,32 @@
     </form>
   </Dialog>          
 </template>
- 
+
 <script setup>
 import { ref, computed, inject } from 'vue'
 import { PlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline';
 import { useFundStore } from '../../stores/fundStore';
 import Dialog from '../layout/Dialog.vue';
 
-const props = defineProps(['form-is-open', 'editing-fund']);
+const props = defineProps({
+  formIsOpen: {
+    type: Boolean,
+    required: true,
+  },
+  editingFund: {
+    type: Object,
+    default: null,
+  },
+});
+
 const emit = defineEmits(['close-form']);
 const showAlert = inject("showAlert");
 const showToast = inject("showToast");
 
 const fundStore = useFundStore();
 
-const fund = ref({
-  name: '',
-  description: '',
-});
+const fund = ref({ name: '', description: '' });
 const loading = ref(false);
-
 const editing = props.editingFund !== null
 if (editing) {
   const { name, description } = props.editingFund;

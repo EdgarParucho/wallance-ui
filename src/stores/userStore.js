@@ -33,7 +33,6 @@ export const useUserStore = defineStore('user', () => {
           router.replace("/")
         } else {
           const feedback = error.response?.data?.message || error.response?.data || error.message || error;
-          requestingRecords.value = false;
           reject(feedback);
         }
       })
@@ -52,7 +51,6 @@ export const useUserStore = defineStore('user', () => {
         router.replace("/")
       } else {
         const feedback = error.response?.data?.message || error.response?.data || error.message || error;
-        requestingRecords.value = false;
         reject(feedback);
       }
     })
@@ -67,7 +65,6 @@ export const useUserStore = defineStore('user', () => {
         router.replace("/")
       } else {
         const feedback = error.response?.data?.message || error.response?.data || error.message || error;
-        requestingRecords.value = false;
         reject(feedback);
       }
     })

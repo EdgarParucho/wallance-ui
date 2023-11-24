@@ -62,7 +62,6 @@ export const useAuthStore = defineStore('auth', () => {
         router.replace("/")
       } else {
         const feedback = error.response?.data?.message || error.response?.data || error.message || error;
-        requestingRecords.value = false;
         reject(feedback);
       }
     })
