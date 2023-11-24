@@ -50,16 +50,13 @@ const chartData = computed(() => {
     ],
   }
 });
-const chartOptions = computed(() => {
-  return {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: { color: "#5d5d5d" }
-      }
+const chartOptions = {
+  plugins: {
+    legend: {
+      position: "bottom",
+      labels: { color: "#5d5d5d" }
     }
   }
-});
+};
 
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <Line id="monthly-balance-chart" :options="chartOptions" :data="chartData" />
+  <Line id="monthly-balance-chart" :data="chartData" />
 </template>
 
 <script setup>
@@ -87,12 +87,6 @@ const chartData = computed(() => {
         data: monthsBalance.value
       }
     ]
-  }
-});
-const chartOptions = computed(() => {
-  return {
-    responsive: true,
-    // indexAxis: 'y',
   }
 });
 </script>

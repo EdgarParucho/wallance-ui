@@ -61,6 +61,7 @@ import { useRecordStore } from '../stores/recordStore';
 import QueryPanel from '../components/query/QueryPanel.vue';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, LineElement, PointElement);
+ChartJS.defaults = { responsive: true };
 
 const Stats = defineAsyncComponent(() => import('../components/query/QueryStats.vue'));
 const QueryTagsList = defineAsyncComponent(() => import('../components/query/QueryTagsList.vue'));

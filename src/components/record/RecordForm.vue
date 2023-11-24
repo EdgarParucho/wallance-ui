@@ -326,7 +326,7 @@ const formHasErrors = computed(() => {
 function onSave(formValues) {
   loading.value = true;
   const action = props.editing ? recordStore.updateRecord : recordStore.createRecord;
-  const data = normalize(formValues);
+  const data = normalizeRecord(formValues);
   action(data)
     .then((message) => showToast(message))
     .then(() => {
@@ -338,7 +338,7 @@ function onSave(formValues) {
     .finally(() => loading.value = false)
 };
 
-function normalize({ amount, date, time, ...rest }) {
+function normalizeRecord({ amount, date, time, ...rest }) {
   const normalized = {
     amount: (!isCredit.value && form.amount > 0) ? -(amount) : amount,
     date: new Date(`${date}T${time}:01`).toISOString(),

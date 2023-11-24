@@ -9,9 +9,12 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="my-1 p-1 border border-stone-200 dark:border-stone-700 bg-stone-100 dark:bg-stone-800" v-for="record in recordRows" :key="record.id" :class="underLgBreakpoint ? 'grid' : ''">
+        <tr
+        v-for="record in recordsInRange" :key="record.id" :class="underLgBreakpoint ? 'grid' : ''"
+        class="my-1 p-1 border border-stone-200 dark:border-stone-700 bg-stone-100 dark:bg-stone-800"
+        >
           <td class="text-end h-8 xl:w-40 lg:px-2">
-            {{ getDateFormatted(record) }}
+            {{ formattedDate(record) }}
           </td>
           <td class="h-8 lg:w-36 lg:px-2">
             <div class="flex items-center justify-between">
@@ -104,7 +107,8 @@ import { ref, computed, watch, defineAsyncComponent, inject } from "vue";
 import { useFundStore } from '../../stores/fundStore';
 import { useRecordStore } from '../../stores/recordStore';
 import { storeToRefs } from "pinia";
-import { breakpointsTailwind, useBreakpoints } from '@vueuse/core';
+import { breakpointsTailwind, useBreakpoints, useDateFormat } from '@vueuse/core';
+
 const RecordForm = defineAsyncComponent(() => import('../record/RecordForm.vue'));
 
 const showAlert = inject("showAlert");
@@ -134,11 +138,10 @@ function resetForm() {
   recordFormIsOpen.value = false;
 }
 
-
 const totalPages = computed(() => Math.ceil(records.value.length / maxRows.value));
 const startIndex = computed(() => (currentPage.value * maxRows.value) - maxRows.value);
 const endIndex = computed(() => (startIndex.value + maxRows.value));
-const recordRows = computed(() => records.value.slice(startIndex.value, endIndex.value));
+const recordsInRange = computed(() => records.value.slice(startIndex.value, endIndex.value));
 
 function getRecordTypeIcon({ type }) {
   if (type === 0) return ArrowsRightLeftIcon
@@ -164,13 +167,7 @@ function getAmountFormatted({ amount }) {
   }).format(amount);
 }
 
-function getDateFormatted({ date }){
-  return new Intl.DateTimeFormat(undefined, {
-    day: "2-digit",
-    weekday: "short",
-    month: "short",
-  }).format(new Date(date)).toLocaleString()
-}
+const formattedDate = ({ date }) => useDateFormat(new Date(date), 'MMM-DD (ddd)').value;
 
 function deleteRecord(record) {
   recordStore.deleteRecord({ id: record.id })

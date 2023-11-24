@@ -51,16 +51,13 @@ const chartData = computed(() => {
     ],
   }
 });
-const chartOptions = computed(() => {
-  return {
-    responsive: true,
-    indexAxis: 'x',
-    plugins: {
-      legend: {
-        display: false
-      }
+const chartOptions = {
+  indexAxis: 'x',
+  plugins: {
+    legend: {
+      display: false
     }
   }
-});
+};
 
 </script>
