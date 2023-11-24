@@ -1,10 +1,10 @@
 import { defineStore } from 'pinia';
 import { ref, computed, watch } from 'vue';
 import { useLocalStorage } from '@vueuse/core';
-
 import { useAuthStore } from "./authStore";
 import { useFundStore } from './fundStore';
 import { Find, Create, Update, Delete } from '../services/recordAPI';
+import router from '../router';
 
 export const useRecordStore = defineStore('records', () => {
   const records = useLocalStorage('vueUseRecords', []);
@@ -52,9 +52,15 @@ export const useRecordStore = defineStore('records', () => {
       mutation(data)
     ))
     .catch((error) => {
-      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
-      requestingRecords.value = false;
-      reject(feedback);
+      if (error.response?.status === 401 && !authStore.tokenIsValid) {
+        reject("For security reasons, your session finished.")
+        authStore.logout();
+        router.replace("/")
+      } else {
+        const feedback = error.response?.data?.message || error.response?.data || error.message || error;
+        requestingRecords.value = false;
+        reject(feedback);
+      }
     })
   );
 

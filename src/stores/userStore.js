@@ -1,10 +1,10 @@
 import { watch } from 'vue';
 import { defineStore } from 'pinia'
 import { useLocalStorage } from '@vueuse/core';
-
 import { useAuthStore } from './authStore';
 import { Update, Delete, ResetPassword } from '../services/userAPI'
 import { Sign } from '../services/authAPI';
+import router from '../router';
 
 export const useUserStore = defineStore('user', () => {
   const preferences = useLocalStorage("vueUsePreferences", { templates: [], queries: [], darkMode: false, FirstStepsStatus: [], language: null });
@@ -27,8 +27,15 @@ export const useUserStore = defineStore('user', () => {
         resolve(data.message);
       })
       .catch((error) => {
-        const feedback = error.response?.data?.message || error.response?.data || error.message || error;
-        reject(feedback);
+        if (error.response?.status === 401 && !authStore.tokenIsValid) {
+          reject("For security reasons, your session finished.")
+          authStore.logout();
+          router.replace("/")
+        } else {
+          const feedback = error.response?.data?.message || error.response?.data || error.message || error;
+          requestingRecords.value = false;
+          reject(feedback);
+        }
       })
     )
   }
@@ -39,16 +46,30 @@ export const useUserStore = defineStore('user', () => {
       resolve(data);
     })
     .catch((error) => {
-      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
-      reject(feedback);
+      if (error.response?.status === 401 && !authStore.tokenIsValid) {
+        reject("For security reasons, your session finished.")
+        authStore.logout();
+        router.replace("/")
+      } else {
+        const feedback = error.response?.data?.message || error.response?.data || error.message || error;
+        requestingRecords.value = false;
+        reject(feedback);
+      }
     })
   )
 
   const resetPassword = (body) => new Promise((resolve, reject) => ResetPassword(body)
     .then(({ data }) => resolve(data))
     .catch((error) => {
-      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
-      reject(feedback);
+      if (error.response?.status === 401 && !authStore.tokenIsValid) {
+        reject("For security reasons, your session finished.")
+        authStore.logout();
+        router.replace("/")
+      } else {
+        const feedback = error.response?.data?.message || error.response?.data || error.message || error;
+        requestingRecords.value = false;
+        reject(feedback);
+      }
     })
   )
 

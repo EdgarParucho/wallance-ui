@@ -1,17 +1,25 @@
+import { computed } from "vue";
 import { defineStore } from 'pinia';
 import { RequestOTP, Login } from '../services/authAPI';
 import { useLocalStorage } from '@vueuse/core';
-
 import API from '../services/API';
 import { useFundStore } from './fundStore';
 import { useUserStore } from './userStore';
 import { useRecordStore } from './recordStore';
+import router from '../router';
 
 export const useAuthStore = defineStore('auth', () => {
   const userStore = useUserStore();
   const recordStore = useRecordStore();
   const fundStore = useFundStore();
   const auth = useLocalStorage("vueUseAuth", { token: null, exp: null });
+
+  const tokenIsValid = computed(() => {
+    const tokenHasData = (auth.value.token !== "" && auth.value.token !== null && auth.value.token !== undefined);
+    const expirationDate = new Date(auth.value.exp * 1000);
+    const tokenIsNotExpired = expirationDate > new Date();
+    return tokenHasData && tokenIsNotExpired;
+  })
 
   const mutations = {
     login: ({ data, message }) => {
@@ -48,8 +56,15 @@ export const useAuthStore = defineStore('auth', () => {
   const requestOTP = (body) => new Promise((resolve, reject) => RequestOTP({ body, token: auth.value.token })
     .then(({ data }) => resolve(data))
     .catch((error) => {
-      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
-      reject(feedback);
+      if (error.response?.status === 401 && !tokenIsValid.value) {
+        reject("For security reasons, your session finished.")
+        mutations.logout();
+        router.replace("/")
+      } else {
+        const feedback = error.response?.data?.message || error.response?.data || error.message || error;
+        requestingRecords.value = false;
+        reject(feedback);
+      }
     })
   );
 
@@ -61,5 +76,5 @@ export const useAuthStore = defineStore('auth', () => {
 
   const logout = () => mutations.logout();
 
-  return { auth, requestOTP, login, logout, refreshToken: mutations.refreshToken };
+  return { auth, tokenIsValid, requestOTP, login, logout, refreshToken: mutations.refreshToken };
 });

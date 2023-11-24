@@ -7,6 +7,7 @@ import Funds from "../views/Funds.vue";
 import Account from "../views/Account.vue";
 import NotFound from "../views/NotFound.vue";
 import { useAuthStore } from "../stores/authStore";
+import { storeToRefs } from "pinia";
 
 const routes = [
   {
@@ -47,30 +48,29 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach(async (to, from) => {
+function validateSession() {
   const authStore = useAuthStore();
-  const tokenIsBlank = (authStore.auth.token === "" || authStore.auth.token === null || authStore.auth.token === undefined);
-  const tokenExpired = new Date(authStore.auth.exp * 1000) < new Date();
-  if ((tokenIsBlank) && to.name !== 'Index') {
-    authStore.logout();
-    swal({
-      icon: "info",
-      title: "Welcome",
-      text: "Please, log in to start.",
-      timer: 3000,
-      button: false })
-    return { name: 'Index' }
-  }
-  if ((tokenExpired) && to.name !== 'Index') {
+  const { auth } = storeToRefs(authStore);
+  const tokenHasData = (auth.value.token !== "" && auth.value.token !== null && auth.value.token !== undefined);
+  const expirationDate = new Date(auth.value.exp * 1000);
+  const tokenIsNotExpired = expirationDate > new Date();
+  const tokenIsValid = tokenHasData && tokenIsNotExpired;
+
+  if (!tokenIsValid) {
     authStore.logout();
     swal({
       icon: "info",
       title: "Please log in",
-      text: "Your session finished.",
+      text: "To protect your data, your session has finished.",
       timer: 3000,
-      button: false })
-    return { name: 'Index' }
+      button: false
+    });
+    router.replace("/");
   }
+}
+
+router.beforeEach(async (to, from) => {
+  if (to.name !== 'Index') validateSession()
 });
 
 export default router;
