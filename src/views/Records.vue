@@ -7,6 +7,13 @@
     <div v-if="records.length > 0">
 
       <QueryTotals class="mt-24" :records="records" />
+      <download-excel
+      :fetch="formatToXls"
+      class="bg-stone-100 dark:bg-stone-800 cursor-pointer my-6 w-28 rounded-sm shadow-md text-sm hover:scale-105 transition-transform px-2 py-1 justify-between flex items-center mx-auto"
+      >
+      Export .xls
+      <ArrowDownIcon class="w-4" />
+      </download-excel>
       <RecordsTable />
 
       <div class="my-20">
@@ -52,13 +59,15 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent, ref } from 'vue'
+import { defineAsyncComponent, nextTick, ref } from 'vue'
 import { storeToRefs } from "pinia";
-import { ArchiveBoxIcon, TagIcon, CalendarIcon, LightBulbIcon } from '@heroicons/vue/24/outline';
+import { ArchiveBoxIcon, TagIcon, CalendarIcon, LightBulbIcon, ArrowDownOnSquareIcon, ArrowDownIcon } from '@heroicons/vue/24/outline';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, LineElement, PointElement } from 'chart.js';
 
 import { useRecordStore } from '../stores/recordStore';
 import QueryPanel from '../components/query/QueryPanel.vue';
+import { useFundStore } from '../stores/fundStore';
+import { useDateFormat } from '@vueuse/shared';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, LineElement, PointElement);
 ChartJS.defaults = { responsive: true };
@@ -72,8 +81,37 @@ const FundsChart = defineAsyncComponent(() => import('../components/query/QueryF
 const QueryYearlyChart = defineAsyncComponent(() => import('../components/query/QueryYearlyChart.vue'));
 const QueryTagsChart = defineAsyncComponent(() => import('../components/query/QueryTagsChart.vue'));
 
+const fundStore = useFundStore();
+const { funds } = storeToRefs(fundStore);
 const recordStore = useRecordStore();
 const { records } = storeToRefs(recordStore);
 const tagsList = ref(null);
 tagsList.value = ref(tagsList.tagsData)
+
+let recordsXls = [];
+const typeNames = {
+  0: "Assignment",
+  1: "Credit",
+  2: "Debit",
+};
+
+function getFundName (id) {
+  return funds.value.find(f => f.id === id).name
+}
+
+function formatToXls() {
+  recordsXls = records.value.map(({ date, type, amount, fundID, otherFundID, tag, note }) => {
+    return {
+      date: useDateFormat(date, 'YYYY-MM-DD HH:mm').value,
+      type: typeNames[type],
+      amount,
+      fund_source: getFundName(fundID),
+      fund_target: (otherFundID) ? getFundName(otherFundID) : "",
+      tag,
+      note,
+    }
+  })
+  return recordsXls;
+}
+
 </script>
