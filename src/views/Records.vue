@@ -52,16 +52,25 @@
         <h2 class="mb-2 text-2xl font-bold text-center">This year on average</h2>
         <Stats />
       </div>
-      
+
+      <div class="mt-20 space-x-2 justify-center flex">
+        <h3 class="font-bold text-2xl"><span class="text-violet-500">Planning</span> Time?</h3>
+        <router-link to="/projection" class="text-violet-500 py-1 gap-2 rounded-md flex justify-center">
+          <LinkIcon class="w-4" />
+          Check projection
+        </router-link>
+      </div>
+      <p class="text-center">For a quick calculation based on this year's records.</p>
+
     </div>
 
   </div>
 </template>
 
 <script setup>
-import { defineAsyncComponent, nextTick, ref } from 'vue'
+import { defineAsyncComponent, ref } from 'vue'
 import { storeToRefs } from "pinia";
-import { ArchiveBoxIcon, TagIcon, CalendarIcon, LightBulbIcon, ArrowDownOnSquareIcon, ArrowDownIcon } from '@heroicons/vue/24/outline';
+import { ArchiveBoxIcon, TagIcon, CalendarIcon, LightBulbIcon, LinkIcon, ArrowDownIcon } from '@heroicons/vue/24/outline';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, LineElement, PointElement } from 'chart.js';
 
 import { useRecordStore } from '../stores/recordStore';

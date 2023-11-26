@@ -1,8 +1,6 @@
 <template>
   <div>
-    <div class="xl:w-10/12 mx-auto">
-      <Line id="line-chart" :data="chartData" :options="chartOptions" />
-    </div>
+    <Line id="line-chart" :data="chartData" :options="chartOptions" />
   </div>
 </template>
 
@@ -14,7 +12,7 @@ import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Lege
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, LineElement, PointElement);
 
 const props = defineProps({
-  estimationData: {
+  chartData: {
     type: Object,
     required:  true,
   }
@@ -36,8 +34,8 @@ const colors = [
 
 const chartData = computed(() => {
   return {
-    labels: props.estimationData.dates,
-    datasets: [...props.estimationData.fundsData],
+    labels: props.chartData.dates,
+    datasets: [...props.chartData.fundsData],
   }
 });
 

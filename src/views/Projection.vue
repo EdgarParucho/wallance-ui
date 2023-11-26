@@ -1,6 +1,21 @@
 <template>
-  <div>
-    <form class="my-10 shadow-md mx-auto md:w-1/3 px-4 py-2 rounded-xl text-sm">
+  <div class="mb-8 mx-auto">
+    <h1 class="text-4xl font-bold">Projection</h1>
+    <p class="text-xl my-4">
+      Based on this year's records (until the last month), let's try to make a rough calculation for upcoming months.
+    </p>
+
+    <form class="my-20 shadow-md mx-auto md:w-1/3 px-4 py-2 rounded-xl text-sm dark:bg-stone-800">
+      <div class="text-center my-2 space-y-1">
+        <label for="estimating-months">Time projecting</label>
+        <select id="estimating-months" class="flex mx-auto rounded-sm text-center h-8 w-20 px-3 p-0 bg-transparent border-none focus:ring-stone-400 shadow-md" v-model="monthsProjecting">
+          <option class="bg-stone-800 text-white" :value="12">1 y.</option>
+          <option class="bg-stone-800 text-white" :value="24">2 y.</option>
+          <option class="bg-stone-800 text-white" :value="36">3 y.</option>
+          <option class="bg-stone-800 text-white" :value="48">4 y.</option>
+          <option class="bg-stone-800 text-white" :value="60">5 y.</option>
+        </select>
+      </div>
       <dl>
         <div class="flex items-center justify-between">
           <dt class="font-bold">Fund name</dt>
@@ -9,43 +24,45 @@
         <div v-for="fund in chartData.fundsData" :key="fund.id" class="flex items-center justify-between">
           <dd class="w-1/2">{{ fund.label }}</dd>
           <dd class="w-1/2 text-right">
-            <button class="w-28 text-right hover:bg-stone-200 px-2" type="button" @click="editCustomSample(fund.id, fund.monthlyAvg)">
-              ${{ fund.monthlyAvg }}
+            <button class="w-28 text-right hover:bg-stone-100 px-2 shadow-sm" type="button" @click="editCustomSample(fund.id, fund.monthlyAvg)">
+              ${{ fund.monthlyAvg.toFixed() }}
             </button>
           </dd>
         </div>
       </dl>
-      <button class="flex mx-auto justify-center my-2 w-24 px-2 py-1 rounded-sm shadow-sm text-sm bg-violet-500 text-white" @click="runEstimation" type="button">
-        Estimate
-      </button>
+      <small class="text-violet-400 flex justify-center">
+        You can interact with the average balance to customize it.
+      </small>
     </form>
     <Dialog :form-is-open="formIsOpen" @close-form="formIsOpen = false" :icon="CurrencyDollarIcon" title="Set an alternative average">
-      <form @submit.prevent="overrideEstimation(customAvgFundID, customMonthlyAvg)">
+      <form @submit.prevent="overrideProjection(customAvgFundID, customMonthlyAvg)">
         <input type="number" v-model.number="customMonthlyAvg" class="bg-transparent border-transparent border-b border-stone-400">
         <div class="flex items-center justify-center gap-2">
-          <button @click="overrideEstimation(customAvgFundID, customMonthlyAvg)" type="button" class="rounded-sm shadow-sm w-20 my-4 text-sm bg-violet-500 text-white hover:bg-violet-600">
+          <button @click="overrideProjection(customAvgFundID, customMonthlyAvg)" type="button" class="rounded-sm shadow-sm w-20 my-4 text-sm bg-violet-500 text-white hover:bg-violet-600">
             Done
           </button>
           <button type="button" @click="formIsOpen = false" class="rounded-sm shadow-sm w-20 my-4 text-sm">Cancel</button>
         </div>
       </form>
     </Dialog>
-    <LineChart :estimation-data="chartData" />
+    <div class="xl:w-10/12 mx-auto dark:bg-stone-800 p-2">
+      <LineChart :chart-data="chartData" />
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, inject, onMounted } from "vue";
+import { ref, inject, onMounted, watch } from "vue";
 import { CurrencyDollarIcon } from '@heroicons/vue/24/outline';
 import { storeToRefs } from "pinia";
 import { useDateFormat } from "@vueuse/shared";
 import { useNow } from "@vueuse/core";
 import { useRecordStore } from "../stores/recordStore";
 import { useFundStore } from "../stores/fundStore";
-import LineChart from "../components/estimation/LineChart.vue";
+import LineChart from "../components/projection/LineChart.vue";
 import Dialog from '../components/layout/Dialog.vue';
 
-onMounted(() => runEstimation());
+onMounted(() => runProjection());
 
 const showToast = inject("showToast");
 const showAlert = inject("showAlert");
@@ -63,7 +80,7 @@ const chartData = ref({
   fundsData: [],
 });
 
-const monthsToEstimate = ref(12);
+const monthsProjecting = ref(12);
 const sampleBalance = ref({});
 const customAvgFundID = ref("");
 const customMonthlyAvg = ref(0);
@@ -72,12 +89,12 @@ const sampleDateRange = ref({ fromDate: "", toDate: "" });
 sampleDateRange.value.fromDate = useDateFormat(useNow(), "YYYY-01-01").value;
 sampleDateRange.value.toDate = useDateFormat(useNow(), "YYYY-MM-01").value;
 
-async function runEstimation() {
+async function runProjection() {
   calculating.value = true;
   await getSampleRecords();
   if (sampleRecords.value.length === 0) return showAlert({
-    type: "caution",
-    text: "There are no records to take as sample for estimations. Come back after adding some records."
+    type: "info",
+    text: "There are no records to take as sample for the projection."
   });
   setChartData();
   calculating.value = false;
@@ -93,17 +110,17 @@ function getSampleRecords() {
 function setChartData() {
   chartData.value.dates = [];
   chartData.value.fundsData = [];
-  setEstimationDates();
+  setProjectionDates();
   setFundsData();
 }
 
-function setEstimationDates() {
+function setProjectionDates() {
   let month = Number(useDateFormat(useNow(), "MM").value);
   let year = Number(useDateFormat(useNow(), 'YYYY').value);
   let monthsEstimated = 0;
   do {
-    const estimationDate = useDateFormat(`${year}/${month}`, "MMM, YYYY").value;
-    chartData.value.dates.push(estimationDate);
+    const projectionDate = useDateFormat(`${year}/${month}`, "MMM, YYYY").value;
+    chartData.value.dates.push(projectionDate);
     if (month === 12) {
       month = 1;
       year++;
@@ -111,7 +128,7 @@ function setEstimationDates() {
       month++;
     }
     monthsEstimated++;
-  } while (monthsEstimated <= monthsToEstimate.value);
+  } while (monthsEstimated <= monthsProjecting.value);
 }
 
 function setFundsData() {
@@ -127,28 +144,28 @@ function setFundsData() {
 
   const fundsData = Object.entries(sampleBalance.value);
   fundsData.forEach(([id, balance]) => {
-    const currentMonthEstimation = balance + (balance / monthsPassed);
+    const currentMonthProjection = balance + (balance / monthsPassed);
     const fundData = {
       id,
       label: getFundName(id),
-      data: [currentMonthEstimation],
+      data: [currentMonthProjection],
       monthlyAvg: sampleBalance.value[id] / monthsPassed,
     };
-    for (let month = 1; month <= monthsToEstimate.value; month++) fundData.data.push(fundData.data[month-1] + fundData.monthlyAvg)
+    for (let month = 1; month <= monthsProjecting.value; month++) fundData.data.push(fundData.data[month-1] + fundData.monthlyAvg)
     chartData.value.fundsData.push(fundData);
   })
 }
 
-function overrideEstimation(fundID, customAvg) {
+function overrideProjection(fundID, customAvg) {
   const dataIndex = chartData.value.fundsData.findIndex(fundData => fundData.id === fundID);
-  const currentMonthEstimation = sampleBalance.value[fundID] + customAvg;
+  const currentMonthProjection = sampleBalance.value[fundID] + customAvg;
   const fundData = {
     id: fundID,
     label: getFundName(fundID),
-    data: [currentMonthEstimation],
+    data: [currentMonthProjection],
     monthlyAvg: customAvg,
   };
-  for (let month = 1; month <= monthsToEstimate.value; month++) fundData.data.push(fundData.data[month-1] + customAvg)
+  for (let month = 1; month <= monthsProjecting.value; month++) fundData.data.push(fundData.data[month-1] + customAvg)
   chartData.value.fundsData.splice(dataIndex, 1, fundData);
   formIsOpen.value = false;
   sampleBalance.value[fundID] = customAvg;
@@ -163,5 +180,7 @@ function editCustomSample(fundID, monthlyAvg) {
   customMonthlyAvg.value = monthlyAvg;
   formIsOpen.value = true;
 }
+
+watch(monthsProjecting, () => setChartData())
 
 </script>

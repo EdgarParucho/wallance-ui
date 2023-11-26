@@ -36,9 +36,9 @@ const routes = [
     component: Account,
   },
   {
-    path: "/estimations",
-    name: "Estimations",
-    component: () => import('../views/Estimations.vue')
+    path: "/projection",
+    name: "Projection",
+    component: () => import('../views/Projection.vue')
   },
   {
     path: "/:catchAll(.*)",
