@@ -6,11 +6,11 @@
           <dt class="font-bold">Fund name</dt>
           <dt class="font-bold">Avg. Balance (monthly)</dt>
         </div>
-        <div v-for="fund in estimationData.fundsData" :key="fund.id" class="flex items-center justify-between">
+        <div v-for="fund in chartData.fundsData" :key="fund.id" class="flex items-center justify-between">
           <dd class="w-1/2">{{ fund.label }}</dd>
           <dd class="w-1/2 text-right">
-            <button class="w-28 hover:bg-stone-200 px-2" type="button" @click="editCustomSample(fund.id)">
-              ${{ fundAvgBalance[fund.id].toFixed(2) }}
+            <button class="w-28 text-right hover:bg-stone-200 px-2" type="button" @click="editCustomSample(fund.id, fund.monthlyAvg)">
+              ${{ fund.monthlyAvg }}
             </button>
           </dd>
         </div>
@@ -20,126 +20,147 @@
       </button>
     </form>
     <Dialog :form-is-open="formIsOpen" @close-form="formIsOpen = false" :icon="CurrencyDollarIcon" title="Set an alternative average">
-      <form @submit.prevent="overrideEstimation(customSampleTargetFund, customSample)">
-        <input type="number" v-model.number="customSample" class="bg-transparent border-transparent border-b border-stone-400">
+      <form @submit.prevent="overrideEstimation(customAvgFundID, customMonthlyAvg)">
+        <input type="number" v-model.number="customMonthlyAvg" class="bg-transparent border-transparent border-b border-stone-400">
         <div class="flex items-center justify-center gap-2">
-          <button @click="overrideEstimation(customSampleTargetFund, customSample)" type="button" class="rounded-sm shadow-sm w-20 my-4 text-sm bg-violet-500 text-white hover:bg-violet-600">
+          <button @click="overrideEstimation(customAvgFundID, customMonthlyAvg)" type="button" class="rounded-sm shadow-sm w-20 my-4 text-sm bg-violet-500 text-white hover:bg-violet-600">
             Done
           </button>
           <button type="button" @click="formIsOpen = false" class="rounded-sm shadow-sm w-20 my-4 text-sm">Cancel</button>
         </div>
       </form>
     </Dialog>
-    <LineChart :estimation-data="estimationData" />
+    <LineChart :estimation-data="chartData" />
   </div>
 </template>
 
 <script setup>
-// Scenarios to consider:
-// Not enough sample data (< 1 month)
-
-import Dialog from '../components/layout/Dialog.vue';
-import { ref, computed, inject, onMounted } from "vue";
-import { useRecordStore } from "../stores/recordStore";
-import { useFundStore } from "../stores/fundStore";
+import { ref, inject, onMounted } from "vue";
+import { CurrencyDollarIcon } from '@heroicons/vue/24/outline';
 import { storeToRefs } from "pinia";
 import { useDateFormat } from "@vueuse/shared";
 import { useNow } from "@vueuse/core";
+import { useRecordStore } from "../stores/recordStore";
+import { useFundStore } from "../stores/fundStore";
 import LineChart from "../components/estimation/LineChart.vue";
-import { CurrencyDollarIcon } from '@heroicons/vue/24/outline';
+import Dialog from '../components/layout/Dialog.vue';
 
 onMounted(() => runEstimation());
+
 const showToast = inject("showToast");
 const showAlert = inject("showAlert");
 
-const recordStore = useRecordStore();
 const fundStore = useFundStore();
+const recordStore = useRecordStore();
 const { funds } = storeToRefs(fundStore);
 const { sampleRecords } = storeToRefs(recordStore);
 
 const formIsOpen =  ref(false);
-const customSample = ref(0);
-const customSampleTargetFund = ref({});
-
-const currentMonth = Number(new Intl.DateTimeFormat('en-US', { month: '2-digit' }).format(new Date()));
-const currentYear = Number(useDateFormat(useNow(), 'YYYY').value);
-const months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-
-const estimationInMonths = ref(12);
 const calculating = ref(false);
-const estimationData = ref({ dates: [useDateFormat(useNow(), "MMM, YYYY").value], fundsData: [] });
 
-const fundAvgBalance = ref({});
+const chartData = ref({
+  dates: [],
+  fundsData: [],
+});
 
-function setFundsAverageBalances() {
-  const monthsPassed = currentMonth - 1;
-  const fundsEntries = funds.value.map(({ id }) => [[id], 0 ]);
-  fundAvgBalance.value = Object.fromEntries(fundsEntries);
-  sampleRecords.value.forEach(({ amount, fundID, otherFundID }) => {
-    fundAvgBalance.value[fundID] += amount;
-    if (otherFundID) fundAvgBalance.value[otherFundID] -= amount;
-  })
-  fundsEntries.forEach(([id]) => fundAvgBalance.value[id] /= monthsPassed)
+const monthsToEstimate = ref(12);
+const sampleBalance = ref({});
+const customAvgFundID = ref("");
+const customMonthlyAvg = ref(0);
+
+const sampleDateRange = ref({ fromDate: "", toDate: "" });
+sampleDateRange.value.fromDate = useDateFormat(useNow(), "YYYY-01-01").value;
+sampleDateRange.value.toDate = useDateFormat(useNow(), "YYYY-MM-01").value;
+
+async function runEstimation() {
+  calculating.value = true;
+  await getSampleRecords();
+  if (sampleRecords.value.length === 0) return showAlert({
+    type: "caution",
+    text: "There are no records to take as sample for estimations. Come back after adding some records."
+  });
+  setChartData();
+  calculating.value = false;
 }
 
 function getSampleRecords() {
-  calculating.value = true;
-  const thisYearStartDate = useDateFormat(useNow(), "YYYY-01-01").value;
-  return recordStore.getRecords({ filters: { fromDate: thisYearStartDate } }, true)
-    .then((message) => {
-      showToast(message)
-    })
+  if (sampleRecords.value.length > 0) return;
+  return recordStore.getRecords({ filters: sampleDateRange.value }, true)
+    .then((message) => showToast(message))
     .catch((error) => showAlert({ type: "error", text: error }))
-    .finally(() => calculating.value = false)
 }
 
-async function runEstimation() {
-  if (sampleRecords.value.length === 0) await getSampleRecords();
-  setFundsAverageBalances()
-  calculating.value = true;
-  const estimationDates = [];
-  for (let i = 1; i <= estimationInMonths.value; i++) {
-    const nextMonth = months[currentMonth + i - 2] ?? months[currentMonth + i - 14]
-    const estimationMonth = nextMonth;
-    const estimationYear = (estimationMonth < currentMonth) ? (currentYear + 1) : currentYear;
-    const estimationDate = useDateFormat(new Date(estimationYear, estimationMonth, 1), "MMM, YYYY").value;
-    estimationDates.push(estimationDate);
-  }
+function setChartData() {
+  chartData.value.dates = [];
+  chartData.value.fundsData = [];
+  setEstimationDates();
+  setFundsData();
+}
 
-  const fundsData = [];
-  funds.value.forEach(({ id, balance }) => {
+function setEstimationDates() {
+  let month = Number(useDateFormat(useNow(), "MM").value);
+  let year = Number(useDateFormat(useNow(), 'YYYY').value);
+  let monthsEstimated = 0;
+  do {
+    const estimationDate = useDateFormat(`${year}/${month}`, "MMM, YYYY").value;
+    chartData.value.dates.push(estimationDate);
+    if (month === 12) {
+      month = 1;
+      year++;
+    } else {
+      month++;
+    }
+    monthsEstimated++;
+  } while (monthsEstimated <= monthsToEstimate.value);
+}
+
+function setFundsData() {
+  const fundsEntries = funds.value.map(({ id }) => [id, 0]);
+  const currentMonth = Number(useDateFormat(useNow(), "MM").value);
+  const monthsPassed = currentMonth - 1;
+  
+  sampleBalance.value = Object.fromEntries(fundsEntries);
+  sampleRecords.value.forEach(({ amount, fundID, otherFundID }) => {
+    sampleBalance.value[fundID] += amount;
+    if (otherFundID) sampleBalance.value[otherFundID] -= amount;
+  })
+
+  const fundsData = Object.entries(sampleBalance.value);
+  fundsData.forEach(([id, balance]) => {
+    const currentMonthEstimation = balance + (balance / monthsPassed);
     const fundData = {
       id,
       label: getFundName(id),
-      data: [balance],
+      data: [currentMonthEstimation],
+      monthlyAvg: sampleBalance.value[id] / monthsPassed,
     };
-    const fundAvg = fundAvgBalance.value[id];
-    for (let i = 1; i <= estimationInMonths.value; i++) fundData.data.push(fundData.data[i-1] + fundAvg)
-    fundsData.push(fundData)
+    for (let month = 1; month <= monthsToEstimate.value; month++) fundData.data.push(fundData.data[month-1] + fundData.monthlyAvg)
+    chartData.value.fundsData.push(fundData);
   })
-  estimationData.value.dates = estimationDates;
-  estimationData.value.fundsData = fundsData;
 }
 
-function overrideEstimation(fundID, customAmount) {
-  const dataIndex = estimationData.value.fundsData.findIndex(fundData => fundData.id === fundID)
+function overrideEstimation(fundID, customAvg) {
+  const dataIndex = chartData.value.fundsData.findIndex(fundData => fundData.id === fundID);
+  const currentMonthEstimation = sampleBalance.value[fundID] + customAvg;
   const fundData = {
     id: fundID,
-    label: estimationData.value.fundsData[dataIndex].label,
-    data: [estimationData.value.fundsData[dataIndex].data[0]],
+    label: getFundName(fundID),
+    data: [currentMonthEstimation],
+    monthlyAvg: customAvg,
   };
-  for (let i = 1; i <= estimationInMonths.value; i++) fundData.data.push(fundData.data[i-1] + customAmount)
-  estimationData.value.fundsData.splice(dataIndex, 1, fundData);
+  for (let month = 1; month <= monthsToEstimate.value; month++) fundData.data.push(fundData.data[month-1] + customAvg)
+  chartData.value.fundsData.splice(dataIndex, 1, fundData);
   formIsOpen.value = false;
-  fundAvgBalance.value[fundID] = customAmount;
+  sampleBalance.value[fundID] = customAvg;
 }
 
 function getFundName(id) {
   return funds.value.find(fund => fund.id === id).name;
 }
 
-function editCustomSample(fundID) {
-  customSampleTargetFund.value = fundID;
+function editCustomSample(fundID, monthlyAvg) {
+  customAvgFundID.value = fundID;
+  customMonthlyAvg.value = monthlyAvg;
   formIsOpen.value = true;
 }
 
