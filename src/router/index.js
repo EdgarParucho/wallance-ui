@@ -5,7 +5,6 @@ import Dashboard from "../views/Dashboard.vue";
 import Records from "../views/Records.vue";
 import Funds from "../views/Funds.vue";
 import Account from "../views/Account.vue";
-import NotFound from "../views/NotFound.vue";
 import { useAuthStore } from "../stores/authStore";
 import { storeToRefs } from "pinia";
 
@@ -37,9 +36,13 @@ const routes = [
     component: Account,
   },
   {
+    path: "/projection",
+    name: "Projection",
+    component: () => import('../views/Projection.vue')
+  },
+  {
     path: "/:catchAll(.*)",
-    name: "NotFound",
-    component: NotFound,
+    component: () => import('../views/NotFound.vue'),
   },
 ];
 

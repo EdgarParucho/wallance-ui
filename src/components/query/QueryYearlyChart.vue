@@ -25,7 +25,7 @@ const months = [
   'September',
   'October',
   'November',
-  'December'
+  'December',
 ];
 
 const monthsBalance = computed(() => {
@@ -72,21 +72,21 @@ const chartData = computed(() => {
         label: "Credits",
         backgroundColor: '#22c55e',
         borderColor: "#bbf7d0",
-        data: monthsCredits.value
+        data: monthsCredits.value,
       },
       {
         label: "Debits",
         backgroundColor: '#dc2626',
         borderColor: "#fecaca",
-        data: monthsDebits.value
+        data: monthsDebits.value,
       },
       {
         label: "Balance",
         backgroundColor: '#7c3aed',
         borderColor: "#c4b5fd",
-        data: monthsBalance.value
-      }
-    ]
+        data: monthsBalance.value,
+      },
+    ],
   }
 });
 </script>

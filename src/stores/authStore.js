@@ -42,6 +42,7 @@ export const useAuthStore = defineStore('auth', () => {
     auth.value.exp = null;
     userStore.preferences = { templates: [], queries: [], darkMode: false, FirstStepsStatus: [], language: null };
     recordStore.records = [];
+    recordStore.sampleRecords = [];
     fundStore.funds = [];
   }
 

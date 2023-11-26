@@ -8,6 +8,7 @@ import router from '../router';
 
 export const useRecordStore = defineStore('records', () => {
   const records = useLocalStorage('vueUseRecords', []);
+  const sampleRecords = useLocalStorage('vueUseSample', []);
   const authStore = useAuthStore();
   const fundStore = useFundStore();
   const requestingRecords = ref(false);
@@ -26,6 +27,10 @@ export const useRecordStore = defineStore('records', () => {
     setRecords: ({ data, message }) => {
       if (data.length > 0) records.value = [...data];
       requestingRecords.value = false;
+      return message;
+    },
+    setSample: ({ data, message }) => {
+      sampleRecords.value = [...data];
       return message;
     },
     createRecord: ({ data, message }) => {
@@ -64,13 +69,14 @@ export const useRecordStore = defineStore('records', () => {
     })
   );
 
-  const getRecords = (data = { filters: {} }) => {
+  const getRecords = (data = { filters: {} }, forSample = false) => {
     requestingRecords.value = true;
     return useService({
       service: Find,
       data: { ...data, token: authStore.auth.token },
-      mutation: mutations.setRecords,
-    })};
+      mutation: forSample ? mutations.setSample : mutations.setRecords,
+    })
+  };
 
   const createRecord = (data) => useService({
     service: Create,
@@ -95,13 +101,14 @@ export const useRecordStore = defineStore('records', () => {
   }, { immediate: true })
 
   return {
+    requestingRecords,
     records,
+    sampleRecords,
     tags,
     getRecords,
     setRecords: mutations.setRecords,
     createRecord,
     updateRecord,
     deleteRecord,
-    requestingRecords,
   };
 })
