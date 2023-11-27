@@ -16,16 +16,15 @@ const authStore = useAuthStore();
 const { preferences } = storeToRefs(userStore);
 
 const atHome = computed(() => route.fullPath === '/');
-const darkMode = computed(() => preferences.value.darkMode);
+const darkMode = ref(null);
 
-const darkModeIsActive = ref(darkMode.value);
-
+darkMode.value = preferences.value.darkMode;
 document.querySelector("html").className = darkMode.value ? "dark" : "";
 
-function updateThemePreference(darkModeIsActive) {
-  document.querySelector("html").className = darkModeIsActive ? "dark" : ""
+function updateThemePreference(darkMode) {
+  document.querySelector("html").className = darkMode ? "dark" : ""
   const payload = JSON.parse(JSON.stringify(preferences.value));
-  payload.darkMode = darkModeIsActive;
+  payload.darkMode = darkMode;
   userStore.updateUser({ OTP: null, updateEntries: { preferences: payload }})
     .then((message) => {
       showToast(message);
@@ -39,7 +38,7 @@ function logout() {
   router.replace('/')
 }
 
-watch(darkModeIsActive, (darkModeIsActive) => updateThemePreference(darkModeIsActive))
+watch(darkMode, (darkMode) => updateThemePreference(darkMode))
 
 </script>
 
@@ -53,15 +52,15 @@ watch(darkModeIsActive, (darkModeIsActive) => updateThemePreference(darkModeIsAc
       </span>
     </router-link>
 
-    <div class="flex space-x-4">
+    <div class="flex space-x-4 text-stone-400">
       <label for="toogleButton" class="flex items-center cursor-pointer space-x-2">
-        <SunIcon :class="[darkMode ? 'text-stone-400' : 'text-black', 'transition delay-75 w-5']" />
+        <SunIcon class="transition delay-75 w-5" :class="{ 'text-black': !darkMode }" />
         <div class="relative">
-          <input id="toogleButton" type="checkbox" class="hidden" v-model="darkModeIsActive">
+          <input id="toogleButton" type="checkbox" class="hidden" v-model="darkMode">
           <div class="toggle-path bg-stone-500 w-9 h-5 rounded-full shadow-inner" />
           <div class="toggle-circle absolute w-3.5 h-3.5 bg-stone-200 rounded-full shadow inset-y-0 left-0" />
         </div>
-        <MoonIcon :class="[darkMode ? 'text-white' : 'text-stone-400', 'transition delay-75 w-5']" />
+        <MoonIcon :class="[{ 'text-white': darkMode }, 'transition delay-75 w-5']" />
       </label>
 
     <Menu as="div" class="relative inline-block text-left">

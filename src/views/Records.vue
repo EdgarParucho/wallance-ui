@@ -11,8 +11,8 @@
       :fetch="formatToXls"
       class="bg-stone-100 dark:bg-stone-800 cursor-pointer my-6 w-28 rounded-sm shadow-md text-sm hover:scale-105 transition-transform px-2 py-1 justify-between flex items-center mx-auto"
       >
-      Export .xls
-      <ArrowDownIcon class="w-4" />
+        Export .xls
+        <ArrowDownIcon class="w-4" />
       </download-excel>
       <RecordsTable />
 
@@ -55,7 +55,7 @@
 
       <div class="mt-20 space-x-2 justify-center flex">
         <h3 class="font-bold text-2xl"><span class="text-violet-500">Planning</span> Time?</h3>
-        <router-link to="/projection" class="text-violet-500 py-1 gap-2 rounded-md flex justify-center">
+        <router-link to="/projection" class="text-violet-500 py-1 gap-2 rounded-md flex justify-center" @click.native="scrollToTop">
           <LinkIcon class="w-4" />
           Check projection
         </router-link>
@@ -121,6 +121,12 @@ function formatToXls() {
     }
   })
   return recordsXls;
+}
+
+function scrollToTop() {
+  setTimeout(() => {
+    window.scrollTo(0,0);
+  }, 250)
 }
 
 </script>

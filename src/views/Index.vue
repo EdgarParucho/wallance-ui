@@ -38,7 +38,7 @@
       @close-form="signFormIsOpen = false"
     />
     <div class="flex justify-center">
-      <footer class="bottom-0 absolute h-16 dark:bg-stone-800 w-11/12 lg:w-5/12 flex items-center justify-between rounded-sm p-4">
+      <footer class="absolute h-16 dark:bg-stone-800 w-11/12 lg:w-5/12 flex items-center justify-between rounded-sm p-4">
 
         <div class="grid">
           <div class="text-zinc-600 dark:text-zinc-400 sm:text-xs">
