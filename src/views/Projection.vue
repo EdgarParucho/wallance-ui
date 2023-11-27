@@ -5,7 +5,9 @@
       Based on this year's records (until the last month), let's try to make a rough calculation for upcoming months.
     </p>
 
-    <form class="my-20 shadow-md mx-auto md:w-1/3 px-4 py-2 rounded-xl text-sm dark:bg-stone-800">
+    <div v-if="calculating" class="my-20 shadow-md mx-auto md:w-1/3 px-4 py-2 rounded-xl text-sm dark:bg-stone-800 bg-stone-400 h-44 animate-pulse" />
+
+    <form v-else class="my-20 shadow-md mx-auto md:w-1/3 px-4 py-2 rounded-xl text-sm dark:bg-stone-800">
       <div class="text-center my-2 space-y-1">
         <label for="estimating-months">Time projecting</label>
         <select id="estimating-months" class="flex mx-auto rounded-sm text-center h-8 w-20 px-3 p-0 bg-transparent border-none focus:ring-stone-400 shadow-md" v-model="monthsProjecting">
@@ -61,6 +63,7 @@ import { useRecordStore } from "../stores/recordStore";
 import { useFundStore } from "../stores/fundStore";
 import LineChart from "../components/projection/LineChart.vue";
 import Dialog from '../components/layout/Dialog.vue';
+import router from "../router";
 
 onMounted(() => runProjection());
 
@@ -103,7 +106,12 @@ async function runProjection() {
 function getSampleRecords() {
   if (sampleRecords.value.length > 0) return;
   return recordStore.getRecords({ filters: sampleDateRange.value }, true)
-    .then((message) => showToast(message))
+    .then((message) => {
+      if (sampleRecords.value.length > 0) return showToast(message);
+      calculating.value = false;
+      showAlert({ type: "info", text: message });
+      router.back();
+    })
     .catch((error) => showAlert({ type: "error", text: error }))
 }
 

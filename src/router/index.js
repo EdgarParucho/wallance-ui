@@ -51,7 +51,7 @@ const router = createRouter({
   routes
 });
 
-function validateSession() {
+function validateAuth(path) {
   const authStore = useAuthStore();
   const { auth } = storeToRefs(authStore);
   const tokenHasData = (auth.value.token !== "" && auth.value.token !== null && auth.value.token !== undefined);
@@ -59,7 +59,7 @@ function validateSession() {
   const tokenIsNotExpired = expirationDate > new Date();
   const tokenIsValid = tokenHasData && tokenIsNotExpired;
 
-  if (!tokenIsValid) {
+  if (!tokenIsValid && path !== '/') {
     authStore.logout();
     swal({
       icon: "info",
@@ -69,11 +69,13 @@ function validateSession() {
       button: false
     });
     router.replace("/");
+  } else if (tokenIsValid && path === '/') {
+    router.replace("/dashboard");
   }
 }
 
 router.beforeEach(async (to, from) => {
-  if (to.name !== 'Index') validateSession()
+  validateAuth(to.path)
 });
 
 export default router;
