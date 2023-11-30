@@ -14,26 +14,23 @@
 
 <script setup>
 import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
-import { useRecordStore } from '../../stores/recordStore';
 
-const recordStore = useRecordStore();
-const { records } = storeToRefs(recordStore);
-
-const yearRecords = computed(() => {
-  const isFromCurrentYear = (date) => new Date(date).getFullYear() === new Date().getFullYear();
-  const filteredRecords = records.value.filter(({ date, type }) => isFromCurrentYear(date) && type !== 0)
-  return filteredRecords;
+const props = defineProps({
+  sampleRecords: {
+    type: Array,
+    default: [],
+  },
 });
+
 const currentMonth = Number(new Intl.DateTimeFormat('en-US', { month: '2-digit' }).format(new Date()));
 
-const yearCredits = computed(() => yearRecords.value.filter((record) => record.type === 1));
-const yearDebits = computed(() => yearRecords.value.filter((record) => record.type === 2));
+const yearCredits = computed(() => props.sampleRecords.filter((record) => record.type === 1));
+const yearDebits = computed(() => props.sampleRecords.filter((record) => record.type === 2));
 const creditsBalance = computed(() => yearCredits.value.reduce((balance, { amount }) => (balance + Number(amount)), 0));
 const debitsBalance = computed(() => yearDebits.value.reduce((balance, { amount }) => (balance + Number(amount)), 0));
 const yearBalance = computed(() => creditsBalance.value + debitsBalance.value);
-const yearSavings = computed(() => (creditsBalance.value > 0) ? (yearBalance.value / creditsBalance.value) * 100 : 0);
-const averageMonthSaving = computed(() => (yearBalance.value / (currentMonth - 1)).toFixed());
+const yearSavings = computed(() => (yearBalance.value / creditsBalance.value) * 100);
+const averageMonthSaving = computed(() => Number(yearBalance.value / (currentMonth - 1)).toFixed());
 
 const stats = computed(() => [
   { id: 1, name: 'Saved until now', value: yearSavings.value.toFixed() + '%'},

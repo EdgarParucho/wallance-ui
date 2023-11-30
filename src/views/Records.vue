@@ -22,10 +22,10 @@
         <p class="text-center">Check the tags among the results</p>
         <div class="md:flex my-10 justify-center space-x-1">
           <div class="md:w-1/2 xl:w-1/3 p-4 shadow-md rounded-md bg-white dark:bg-stone-800">
-            <QueryTagsList ref="tagsList" :records="records" />
+            <QueryTagsList ref="taglistRef" :tag-data="tagData" :type-sum="typeSum" />
           </div>
           <div class="md:w-1/2 xl:w-1/3 p-4 shadow-md rounded-md bg-white dark:bg-stone-800">
-            <QueryTagsChart :records="records" :tags-data="tagsList.tagsData" />
+            <QueryTagsChart :taglist-ref="taglistRef" :tag-names="tagNames" />
           </div>
         </div>
       </div>
@@ -35,7 +35,7 @@
           <ArchiveBoxIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
           <h2 class="mb-2 text-3xl font-bold text-center">Funds management</h2>
           <p class="text-center">Credits, debits, and balance by fund</p>
-          <FundsChart class="p-2 shadow-md" :records="records" />
+          <FundsChart class="p-2 shadow-md" :records="records" :type-sum="typeSum" />
           <FundsList :balance-on-records="true" />
         </div>
         <div class="hidden xl:inline w-full md:w-1/2 xl:w-2/3 p-10 shadow-md rounded-md bg-white dark:bg-stone-800">
@@ -45,17 +45,10 @@
           <QueryYearlyChart class="p-2 shadow-md" :records="records" />
         </div>
       </div>
-      <div class="my-20">
-        <LightBulbIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
-        <h2 class="mb-2 text-3xl font-bold text-center">A close look</h2>
-        <p class="mb-10 text-center">Some valuable data about your management</p>
-        <h2 class="mb-2 text-2xl font-bold text-center">This year on average</h2>
-        <Stats />
-      </div>
-
-      <div class="mt-20 space-x-2 justify-center flex">
-        <h3 class="font-bold text-2xl"><span class="text-violet-500">Planning</span> Time?</h3>
-        <router-link to="/projection" class="text-violet-500 py-1 gap-2 rounded-md flex justify-center" @click.native="scrollToTop">
+      <div class="mt-20 space-x-2 justify-center flex items-center">
+        <ArrowTrendingUpIcon class="w-6" />
+        <h3 class="font-bold text-2xl">Planning Time?</h3>
+        <router-link to="/projection" class="bg-violet-500 text-white py-0.5 px-1.5 font-bold gap-2 rounded-sm flex justify-center" @click.native="scrollToTop">
           <LinkIcon class="w-4" />
           Check projection
         </router-link>
@@ -70,18 +63,17 @@
 <script setup>
 import { defineAsyncComponent, ref } from 'vue'
 import { storeToRefs } from "pinia";
-import { ArchiveBoxIcon, TagIcon, CalendarIcon, LightBulbIcon, LinkIcon, ArrowDownIcon } from '@heroicons/vue/24/outline';
+import { ArchiveBoxIcon, TagIcon, CalendarIcon, LinkIcon, ArrowDownIcon, ArrowTrendingUpIcon } from '@heroicons/vue/24/outline';
 import { Chart as ChartJS, BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, LineElement, PointElement } from 'chart.js';
 
+import { useDateFormat } from '@vueuse/shared';
+import { useFundStore } from '../stores/fundStore';
 import { useRecordStore } from '../stores/recordStore';
 import QueryPanel from '../components/query/QueryPanel.vue';
-import { useFundStore } from '../stores/fundStore';
-import { useDateFormat } from '@vueuse/shared';
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcElement, LineElement, PointElement);
 ChartJS.defaults = { responsive: true };
 
-const Stats = defineAsyncComponent(() => import('../components/query/QueryStats.vue'));
 const QueryTagsList = defineAsyncComponent(() => import('../components/query/QueryTagsList.vue'));
 const FundsList = defineAsyncComponent(() => import('../components/fund/FundsList.vue'));
 const QueryTotals = defineAsyncComponent(() => import('../components/query/QueryTotals.vue'));
@@ -91,17 +83,20 @@ const QueryYearlyChart = defineAsyncComponent(() => import('../components/query/
 const QueryTagsChart = defineAsyncComponent(() => import('../components/query/QueryTagsChart.vue'));
 
 const fundStore = useFundStore();
-const { funds } = storeToRefs(fundStore);
 const recordStore = useRecordStore();
+const { funds } = storeToRefs(fundStore);
 const { records } = storeToRefs(recordStore);
-const tagsList = ref(null);
-tagsList.value = ref(tagsList.tagsData)
+const { tagData } = storeToRefs(recordStore);
+const { typeSum } = storeToRefs(recordStore);
+const { tagNames } = storeToRefs(recordStore);
+
+const taglistRef = ref(null);
 
 let recordsXls = [];
 const typeNames = {
   0: "Assignment",
   1: "Credit",
-  2: "Debit",
+  2: "Debit"
 };
 
 function getFundName (id) {

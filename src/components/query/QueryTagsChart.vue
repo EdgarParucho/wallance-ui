@@ -7,10 +7,14 @@ import { computed } from 'vue';
 import { Doughnut } from 'vue-chartjs'
 
 const props = defineProps({
-  tagsData: {
-    type: Array,
-    default: [],
+  taglistRef: {
+    type: Object,
+    default: {},
   },
+  tagNames: {
+    type: Object,
+    default: {},
+  }
 })
 
 const colors = [
@@ -39,14 +43,15 @@ const colors = [
   "#2dd4bf",
 ];
 
-const tagsNames = computed(() => props.tagsData.map(tag => tag.name));
-const tagsBalance = computed(() => props.tagsData.map(tag => tag.balance));
-
 const chartData = computed(() => {
   return {
-    labels: tagsNames.value,
+    labels: props.tagNames[props.taglistRef.type],
     datasets: [
-      { label: " %", data: tagsBalance.value, backgroundColor: colors },
+      {
+        label: " $",
+        data: props.taglistRef.tagList.map(tag => tag.tagSum),
+        backgroundColor: colors
+      },
     ],
   }
 });
@@ -54,7 +59,7 @@ const chartOptions = {
   plugins: {
     legend: {
       position: "bottom",
-      labels: { color: "#5d5d5d" }
+      labels: { color: "#777" }
     }
   }
 };

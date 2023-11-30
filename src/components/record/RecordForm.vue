@@ -274,7 +274,7 @@ const fundStore = useFundStore();
 const { funds } = storeToRefs(fundStore);
 
 const recordStore = useRecordStore();
-const { tags } = storeToRefs(recordStore);
+const { tagNames } = storeToRefs(recordStore);
 
 const userStore = useUserStore();
 const { preferences } = storeToRefs(userStore);
@@ -297,7 +297,7 @@ const focusedTagIndex = ref(0);
 
 const typeTags = computed(() => {
   const formTag = form.tag?.toLowerCase() || "";
-  const matchingTags = tags.value[form.type]
+  const matchingTags = tagNames.value[form.type]
     .filter(tag => tag.toLowerCase().includes(formTag))
     .sort();
   return matchingTags;

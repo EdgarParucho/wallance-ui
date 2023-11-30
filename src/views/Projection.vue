@@ -50,12 +50,19 @@
     <div class="xl:w-10/12 mx-auto dark:bg-stone-800 p-2">
       <LineChart :chart-data="chartData" />
     </div>
+    <div class="my-20">
+      <LightBulbIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+      <h2 class="mb-2 text-3xl font-bold text-center">A close look</h2>
+      <p class="mb-10 text-center">Some valuable data about your management</p>
+      <h2 class="mb-2 text-2xl font-bold text-center">This year on average</h2>
+      <Stats :sample-records="sampleRecords" />
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, inject, onMounted, watch } from "vue";
-import { CurrencyDollarIcon } from '@heroicons/vue/24/outline';
+import { CurrencyDollarIcon, LightBulbIcon } from '@heroicons/vue/24/outline';
 import { storeToRefs } from "pinia";
 import { useDateFormat } from "@vueuse/shared";
 import { useNow } from "@vueuse/core";
@@ -64,6 +71,7 @@ import { useFundStore } from "../stores/fundStore";
 import LineChart from "../components/projection/LineChart.vue";
 import Dialog from '../components/layout/Dialog.vue';
 import router from "../router";
+import Stats from '../components/projection/Stats.vue';
 
 onMounted(() => runProjection());
 
