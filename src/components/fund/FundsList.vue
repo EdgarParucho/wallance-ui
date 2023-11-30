@@ -6,7 +6,7 @@
         {{ fund.name }}
       </dt>
       <dd class="flex justify-end my-2 mr-3">
-        {{ balanceFormatted(fund) }}
+        {{ getFundBalance(fund) }}
       </dd>
     </div>
   </dl>
@@ -22,14 +22,23 @@ const props = defineProps({
   balanceOnRecords: {
     type: Boolean,
     default: false,
-  }
+  },
 })
 
 const fundStore = useFundStore();
 const { funds } = storeToRefs(fundStore);
 
 const recordStore = useRecordStore();
-const { records } = storeToRefs(recordStore);
+const { typeSum } = storeToRefs(recordStore);
+
+function getFundBalance({ id, balance }) {
+  if (!props.balanceOnRecords) return getBalanceFormatted(balance);
+  const fundAssignmentSum = typeSum.value[0].byFund[id] || 0;
+  const fundCreditSum = typeSum.value[1].byFund[id] || 0;
+  const fundDebitSum = typeSum.value[2].byFund[id] || 0;
+  const balanceOnRecords = fundCreditSum + fundAssignmentSum + fundDebitSum;
+  return getBalanceFormatted(balanceOnRecords)
+}
 
 function getBalanceFormatted(amount) {
   const integer = Math.floor(amount);
@@ -41,17 +50,6 @@ function getBalanceFormatted(amount) {
     style: "currency",
     currency: "USD",
   }).format(recomposed)
-}
-
-function balanceFormatted(fund) {
-  if (!props.balanceOnRecords) return getBalanceFormatted(fund.balance);
-  const balanceOnRecords = records.value
-    .filter(record => record.fundID === fund.id || record.otherFundID === fund.id)
-    .reduce((balance, { fundID, amount }) => {
-      const recordAmount = fundID === fund.id ? amount : -(amount);
-      return balance + recordAmount;
-    }, 0);
-  return getBalanceFormatted(balanceOnRecords)
 }
 
 </script>

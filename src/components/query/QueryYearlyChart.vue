@@ -3,6 +3,7 @@
 </template>
 
 <script setup>
+import { useDateFormat } from '@vueuse/shared';
 import { computed } from 'vue';
 import { Line } from 'vue-chartjs';
 
@@ -13,78 +14,36 @@ const props = defineProps({
   }
 })
 
-const months = [
-  'January',
-  'February',
-  'March',
-  'April',
-  'May',
-  'June',
-  'July',
-  'August',
-  'September',
-  'October',
-  'November',
-  'December',
+const monthsData = [
+  { balance: 0, name: 'January' },
+  { balance: 0, name: 'February' },
+  { balance: 0, name: 'March' },
+  { balance: 0, name: 'April' },
+  { balance: 0, name: 'May' },
+  { balance: 0, name: 'June' },
+  { balance: 0, name: 'July' },
+  { balance: 0, name: 'August' },
+  { balance: 0, name: 'September' },
+  { balance: 0, name: 'October' },
+  { balance: 0, name: 'November' },
+  { balance: 0, name: 'December' },
 ];
 
-const monthsBalance = computed(() => {
-  const result = [];
-  months.forEach(month => {
-    const monthMatch = (date) => new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(date)) === month;
-    const yearMatch = (date) => new Date(date).getFullYear() === new Date().getFullYear();
-    const monthRecords = props.records.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type !== 0);
-    const monthBalance = monthRecords.reduce((acc, record) => acc + record.amount, 0);
-    result.push(monthBalance);
-  });
-  return result;
-});
-
-const monthsCredits = computed(() => {
-  const result = [];
-  months.forEach(month => {
-    const monthMatch = (date) => new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(date)) === month;
-    const yearMatch = (date) => new Date(date).getFullYear() === new Date().getFullYear();
-    const monthRecords = props.records.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type === 1);
-    const monthBalance = monthRecords.reduce((acc, record) => acc + record.amount, 0);
-    result.push(monthBalance);
-  });
-  return result;
-});
-
-const monthsDebits = computed(() => {
-  const result = [];
-  months.forEach(month => {
-    const monthMatch = (date) => new Intl.DateTimeFormat('en-US', { month: 'long' }).format(new Date(date)) === month;
-    const yearMatch = (date) => new Date(date).getFullYear() === new Date().getFullYear();
-    const monthRecords = props.records.filter(({ date, type }) => monthMatch(date) && yearMatch(date) && type === 2);
-    const monthBalance = monthRecords.reduce((acc, record) => acc - record.amount, 0);
-    result.push(monthBalance);
-  });
-  return result;
-});
-
 const chartData = computed(() => {
+  monthsData.forEach((month) => month.balance = 0);
+  const sampleRecords = props.records.filter(record => record.type !== 0);
+  sampleRecords.forEach(({ date, amount }) => {
+    const recordMonth = useDateFormat(new Date(date), "MM").value;
+    monthsData[recordMonth - 1].balance += amount;
+  })  
   return {
-    labels: months,
+    labels: monthsData.map(month => month.name),
     datasets: [
-      {
-        label: "Credits",
-        backgroundColor: '#22c55e',
-        borderColor: "#bbf7d0",
-        data: monthsCredits.value,
-      },
-      {
-        label: "Debits",
-        backgroundColor: '#dc2626',
-        borderColor: "#fecaca",
-        data: monthsDebits.value,
-      },
       {
         label: "Balance",
         backgroundColor: '#7c3aed',
         borderColor: "#c4b5fd",
-        data: monthsBalance.value,
+        data: monthsData.map(month => month.balance),
       },
     ],
   }
