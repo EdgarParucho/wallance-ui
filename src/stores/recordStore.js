@@ -22,20 +22,6 @@ export const useRecordStore = defineStore('records', () => {
     1: { total: 0, byFund: {} },
     2: { total: 0, byFund: {} }
   });
-  const monthlyBalance = useLocalStorage("vueUseMonthlyBalance", {
-    "01": 0,
-    "02": 0,
-    "03": 0,
-    "04": 0,
-    "05": 0,
-    "06": 0,
-    "07": 0,
-    "08": 0,
-    "09": 0,
-    "10": 0,
-    "11": 0,
-    "12": 0
-  });
   const tagNames = useLocalStorage("vueUseTagNames", {
     0: [],
     1: [],
@@ -47,7 +33,7 @@ export const useRecordStore = defineStore('records', () => {
     const tagCounter = { 0: 0, 1: 0, 2: 0 };
 
     recordData.forEach(({ fundID, type, date, tag, amount, otherFundID }) => {
-      const tagName = tag ?? "Not tagged";
+      const tagName = tag || "Not tagged";
       const tagNotIndexed = tagIndexer[type][tagName] === undefined;
       const index = tagNotIndexed ? tagCounter[type] : tagIndexer[type][tagName];
 
@@ -58,7 +44,6 @@ export const useRecordStore = defineStore('records', () => {
       }
 
       updateSumByType({ type, fundID, amount, otherFundID });
-      updateTagMonthly(date, type, index, amount);
       tagData.value[type][index].tagSum += amount;
     });
   }
@@ -79,7 +64,6 @@ export const useRecordStore = defineStore('records', () => {
       1: { total: 0, byFund: {} },
       2: { total: 0, byFund: {} }
     };
-    monthlyBalance.value = { "01": 0, "02": 0, "03": 0, "04": 0, "05": 0, "06": 0, "07": 0, "08": 0, "09": 0, "10": 0, "11": 0, "12": 0 };
   }
 
   function insertTag(type, tagName) {
@@ -89,20 +73,21 @@ export const useRecordStore = defineStore('records', () => {
   }
 
   function updateSumByType({ type, fundID, amount, otherFundID }) {
-    if (typeSum.value[type].byFund[fundID]) typeSum.value[type].byFund[fundID] += amount;
-    else typeSum.value[type].byFund[fundID] = amount;
-    if (type === 0 && typeSum.value[type].byFund[otherFundID]) typeSum.value[type].byFund[otherFundID] -= amount;
-    else if (type === 0) typeSum.value[type].byFund[otherFundID] = -amount;
-    if (type === 0) typeSum.value[type].total -= amount;
-    else typeSum.value[type].total += amount;
-  }
-
-  function updateTagMonthly(date, type, index, amount) {
-    const month = useDateFormat(new Date(date), "MM").value;
-    tagData.value[type][index].tagMonthlySum[month] += amount;
-    if (type !== 0) monthlyBalance.value[month] += amount;
+    validateFundNamespace(fundID);
+    if (type === 0) validateFundNamespace(otherFundID);
+    if (type === 0) typeSum.value[type].byFund[otherFundID] += amount;
+    typeSum.value[type].byFund[fundID] += amount;
+    typeSum.value[type].total += amount;
   }
   
+  function validateFundNamespace(fundID) {
+    const namespaceExists = typeSum.value[0].byFund[fundID] !== undefined;
+    if (namespaceExists) return;
+    typeSum.value[0].byFund[fundID] = 0;
+    typeSum.value[1].byFund[fundID] = 0;
+    typeSum.value[2].byFund[fundID] = 0;
+  }
+
   const mutations = {
     setRecords: ({ data, message }) => {
       resetState();
@@ -115,7 +100,6 @@ export const useRecordStore = defineStore('records', () => {
       return message;
     },
     createRecord: ({ data, message }) => {
-      records.value.push(data.record)
       data.funds.forEach((fund) => fundStore.mutations.updateFund({ data: fund }));
       resetState();
       updateStore(records.value);  
@@ -192,6 +176,5 @@ export const useRecordStore = defineStore('records', () => {
     tagData,
     tagNames,
     typeSum,
-    monthlyBalance,
   };
 })

@@ -22,27 +22,33 @@ const props = defineProps({
 const fundStore = useFundStore();
 const { funds } = storeToRefs(fundStore);
 
-const fundNames = funds.value.map(fund => fund.name);
+const fundNames = computed(() => {
+  const fundNames = [];
+  Object.keys(props.typeSum[0].byFund).forEach(id => fundNames.push(funds.value.find(fund => fund.id === id).name))
+  return fundNames;
+})
 
 const chartData = computed(() => {
 
   return {
-    labels: fundNames,
+    labels: fundNames.value,
     datasets: [
     {
         label: "Credit",
         data: Object.values(props.typeSum[1].byFund),
         backgroundColor: '#69a060',
-      },
-      {
-        label: "Debit",
-        data: Object.values(props.typeSum[2].byFund),
-        backgroundColor: '#da6960',
+        borderColor: 'black',
       },
       {
         label: "Assignment",
         data: Object.values(props.typeSum[0].byFund),
         backgroundColor: '#60b0b0',
+        borderColor: 'black',
+      },
+      {
+        label: "Debit",
+        data: Object.values(props.typeSum[2].byFund),
+        backgroundColor: '#da6960',
       },
     ],
   }
@@ -52,7 +58,12 @@ const chartOptions = {
   plugins: {
     legend: {
       display: false
-    }
+    },
+  },
+  scales: {
+    y: {
+      max: props.typeSum[1].total,
+    },
   }
 };
 

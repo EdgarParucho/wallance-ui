@@ -58,7 +58,9 @@ const iconStyles = {
   0: 'text-stone-500 bg-stone-600',
 };
 
-const tagPercentage = (tagSum) => ((tagSum / props.typeSum[type.value].total) * 100).toFixed(1);
+const tagPercentage = (tagSum) => {
+  return ((tagSum / props.typeSum[type.value].total) * 100).toFixed(1)
+};
 
 function getAmountFormatted(amount) {
   const integer = Math.floor(amount);

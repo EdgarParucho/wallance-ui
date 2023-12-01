@@ -20,31 +20,30 @@
         <TagIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
         <h2 class="mb-2 text-3xl font-bold text-center">Tags Measurement</h2>
         <p class="text-center">Check the tags among the results</p>
-        <div class="md:flex my-10 justify-center space-x-1">
-          <div class="md:w-1/2 xl:w-1/3 p-4 shadow-md rounded-md bg-white dark:bg-stone-800">
+        <div class="md:flex my-10 md:justify-center gap-2">
+          <div class="md:w-1/2 xl:w-1/3 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
             <QueryTagsList ref="taglistRef" :tag-data="tagData" :type-sum="typeSum" />
           </div>
-          <div class="md:w-1/2 xl:w-1/3 p-4 shadow-md rounded-md bg-white dark:bg-stone-800">
+          <div class="md:w-1/2 xl:w-1/3 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
             <QueryTagsChart :taglist-ref="taglistRef" :tag-names="tagNames" />
           </div>
         </div>
       </div>
 
-      <div class="md:flex my-10 md:justify-center md:gap-1">
-        <div class="md:w-1/2 xl:w-1/3 p-4 shadow-md rounded-md bg-white dark:bg-stone-800">
-          <ArchiveBoxIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
-          <h2 class="mb-2 text-3xl font-bold text-center">Funds management</h2>
-          <p class="text-center">Credits, debits, and balance by fund</p>
-          <FundsChart class="p-2 shadow-md" :records="records" :type-sum="typeSum" />
-          <FundsList :balance-on-records="true" />
-        </div>
-        <div class="hidden xl:inline w-full md:w-1/2 xl:w-2/3 p-10 shadow-md rounded-md bg-white dark:bg-stone-800">
-          <CalendarIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
-          <h2 class="mb-2 text-3xl font-bold text-center">{{ new Date().getFullYear() }} Timeline</h2>
-          <p class="text-center">Your query along this year</p>
-          <QueryYearlyChart class="p-2 shadow-md" :records="records" />
+      <div class="my-20">
+        <ArchiveBoxIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
+        <h2 class="mb-2 text-3xl font-bold text-center">Funds management</h2>
+        <p class="text-center">Credits, debits, and balance by fund</p>
+        <div class="md:flex my-10 md:justify-center md:gap-2">
+          <div class="md:w-2/5 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
+            <FundsChart class="p-2 shadow-md" :records="records" :type-sum="typeSum" />
+          </div>
+          <div class="md:w-2/5 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
+            <FundsList :balance-on-records="true" />
+          </div>
         </div>
       </div>
+
       <div class="mt-20 space-x-2 justify-center flex items-center">
         <ArrowTrendingUpIcon class="w-6" />
         <h3 class="font-bold text-2xl">Planning Time?</h3>
@@ -79,7 +78,6 @@ const FundsList = defineAsyncComponent(() => import('../components/fund/FundsLis
 const QueryTotals = defineAsyncComponent(() => import('../components/query/QueryTotals.vue'));
 const RecordsTable = defineAsyncComponent(() => import('../components/query/QueryResultsTable.vue'));
 const FundsChart = defineAsyncComponent(() => import('../components/query/QueryFundsChart.vue'));
-const QueryYearlyChart = defineAsyncComponent(() => import('../components/query/QueryYearlyChart.vue'));
 const QueryTagsChart = defineAsyncComponent(() => import('../components/query/QueryTagsChart.vue'));
 
 const fundStore = useFundStore();

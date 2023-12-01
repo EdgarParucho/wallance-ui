@@ -47,8 +47,8 @@ function removeTemplate(index) {
   const payload = JSON.parse(JSON.stringify(preferences.value));
   payload.templates.splice(index, 1)
   userStore.updateUser({ OTP: null, updateEntries: { preferences: payload } })
-    .then(({ message }) => {
-      preferences.value = payload
+    .then((message) => {
+      preferences.value = payload;
       showToast(message);
     })
     .catch((error) => console.error(error))
