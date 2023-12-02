@@ -35,7 +35,7 @@ const colors = [
 const chartData = computed(() => {
   return {
     labels: props.chartData.dates,
-    datasets: [...props.chartData.fundsData],
+    datasets: props.chartData.datasets,
   }
 });
 
