@@ -31,12 +31,12 @@ const { funds } = storeToRefs(fundStore);
 const recordStore = useRecordStore();
 const { typeSum } = storeToRefs(recordStore);
 
-function getFundBalance({ id, balance }) {
+function getFundBalance({ id, balance, isDefault }) {
   if (!props.balanceOnRecords) return getBalanceFormatted(balance);
   const fundAssignmentSum = typeSum.value[0].byFund[id] || 0;
-  const fundCreditSum = typeSum.value[1].byFund[id] || 0;
+  const fundCreditSum = isDefault ? (typeSum.value[1].byFund[id] + fundAssignmentSum) : -fundAssignmentSum;
   const fundDebitSum = typeSum.value[2].byFund[id] || 0;
-  const balanceOnRecords = fundCreditSum + fundAssignmentSum + fundDebitSum;
+  const balanceOnRecords = fundCreditSum + fundDebitSum;
   return getBalanceFormatted(balanceOnRecords)
 }
 
