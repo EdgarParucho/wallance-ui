@@ -8,9 +8,23 @@
     <div v-if="calculating" class="my-20 shadow-md mx-auto md:w-1/3 px-4 py-2 rounded-xl text-sm dark:bg-stone-800 bg-stone-400 h-44 animate-pulse" />
 
     <form v-else class="my-20 shadow-md mx-auto md:w-1/3 px-4 py-2 rounded-xl text-sm dark:bg-stone-800">
-      <div class="text-center my-2 space-y-1">
-        <label for="estimating-months">Projecting for</label>
-        <select id="estimating-months" class="flex mx-auto rounded-sm text-center h-8 w-20 px-3 p-0 bg-transparent border-none focus:ring-stone-400 shadow-md" v-model="monthsProjecting">
+      <dl>
+        <div class="flex items-center justify-between">
+          <dt class="font-bold">Fund name</dt>
+          <dt class="font-bold">Avg. Balance (monthly)</dt>
+        </div>
+        <div v-for="dataset in datasets" :key="dataset.id" class="flex items-center justify-between">
+          <dd class="w-1/2">{{ dataset.label }}</dd>
+          <dd class="w-1/2 text-right">
+            <button class="w-28 text-right hover:bg-stone-100 dark:hover:bg-stone-700 px-2 shadow-sm" type="button" @click="editCustomSample(dataset.id, dataset.monthlyAvg)">
+              ${{ dataset.monthlyAvg.toFixed() }}
+            </button>
+          </dd>
+        </div>
+      </dl>
+      <div class="text-center mx-auto justify-center my-2 flex items-center">
+        <label class="w-1/2 text-xs font-bold" for="estimating-months">Projecting for</label>
+        <select id="estimating-months" class="cursor-pointer w-1/2 flex mx-auto rounded-sm text-center h-8 px-3 p-0 bg-transparent border-none focus:ring-0 focus:shadow-violet-400 shadow-md" v-model="monthsProjecting">
           <option class="bg-stone-800 text-white" :value="12">1 y.</option>
           <option class="bg-stone-800 text-white" :value="24">2 y.</option>
           <option class="bg-stone-800 text-white" :value="36">3 y.</option>
@@ -18,20 +32,6 @@
           <option class="bg-stone-800 text-white" :value="60">5 y.</option>
         </select>
       </div>
-      <dl>
-        <div class="flex items-center justify-between">
-          <dt class="font-bold">Fund name</dt>
-          <dt class="font-bold">Avg. Balance (monthly)</dt>
-        </div>
-        <div v-for="fund in datasets" :key="fund.id" class="flex items-center justify-between">
-          <dd class="w-1/2">{{ fund.label }}</dd>
-          <dd class="w-1/2 text-right">
-            <button class="w-28 text-right hover:bg-stone-100 dark:hover:bg-stone-700 px-2 shadow-sm" type="button" @click="editCustomSample(fund.id, fund.monthlyAvg)">
-              ${{ fund.monthlyAvg.toFixed() }}
-            </button>
-          </dd>
-        </div>
-      </dl>
       <small class="text-violet-400 flex justify-center my-2">
         Interact with the average balance to customize.
       </small>
@@ -52,10 +52,9 @@
     </div>
     <div class="my-20">
       <LightBulbIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
-      <h2 class="mb-2 text-3xl font-bold text-center">A close look</h2>
-      <p class="mb-10 text-center">Some valuable data about your management</p>
-      <h2 class="mb-2 text-2xl font-bold text-center">This year on average</h2>
-      <Stats :sample-records="sampleRecords" :datasets="datasets" />
+      <h2 class="mb-2 text-3xl font-bold text-center">This year's savings</h2>
+      <p class="mb-10 text-center">On average based on your records</p>
+      <Stats :datasets="datasets" />
     </div>
   </div>
 </template>
@@ -91,6 +90,7 @@ const customMonthlyAvg = ref(0);
 const sampleDateRange = ref({ fromDate: "", toDate: "" });
 sampleDateRange.value.fromDate = useDateFormat(useNow(), "YYYY-01-01").value;
 sampleDateRange.value.toDate = useDateFormat(useNow(), "YYYY-MM-01").value;
+const monthsPassed = Number(useDateFormat(sampleDateRange.value.toDate, "MM").value) - 1;
 
 const dates = ref([]);
 const datasets = ref([]);
@@ -144,12 +144,27 @@ function initializeDatasets() {
   fundProjection.value = {};
 
   for (const record of sampleRecords.value) {
+
     declareDataset(record.fundID);
-    fundProjection.value[record.fundID].sum += record.amount;
-    if (record.type === 0) {
-      declareDataset(record.otherFundID);
-      fundProjection.value[record.otherFundID].sum -= record.amount;
+
+    switch (record.type) {
+      case 1:
+        fundProjection.value[record.fundID].creditSum += record.amount;
+        fundProjection.value[record.fundID].sum += record.amount;
+        break;
+      case 2:
+        fundProjection.value[record.fundID].debitSum += record.amount;
+        fundProjection.value[record.fundID].sum += record.amount;
+        break;
+      default:
+        declareDataset(record.otherFundID);
+        fundProjection.value[record.fundID].debitSum += record.amount;
+        fundProjection.value[record.otherFundID].creditSum -= record.amount;
+        fundProjection.value[record.otherFundID].sum -= record.amount;
+        fundProjection.value[record.fundID].sum += record.amount;
+        break;
     }
+
   }
 
   for (const fundID of Object.keys(fundProjection.value)) {
@@ -157,6 +172,7 @@ function initializeDatasets() {
     addBalanceDiff(fundID);
     createFundProjection(fundID);
   }
+
 }
 
 function declareDataset(fundID) {
@@ -166,6 +182,8 @@ function declareDataset(fundID) {
       label: getFundData(fundID).name,
       data: [],
       monthlyAvg: 0,
+      creditSum: 0,
+      debitSum: 0,
       sum: 0,
     };
   }
@@ -176,7 +194,6 @@ function getFundData(id) {
 }
 
 function setMonthlyAvg(fundID) {
-  const monthsPassed = Number(useDateFormat(sampleDateRange.value.toDate, "MM").value) - 1;
   fundProjection.value[fundID].monthlyAvg = (fundProjection.value[fundID].sum) / monthsPassed;
 }
 
@@ -195,7 +212,7 @@ function insertDatasets() {
 
 function addBalanceDiff(fundID) {
   const currentBalance = getFundData(fundID).balance;
-  const diff = currentBalance - fundProjection.value[fundID].sum;
+  const diff = (currentBalance - fundProjection.value[fundID].sum);
   fundProjection.value[fundID].sum += diff;
 }
 
