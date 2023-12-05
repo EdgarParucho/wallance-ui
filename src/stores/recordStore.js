@@ -75,7 +75,7 @@ export const useRecordStore = defineStore('records', () => {
   function updateSumByType({ type, fundID, amount, otherFundID }) {
     validateFundNamespace(fundID);
     if (type === 0) validateFundNamespace(otherFundID);
-    if (type === 0) typeSum.value[type].byFund[otherFundID] += amount;
+    if (type === 0) typeSum.value[type].byFund[otherFundID] -= amount;
     typeSum.value[type].byFund[fundID] += amount;
     typeSum.value[type].total += amount;
   }

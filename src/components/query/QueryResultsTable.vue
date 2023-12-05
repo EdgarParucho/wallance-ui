@@ -16,11 +16,10 @@
           <td class="text-end h-8 xl:w-40 lg:px-2">
             {{ formattedDate(record) }}
           </td>
-          <td class="h-8 lg:w-36 lg:px-2">
-            <div class="flex items-center justify-between">
+          <td class="h-8 lg:w-48 lg:px-2">
+            <div class="flex items-center">
               <span>{{ getFundName(record.fundID) }}</span>
-              <ArrowRightCircleIcon class="w-5" v-if="record.type === 0" />
-              <span v-if="record.type === 0">{{ getFundName(record.otherFundID) }}</span>
+              <span v-if="record.type === 0">, {{ getFundName(record.otherFundID) }}</span>
             </div>
           </td>
           <td class="px-2 h-8 2xl:min-w-96">
