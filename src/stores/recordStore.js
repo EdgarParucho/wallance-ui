@@ -18,7 +18,6 @@ export const useRecordStore = defineStore('records', () => {
     2: [],
   });
   const typeSum = useLocalStorage("vueUseTypeSumByFund", {
-    0: { total: 0, byFund: {} },
     1: { total: 0, byFund: {} },
     2: { total: 0, byFund: {} }
   });
@@ -44,7 +43,7 @@ export const useRecordStore = defineStore('records', () => {
       }
 
       updateSumByType({ type, fundID, amount, otherFundID });
-      tagData.value[type][index].tagSum += amount;
+      updateTagData({ type, index, amount, date });
     });
   }
 
@@ -60,7 +59,6 @@ export const useRecordStore = defineStore('records', () => {
       2: []
     };
     typeSum.value = {
-      0: { total: 0, byFund: {} },
       1: { total: 0, byFund: {} },
       2: { total: 0, byFund: {} }
     };
@@ -74,18 +72,27 @@ export const useRecordStore = defineStore('records', () => {
 
   function updateSumByType({ type, fundID, amount, otherFundID }) {
     validateFundNamespace(fundID);
-    if (type === 0) validateFundNamespace(otherFundID);
-    if (type === 0) typeSum.value[type].byFund[otherFundID] -= amount;
-    typeSum.value[type].byFund[fundID] += amount;
-    typeSum.value[type].total += amount;
+    if (type === 0) {
+      validateFundNamespace(otherFundID);
+      typeSum.value[1].byFund[otherFundID] -= amount;
+      typeSum.value[1].byFund[fundID] += amount;
+    } else {
+      typeSum.value[type].byFund[fundID] += amount;
+      typeSum.value[type].total += amount;
+    }
   }
-  
+
   function validateFundNamespace(fundID) {
-    const namespaceExists = typeSum.value[0].byFund[fundID] !== undefined;
+    const namespaceExists = typeSum.value[1].byFund[fundID] !== undefined;
     if (namespaceExists) return;
-    typeSum.value[0].byFund[fundID] = 0;
     typeSum.value[1].byFund[fundID] = 0;
     typeSum.value[2].byFund[fundID] = 0;
+  }
+
+  function updateTagData({ type, index, amount, date }) {
+    const month = useDateFormat(new Date(date), 'MM').value;
+    tagData.value[type][index].tagSum += amount;
+    tagData.value[type][index].tagMonthlySum[month] += amount;
   }
 
   const mutations = {

@@ -24,7 +24,7 @@ const { funds } = storeToRefs(fundStore);
 
 const fundNames = computed(() => {
   const fundNames = [];
-  Object.keys(props.typeSum[0].byFund).forEach(id => fundNames.push(funds.value.find(fund => fund.id === id).name))
+  Object.keys(props.typeSum[1].byFund).forEach(id => fundNames.push(funds.value.find(fund => fund.id === id).name))
   return fundNames;
 })
 
@@ -37,12 +37,6 @@ const chartData = computed(() => {
         label: "Credit",
         data: Object.values(props.typeSum[1].byFund),
         backgroundColor: '#69a060',
-        borderColor: 'black',
-      },
-      {
-        label: "Assignment",
-        data: Object.values(props.typeSum[0].byFund),
-        backgroundColor: '#60b0b0',
         borderColor: 'black',
       },
       {
