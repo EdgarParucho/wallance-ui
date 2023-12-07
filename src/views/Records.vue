@@ -21,7 +21,7 @@
         <h2 class="mb-2 text-3xl font-bold text-center">Tags Measurement</h2>
         <p class="text-center">Check the tags among the results</p>
         <div class="md:flex my-10 md:justify-center gap-2">
-          <div class="md:w-1/2 xl:w-1/3 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
+          <div class="md:w-1/2 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
             <QueryTagsList ref="taglistRef" :tag-data="tagData" :type-sum="typeSum" />
           </div>
           <div class="md:w-1/2 xl:w-1/3 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
@@ -47,9 +47,9 @@
       <div class="mt-20 space-x-2 justify-center flex items-center">
         <ArrowTrendingUpIcon class="w-6" />
         <h3 class="font-bold text-2xl">Planning Time?</h3>
-        <router-link to="/projection" class="bg-violet-500 text-white py-0.5 px-1.5 font-bold gap-2 rounded-sm flex justify-center" @click.native="scrollToTop">
+        <router-link to="/projection" class="bg-violet-500 text-white py-0.5 px-2 font-bold rounded-sm flex gap-2" @click.native="scrollToTop">
           <LinkIcon class="w-4" />
-          Check projection
+          <span>Check projection</span>
         </router-link>
       </div>
       <p class="text-center">For a quick calculation based on this year's records.</p>
@@ -74,11 +74,11 @@ ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend, ArcEle
 ChartJS.defaults = { responsive: true };
 
 const QueryTagsList = defineAsyncComponent(() => import('../components/query/QueryTagsList.vue'));
+const QueryTagsChart = defineAsyncComponent(() => import('../components/query/QueryTagsChart.vue'));
 const FundsList = defineAsyncComponent(() => import('../components/fund/FundsList.vue'));
 const QueryTotals = defineAsyncComponent(() => import('../components/query/QueryTotals.vue'));
 const RecordsTable = defineAsyncComponent(() => import('../components/query/QueryResultsTable.vue'));
 const FundsChart = defineAsyncComponent(() => import('../components/query/QueryFundsChart.vue'));
-const QueryTagsChart = defineAsyncComponent(() => import('../components/query/QueryTagsChart.vue'));
 
 const fundStore = useFundStore();
 const recordStore = useRecordStore();
