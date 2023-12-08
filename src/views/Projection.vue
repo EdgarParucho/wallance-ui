@@ -12,9 +12,9 @@
         <LightBulbIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
         <h2 class="mb-2 text-3xl font-bold text-center">This year's savings</h2>
         <p class="mb-10 text-center">On average based on your records</p>
-        <Stats :datasets="datasets" />
+        <Stats :sample-credit="sampleCredit" :sample-debit="sampleDebit" :months-passed="monthsPassed" />
       </div>
-      <div class="my-20 xl:w-2/3 mx-auto">
+      <div class="my-20 xl:w-5/6 mx-auto">
         <TagIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
         <h2 class="mb-2 text-3xl font-bold text-center">This year on tags</h2>
         <p class="mb-10 text-center">Measuring your tags along the year</p>
@@ -99,15 +99,19 @@ const tagData = ref({});
 const formIsOpen =  ref(false);
 const calculating = ref(false);
 const monthsProjecting = ref(12);
+
+let sampleCredit = 0;
+let sampleDebit = 0;
+  
 const customAvgFundID = ref("");
 const customMonthlyAvg = ref(0);
 const currentYear = useDateFormat(useNow(), "YYYY").value;
-const currentMonth0Index = useDateFormat(useNow(), "MM").value - 1;
+const currentMonth0Index = Number(useDateFormat(useNow(), "MM").value) - 1;
 const sampleDateRange = ref({ fromDate: "", toDate: "" });
 sampleDateRange.value.fromDate = new Date(currentYear, 0, 1)
 sampleDateRange.value.toDate = new Date(currentYear, currentMonth0Index, 1);
-const monthsPassed = Number(useDateFormat(sampleDateRange.value.toDate, "MM").value) - 1;
 
+const monthsPassed = currentMonth0Index || 1;
 const dates = ref([]);
 const datasets = ref([]);
 const fundProjection = ref({});
@@ -167,10 +171,12 @@ function initializeDatasets() {
       case 1:
         fundProjection.value[record.fundID].creditSum += record.amount;
         fundProjection.value[record.fundID].sum += record.amount;
+        sampleCredit += record.amount;
         break;
       case 2:
         fundProjection.value[record.fundID].debitSum += record.amount;
         fundProjection.value[record.fundID].sum += record.amount;
+        sampleDebit += record.amount;
         break;
       default:
         declareDataset(record.otherFundID);

@@ -16,22 +16,29 @@
 import { computed } from 'vue';
 
 const props = defineProps({
-  datasets: {
-    type: Array,
-    default: [],
+  sampleCredit: {
+    type: Number,
+    required: true,
+  },
+  sampleDebit: {
+    type: Number,
+    required: true,
+  },
+  monthsPassed: {
+    type: Number,
+    required: true,
   }
 });
 
 const stats = computed(() => {
-  const annualBalance = props.datasets.reduce((balance, fundDataset) => balance + fundDataset.sum, 0).toFixed();
-  const avgMonthlySavings = props.datasets.reduce((acc, { monthlyAvg }) => acc + monthlyAvg, 0).toFixed();
-  const projectedAnnualSavings = (avgMonthlySavings * 12).toFixed();
-  const savingsPercentage = ((projectedAnnualSavings / annualBalance) * 100).toFixed();
-  
+  const sampleBalance = props.sampleCredit + props.sampleDebit;
+  const savingPercentage = ((sampleBalance / props.sampleCredit) * 100).toFixed();
+  const avgMonthlySaving = (sampleBalance / props.monthsPassed).toFixed();
+
   return [
-    { name: 'Of total income is saved', value: savingsPercentage + '%' },
-    { name: 'Saved monthly', value: '$' + avgMonthlySavings },
-    { name: 'Projected by the end of the year', value: '$' + projectedAnnualSavings },
+    { name: 'Of total income has been saved', value: savingPercentage + '%' },
+    { name: 'Is saved monthly on average', value: '$' + avgMonthlySaving },
+    { name: 'Savings projected for 12 months', value: '$' + avgMonthlySaving * 12 },
   ];
 });
 
