@@ -16,15 +16,18 @@ const props = defineProps({
   datasets: {
     type: Object,
     required:  true,
-  }
+  },
+  currentYear: {
+    type: String,
+    required: true,
+  },
 });
 
 const labels = [];
 
-let year = Number(useDateFormat(useNow(), 'YYYY').value);
 
-for (let m = 1; m <= 12; m++) labels.push(useDateFormat(`${year}/${m}`, "MMM, YYYY").value);
-  
+for (let month = 1; month <= 12; month++) labels.push(useDateFormat(`${props.currentYear}/${month}`, "MMM, YYYY").value);
+
 const chartData = computed(() => {
   return {
     labels,

@@ -18,7 +18,7 @@
         <TagIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
         <h2 class="mb-2 text-3xl font-bold text-center">This year on tags</h2>
         <p class="mb-10 text-center">Measuring your tags along the year</p>
-        <TagTimelineChart :labels="dates" :datasets="tagData" />
+        <TagTimelineChart :labels="dates" :datasets="tagData" :current-year="currentYear" />
       </div>
 
       <ArrowTrendingUpIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
@@ -83,7 +83,7 @@ import LineChart from "../components/projection/LineChart.vue";
 import Dialog from '../components/layout/Dialog.vue';
 import router from "../router";
 import Stats from '../components/projection/Stats.vue';
-import TagTimelineChart from "../components/query/TagTimelineChart.vue";
+import TagTimelineChart from "../components/projection/TagTimelineChart.vue";
 
 onMounted(() => runProjection());
 
@@ -101,9 +101,11 @@ const calculating = ref(false);
 const monthsProjecting = ref(12);
 const customAvgFundID = ref("");
 const customMonthlyAvg = ref(0);
+const currentYear = useDateFormat(useNow(), "YYYY").value;
+const currentMonth0Index = useDateFormat(useNow(), "MM").value - 1;
 const sampleDateRange = ref({ fromDate: "", toDate: "" });
-sampleDateRange.value.fromDate = useDateFormat(useNow(), "YYYY-01-01").value;
-sampleDateRange.value.toDate = useDateFormat(useNow(), "YYYY-MM-01").value;
+sampleDateRange.value.fromDate = new Date(currentYear, 0, 1)
+sampleDateRange.value.toDate = new Date(currentYear, currentMonth0Index, 1);
 const monthsPassed = Number(useDateFormat(sampleDateRange.value.toDate, "MM").value) - 1;
 
 const dates = ref([]);
