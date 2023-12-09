@@ -23,7 +23,7 @@
         </div>
       </div>
     </div>
-    <QueryPanelForm />
+    <QueryPanelForm ref="queryForm" />
   </div>
 </template>
 
@@ -52,23 +52,14 @@ const filters = ref({
 });
 
 const loading = ref(false);
+const queryForm = ref(null);
+queryForm.value = queryForm;
 
 const appliedFilters = computed(() => {
   const filtersEntries = Object.entries(filters.value);
   const validEntries = filtersEntries.filter(([key, value]) => value !== "" && value !== null);
   return Object.fromEntries(validEntries);
 });
-
-function submitQuery(filters) {
-  loading.value = true;
-  recordStore.getRecords({ filters })
-    .then((recordsLength) => {
-      if (recordsLength > 0) showToast('Your records were loaded.');
-      else showAlert({ type: "info", text: "Filters didn't match any record." });
-    })
-    .catch((message) => showAlert({ type: "error", text: message }))
-    .finally(() => loading.value = false)
-}
 
 function removePreferredQuery(queryIndex) {
   const queryDeletionConfirmed = confirm("Please confirm to remove this query from your preferences");
@@ -82,7 +73,7 @@ function removePreferredQuery(queryIndex) {
 
 function queryFromPreset(queryFilters) {
   filters.value = { ...filters.value, ...queryFilters };
-  submitQuery(appliedFilters.value);
+  queryForm.value.submitQuery(appliedFilters.value);
 }
 
 </script>

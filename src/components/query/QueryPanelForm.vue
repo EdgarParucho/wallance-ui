@@ -227,4 +227,6 @@ function savePreferredQuery(query) {
   savingQueryFormIsOpen.value = false;
 }
 
+defineExpose({ submitQuery });
+
 </script>
