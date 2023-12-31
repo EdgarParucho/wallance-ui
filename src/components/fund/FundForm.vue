@@ -104,9 +104,9 @@ function handleSubmit(body) {
   updateFund(id, body);
 }
 
-function createFund(fund) {
+function createFund(body) {
   loading.value = true
-  fundStore.createFund(fund)
+  fundStore.createFund(body)
     .then((message) => {
       showToast(message);
       emit('close-form');

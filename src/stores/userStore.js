@@ -11,17 +11,9 @@ export const useUserStore = defineStore('user', () => {
   const authStore = useAuthStore();
 
   const setPreferences = (preferencesValues) => preferences.value = preferencesValues;
-  
-  const createUser = (data) => new Promise((resolve, reject) => Sign(data)
-    .then(({ data }) => resolve(data))
-    .catch((error) => {
-      const feedback = error.response?.data?.message || error.response?.data || error.message || error;
-      reject(feedback);
-    })
-  );
-  
-  const updateUser = (data) => {
-    return new Promise((resolve, reject) => Update({ ...data, token: authStore.auth.token })
+
+  const updateUser = (payload) => {
+    return new Promise((resolve, reject) => Update(payload)
       .then(({ data }) => {
         if (data.data?.token) authStore.refreshToken(data.data);
         resolve(data.message);
@@ -39,7 +31,7 @@ export const useUserStore = defineStore('user', () => {
     )
   }
 
-  const deleteUser = (data) => new Promise((resolve, reject) => Delete({ ...data, token: authStore.auth.token })
+  const deleteUser = () => new Promise((resolve, reject) => Delete()
     .then(({ data }) => {
       authStore.logout();
       resolve(data);
@@ -76,5 +68,5 @@ export const useUserStore = defineStore('user', () => {
     }, { immediate: true }
   )
 
-  return { preferences, createUser, updateUser, deleteUser, setPreferences, resetPassword };
+  return { preferences, updateUser, deleteUser, setPreferences, resetPassword };
 });

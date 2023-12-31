@@ -32,13 +32,8 @@ import { MagnifyingGlassIcon, XMarkIcon, DocumentMagnifyingGlassIcon } from '@he
 import { ref, computed, inject } from 'vue';
 import { storeToRefs } from "pinia";
 import { useUserStore } from '../../stores/userStore';
-import { useRecordStore } from '../../stores/recordStore';
 import QueryPanelForm from './QueryPanelForm.vue';
 
-const showAlert = inject("showAlert");
-const showToast = inject("showToast");
-
-const recordStore = useRecordStore();
 const userStore = useUserStore();
 const { preferences } = storeToRefs(userStore);
 
@@ -51,7 +46,6 @@ const filters = ref({
   fundID: null,
 });
 
-const loading = ref(false);
 const queryForm = ref(null);
 queryForm.value = queryForm;
 

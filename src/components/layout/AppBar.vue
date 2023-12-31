@@ -6,6 +6,7 @@ import { useUserStore } from '../../stores/userStore';
 import { useAuthStore } from '../../stores/authStore';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
 import { UserIcon, ScaleIcon, MoonIcon, SunIcon } from '@heroicons/vue/24/outline';
+import { useAuth0 } from '@auth0/auth0-vue';
 
 const showToast = inject("showToast");
 
@@ -14,6 +15,7 @@ const router = useRouter();
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const { preferences } = storeToRefs(userStore);
+const { logout } = useAuth0();
 
 const atHome = computed(() => route.fullPath === '/');
 const darkMode = ref(null);
@@ -33,9 +35,9 @@ function updateThemePreference(darkMode) {
     .catch((error) => console.error(error))
 }
 
-function logout() {
+function onLogout() {
+  logout();
   authStore.logout()
-  router.replace('/')
 }
 
 watch(darkMode, (darkMode) => updateThemePreference(darkMode))
@@ -78,7 +80,7 @@ watch(darkMode, (darkMode) => updateThemePreference(darkMode))
             <MenuItem v-slot="{ active }">
               <button
               type="button" :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
-              @click="logout">
+              @click="onLogout">
                 Log out
               </button>
             </MenuItem>

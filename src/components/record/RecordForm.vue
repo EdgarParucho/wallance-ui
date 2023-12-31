@@ -326,12 +326,12 @@ const formHasErrors = computed(() => {
 function onSave(formValues) {
   loading.value = true;
   const action = props.editing ? recordStore.updateRecord : recordStore.createRecord;
-  const data = normalizeRecord(formValues);
-  action(data)
+  const body = normalizeRecord(formValues);
+  action(body)
     .then((message) => showToast(message))
     .then(() => {
       if (props.meta.firstSteps) updateFirstStepsStatus();
-      if (templateName.value !== "") saveTemplate({ formValues: data.body, name: templateName.value });
+      if (templateName.value !== "") saveTemplate({ formValues: body, name: templateName.value });
       emit('close-form')
     })
     .catch((message) => showAlert({ title: "Something went wrong", type: "error", text: message }))
@@ -344,7 +344,7 @@ function normalizeRecord({ amount, date, time, ...rest }) {
     date: new Date(`${date}T${time}:01`).toISOString(),
     ...rest,
   };
-  if (!props.editing) return { body: normalized };
+  if (!props.editing) return normalized;
   else removeUnaltered(normalized);
   return { id: props.preset.id, body: normalized };
 }

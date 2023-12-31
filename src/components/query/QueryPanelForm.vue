@@ -163,8 +163,8 @@ import { BookmarkIcon, CalendarIcon, MagnifyingGlassIcon } from '@heroicons/vue/
 import { ArrowUturnLeftIcon, CalendarDaysIcon } from '@heroicons/vue/24/outline';
 import { useRecordStore } from '../../stores/recordStore';
 import { useFundStore } from '../../stores/fundStore';
-import Dialog from '../layout/Dialog.vue';
 import { useUserStore } from '../../stores/userStore';
+import Dialog from '../layout/Dialog.vue';
 
 const showAlert = inject("showAlert");
 const showToast = inject("showToast");
