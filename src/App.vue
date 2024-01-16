@@ -1,10 +1,15 @@
 <script setup>
+import { provide, watch } from 'vue';
+import { storeToRefs } from 'pinia';
+import { useToast } from "vue-toastification";
 import { CheckIcon } from '@heroicons/vue/24/outline';
+import swal from "sweetalert";
 import AppBar from './components/layout/AppBar.vue';
 import NavBar from './components/layout/NavBar.vue';
-import swal from "sweetalert";
-import { provide } from 'vue';
-import { useToast } from "vue-toastification";
+import { useUserStore } from './stores/userStore';
+
+const userStore = useUserStore();
+const { activeTheme } = storeToRefs(userStore);
 
 const alertTitleOnType = {
   info: "Attention",
@@ -21,6 +26,8 @@ provide("showAlert", ({ type, text }) => swal({
   button: "Dismiss",
   timer: null,
 }));
+
+watch(activeTheme, (theme) => document.querySelector("html").className = theme, { immediate: true })
 
 </script>
 

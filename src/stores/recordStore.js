@@ -137,7 +137,7 @@ export const useRecordStore = defineStore('records', () => {
     .catch((error) => {
       if (error.response?.status === 401 && !authStore.isAuthenticated) {
         reject("For security reasons, your session finished.")
-        authStore.logout();
+        authStore.finishSession();
         router.replace("/")
       } else {
         const feedback = error.response?.data?.message || error.response?.data || error.message || error;

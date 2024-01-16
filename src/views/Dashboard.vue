@@ -2,11 +2,11 @@
   <div class="py-26 pb-8">
     <Logo class="mx-auto" size="lg" />
 
-    <FirstSteps v-if="firstStepsVisible" @follow-step="step => useFirstSteps(step)" />
-
     <section class="mt-20">
       <h2 class="text-4xl font-bold text-center mt-20">Balance</h2>
-      <p class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">Overall result of your management</p>
+      <p class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">
+        Overall result of your management
+      </p>
       <div class="mt-4 md:w-1/2 lg:w-1/3 xl:w-1/4 p-16 mx-auto rounded-xl text-center shadow-md bg-white dark:bg-stone-800">
         <h2 class="text-5xl">{{ balance }}</h2>
       </div>
@@ -34,23 +34,6 @@
       </a>
     </div>
 
-    <section v-if="preferences.templates.length > 0" class="my-20 lg:flex lg:items-center dark:shadow-black shadow-md rounded-sm py-24 px-4">
-      <div class="text-center lg:text-left mx-auto lg:w-1/3 lg:ml-20 mb-10">
-        <div class="text-center lg:text-left items-start justify-center lg:justify-between gap-2">
-          <DocumentDuplicateIcon class="mx-auto lg:mx-0 my-4 w-12 p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
-          <div>
-            <h2 class="text-4xl font-bold">Templates</h2>
-            <p class="text-lg text-stone-500 dark:text-stone-400 mb-6">Simplify. Time is priceless.</p>
-          </div>
-        </div>
-        <p>Find here a shortcut to add frequent records.</p>
-      </div>
-
-      <div class="lg:w-2/3">
-        <Templates @use-template="(template) => useTemplate(template)" :templates="preferences.templates" />
-      </div>
-    </section>
-
     <div class="grid gap-2 sm:flex items-center justify-around my-28">
 
       <div
@@ -69,7 +52,6 @@
     <RecordForm
     v-if="recordFormIsOpen"
     @close-form="resetRecordForm"
-    :meta="recordFormOptions.meta"
     :form-is-open="recordFormIsOpen"
     :preset="recordFormOptions.preset"
     />
@@ -79,28 +61,23 @@
 
 <script setup>
 import { storeToRefs } from 'pinia';
+import { useAuth0 } from '@auth0/auth0-vue';
 import { computed, ref, defineAsyncComponent } from 'vue';
 import { CircleStackIcon, PlusIcon, LinkIcon, ArchiveBoxIcon, DocumentDuplicateIcon } from '@heroicons/vue/24/solid';
-import Logo from '../components/layout/Logo.vue';
-import Templates from '../components/dashboard/Templates.vue';
-import FundsList from '../components/fund/FundsList.vue';
 import { useFundStore } from '../stores/fundStore';
-import { useUserStore } from '../stores/userStore';
+import Logo from '../components/layout/Logo.vue';
+import FundsList from '../components/fund/FundsList.vue';
 
-const FirstSteps = defineAsyncComponent(() => import('../components/dashboard/FirstSteps.vue'));
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
 
 const fundStore = useFundStore();
-const userStore = useUserStore();
-
+const { user } = useAuth0();
 const { funds } = storeToRefs(fundStore);
-const { preferences } = storeToRefs(userStore);
 const recordFormIsOpen = ref(false);
 
 let recordFormOptions = {
-  meta: {},
   preset: null,
-}
+};
 
 const links = [
   {
@@ -114,49 +91,24 @@ const links = [
     hint: 'For queries stats',
     text: 'Go to records',
     icon: CircleStackIcon,
-  }
+  },
 ];
 
 const balance = computed(() => {
   const total = funds.value.reduce((totalBalance, { balance }) => totalBalance + Number(balance), 0);
-  return amountFormatted(total)
-});
-const firstStepsVisible = computed(() => preferences.value.FirstStepsStatus.some(step => step === "Active"));
-
-function amountFormatted(amount) {
-  const integer = Math.floor(amount);
-  const fractions = amount
+  const integer = Math.floor(total);
+  const fractions = total
     .toString()
     .split('.')[1] || "0";
-  const recomposed = [integer, fractions.slice(0, 2)].join(".")
+  const recomposed = [integer, fractions.slice(0, 2)].join(".");
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "USD",
-  }).format(recomposed)
-}
-
-function useFirstSteps(step) {
-  recordFormOptions = {
-    meta: {
-      firstSteps: true,
-      stepIndex: step.id,
-    },
-    preset: step.template,
-  };
-  recordFormIsOpen.value = true;
-}
-
-function useTemplate({ fields }) {
-  recordFormOptions = {
-    meta: {},
-    preset: fields,
-  };
-  recordFormIsOpen.value = true;
-}
+  }).format(recomposed);
+});
 
 function resetRecordForm() {
   recordFormOptions = {
-    meta: {},
     preset: null,
   };
   recordFormIsOpen.value = false;

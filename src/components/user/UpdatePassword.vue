@@ -1,7 +1,12 @@
 <template>
-  <Dialog :form-is-open="formIsOpen" @close-form="$emit('close-form')" title="Updating Password" :icon="KeyIcon">
+  <Dialog
+  :form-is-open="formIsOpen"
+  @close-form="$emit('close-form')"
+  title="Updating Password"
+  :icon="KeyIcon"
+  >
     <div class="mt-12 px-8">
-      <form @submit.prevent="onSubmit(OTP, newPassword)">
+      <form @submit.prevent="onSubmit(newPassword)">
         <fieldset class="my-6">
           <input
           type="password"
@@ -14,18 +19,10 @@
           <input
           type="password"
           class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
-          placeholder="New password confirmation"
+          placeholder="Password confirmation"
           required
           v-model="reEnteredPassword"
           autocomplete="off"
-          >
-          <input
-          type="text"
-          class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
-          placeholder="Code"
-          required
-          autocomplete="off"
-          v-model="OTP"
           >
         </fieldset>
         <button
@@ -42,70 +39,39 @@
           <span v-if="loading" class="mx-auto">Processing...</span>
           <span v-else>Update Now</span>
         </button>
-        <button
-        class="flex items-center gap-1 mx-auto mb-3 px-3 py-1 text-xs hover:border-stone-500 text-stone-600 hover:scale-110 transition-all hover:text-black dark:hover:text-white"
-        @click="reSendOTP()"
-        :disabled="loading || countDown > 0"
-        type="button"
-        >
-          Request code again
-          <span v-if="countDown > 0">
-            ({{ countDown }})
-          </span>
-        </button>
       </form>
     </div>
   </Dialog>
 </template>
 
 <script setup>
-
 import { computed, ref, inject } from 'vue'
 import { useUserStore } from '../../stores/userStore';
 import { KeyIcon } from '@heroicons/vue/24/outline';
 import Dialog from '../layout/Dialog.vue';
 
-const emit = defineEmits(['close-form', 'request-otp'])
+const emit = defineEmits(['close-form'])
 const props = defineProps({ formIsOpen: { type: Boolean, required: true } })
 const showAlert = inject("showAlert");
 const showToast = inject("showToast");
-const userStore = useUserStore()
+const userStore = useUserStore();
 
-const OTP = ref("");
+const loading = ref(false);
 const newPassword = ref("");
-const reEnteredPassword = ref('')
+const reEnteredPassword = ref('');
 
-const loading = ref(false)
-const countDown = ref(0);
+const passwordMismatch = computed(() => newPassword.value !== reEnteredPassword.value);
+const someFieldIsEmpty = computed(() => newPassword.value === '' || reEnteredPassword.value === '');
 
-const passwordMismatch = computed(() => newPassword.value !== reEnteredPassword.value)
-const someFieldIsEmpty = computed(() => {
-  return OTP.value === '' || newPassword.value === '' || reEnteredPassword.value === ''
-})
-
-startCountDown();
-
-function reSendOTP() {
-  emit("request-otp");  
-  startCountDown();
-}
-function onSubmit(OTP, newPassword) {
+function onSubmit(password) {
   loading.value = true
-  userStore.updateUser({ OTP, updateEntries: { password: newPassword } })
-    .then((message) => {
+  userStore.updateUser({ password })
+    .then(({ message }) => {
       showToast(message);
-      emit('close-form')
+      emit('close-form');
     })
     .catch((message) => showAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
 }
-
-function startCountDown() {
-  countDown.value = 30;
-  const counting = setInterval(function() {
-    if (countDown.value === 0) clearInterval(counting)
-    else countDown.value -= 1
-  }, 1000);
-};
 
 </script>

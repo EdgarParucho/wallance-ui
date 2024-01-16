@@ -1,7 +1,5 @@
 import API from './API';
 
-export const Update = (payload) => API.patch("/user", payload);
-export const Delete = () => API.delete('/user');
-
-// TODO: Delegate OTP management to Auth0
-export const ResetPassword = ({ OTP, ...body }) => API.patch("/user/reset", body, { headers: { OTP } });
+export const GetUser = () => API.get("/user");
+export const UpdateUser = (payload) => API.patch("/user", payload);
+export const DeleteUser = () => API.delete('/user');
