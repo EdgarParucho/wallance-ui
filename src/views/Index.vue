@@ -1,50 +1,26 @@
 <template>
   <div class="pt-32">
     <Logo size="lg" />
-    <h1 class="text-5xl font-bold text-center mt-16">
-      Wallance
-    </h1>
+    <h1 class="text-5xl font-bold text-center mt-16">Wallance</h1>
     <p class="text-lg text-center mt-4 font-medium">
-      A bridge between your goals and your finances
+      Track your records, then fix, plan, improve accordingly.
     </p>
     <div class="mt-10 flex justify-center my-2 space-x-4">
       <button
-      class="rounded-md py-1 w-52 hover:scale-105 transition-all font-bold focus:outline-violet-500 focus:outline-1 bg-white dark:bg-stone-800 shadow-lg"
-      @click="loginFormIsOpen = true"
+      class="rounded-sm py-1 w-52 hover:scale-105 transition-all font-bold focus:outline-violet-500 focus:outline-1 bg-stone-800 text-white shadow-lg disabled:bg-stone-700 disabled:animate-pulse"
+      @click="onSubmit"
+      :disabled="loading"
       >
-        Log In
-      </button>
-      <button
-      class="rounded-md py-1 w-52 hover:scale-105 transition-all focus:outline-1 focus:outline-violet-500 font-bold bg-stone-800 dark:bg-white text-white dark:text-black"
-      @click="signFormIsOpen = true"
-      >
-        Join
+        {{ loading ? '...loading' : 'Join' }}
       </button>
     </div>
-    <div class="flex justify-center mt-10">
-      <button
-      class="flex items-center gap-1 mx-auto mb-3 px-3 py-1 text-xs hover:scale-110 transition-all hover:text-black hover:border-stone-500 text-stone-600 dark:text-stone-400 dark:hover:text-white"
-      @click="resetPassword"
-      >
-        <KeyIcon class="w-4" />
-        Recover my password
-      </button>
-    </div>
-    <Login v-show="loginFormIsOpen" :form-is-open="loginFormIsOpen" @close-form="loginFormIsOpen = false" />
-    <Sign
-      v-if="signFormIsOpen"
-      :form-is-open="signFormIsOpen"
-      :password-forgotten="passwordForgotten"
-      @close-form="signFormIsOpen = false"
-    />
     <div class="flex justify-center">
       <footer class="absolute h-16 dark:bg-stone-800 w-11/12 lg:w-5/12 flex items-center justify-between rounded-sm p-4">
-
         <div class="grid">
           <div class="text-zinc-600 dark:text-zinc-400 sm:text-xs">
             <h1 class="tracking-tight">
               Made by
-              <span class="text-zinc-900 dark:text-zinc-100 sign text-xl">Edgar Parucho</span>
+              <span class="text-zinc-900 dark:text-zinc-100 signature">Edgar Parucho</span>
             </h1>
             <a href="https://edgarparucho.github.io/" target="_blank" class="text-zinc-900 dark:text-zinc-100 underline flex gap-1">
               <LinkIcon class="w-4" />
@@ -52,7 +28,6 @@
             </a>
           </div>
         </div>
-
         <div class="flex items-center justify-center space-x-2">
           <a
           v-for="link, k in links" :key="k"
@@ -70,37 +45,84 @@
 </template>
 
 <script setup>
-import { KeyIcon, LinkIcon } from '@heroicons/vue/24/outline';
-import Login from '../components/auth/Login.vue';
+import { ref, inject, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuth0 } from '@auth0/auth0-vue';
+import { LinkIcon } from '@heroicons/vue/24/outline';
+import { useAuthStore } from '../stores/authStore';
+import { useUserStore } from '../stores/userStore';
 import Logo from '../components/layout/Logo.vue';
-import Sign from '../components/auth/Sign.vue';
-import { ref, watch } from 'vue';
+import API from '../services/API';
 
-const signFormIsOpen = ref(false);
-const loginFormIsOpen = ref(false);
-const passwordForgotten = ref(false);
+const showAlert = inject("showAlert");
+const showToast = inject("showToast");
+
+const router = useRouter();
+const authStore = useAuthStore();
+const userStore = useUserStore();
+const { user, isAuthenticated, loginWithRedirect, getAccessTokenSilently } = useAuth0();
+
+const loading = ref(false);
 
 const links = [
-  { URL: 'https://www.linkedin.com/in/edgarparucho/', title: "Linkedin", icon: "https://img.icons8.com/ios-filled/50/linkedin-circled--v1.png" },
-  { URL: 'mailto:parucho.edgar@outlook.es', title: "Email", icon: "https://img.icons8.com/ios-filled/50/circled-envelope.png" },
-  { URL: 'https://www.github.com/EdgarParucho', title: "GitHub", icon: "https://img.icons8.com/ios-filled/50/github--v1.png",  }
-]        
-        
- function resetPassword() {
-  passwordForgotten.value = true;
-  signFormIsOpen.value = true;
+  {
+    URL: 'https://www.linkedin.com/in/edgarparucho/',
+    title: "Linkedin",
+    icon: "https://img.icons8.com/ios-filled/50/linkedin-circled--v1.png",
+  },
+  {
+    URL: 'mailto:parucho.edgar@outlook.es',
+    title: "Email",
+    icon: "https://img.icons8.com/ios-filled/50/circled-envelope.png",
+  },
+  {
+    URL: 'https://www.github.com/EdgarParucho',
+    title: "GitHub",
+    icon: "https://img.icons8.com/ios-filled/50/github--v1.png",
+  },
+];
+
+function onSubmit() {
+  loginWithRedirect();
 }
 
-watch(() => signFormIsOpen.value,
-(signFormIsOpen) => {
-  if (!signFormIsOpen) passwordForgotten.value = false;
-});
+async function getUserData(data) {
+  loading.value = true;
+  const accessToken = await getAccessTokenSilently({
+    authorizationParams: {
+      audience: import.meta.env.VITE_AUTH0_AUDIENCE,
+      scope: import.meta.env.VITE_AUTH0_SCOPE,
+    }
+  });
+  API.defaults.headers.common['Authorization'] = "Bearer " + accessToken;
+  authStore.login(data)
+    .then((message) => {
+      authStore.accessToken = accessToken;
+      userStore.setActiveTheme(user.value.theme);
+      router.replace('/dashboard');
+      showToast(message);
+    })
+    .catch((message) => showAlert({
+      title: "Couldn't authenticate you",
+      type: "error", text: message
+    }))
+    .finally(() => loading.value = false)
+}
+
+watch(() => isAuthenticated.value, (isAuth) => {
+  if (isAuth) {
+    if (!user.value.email_verified) showAlert({
+      type: "info",
+      text: "Please use the verification link sent to the provided email so you can keep your access.",
+    });
+    getUserData({ email: user.value.email });
+}
+}, { immediate: true })
 
 </script>
 
 <style scoped>
-.sign {
-  /* font-family: 'Parisienne', cursive; */
+.signature {
   font-family: 'Sriracha', cursive;
 }
 </style>

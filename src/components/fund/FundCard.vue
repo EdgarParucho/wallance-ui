@@ -78,7 +78,7 @@ async function confirmDeletion(fund) {
     timer: null,
   });
   if(!deleteIsConfirmed) return;
-  fundStore.deleteFund({ id: fund.id })
+  fundStore.deleteFund(fund.id)
     .then((message) => showToast(message))
     .catch((message) => showAlert({ type: "error", text: message }))
 }

@@ -1,5 +1,5 @@
 import API from './API';
 
-export const Create = ({ token, ...body }) => API.post('/funds', body, { headers: { Authorization: `bearer ${token}` } });
-export const Update = ({ id, body, token  }) => API.patch(`/funds/${id}`, body, { headers: { Authorization: `bearer ${token}` } });
-export const Delete = ({ id, token }) => API.delete(`/funds/${id}`, { headers: { Authorization: `bearer ${token}` } });
+export const Create = (payload) => API.post('/funds', payload);
+export const Update = ({ id, body }) => API.patch(`/funds/${id}`, body);
+export const Delete = (payload) => API.delete(`/funds/${payload}`);

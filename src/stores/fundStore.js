@@ -13,8 +13,8 @@ export const useFundStore = defineStore('fund', () => {
   const authStore = useAuthStore();
 
   const mutations = {
-    setFunds: (data) => {
-      funds.value = [...data]
+    setFunds: (payload) => {
+      funds.value = [...payload]
       return
     },
     createFund: ({ data, message }) => {
@@ -34,14 +34,14 @@ export const useFundStore = defineStore('fund', () => {
     }
   };
 
-  const useService = ({ service, data, mutation }) => new Promise((resolve, reject) => service(data)
+  const useService = ({ service, payload, mutation }) => new Promise((resolve, reject) => service(payload)
     .then(({ data }) => resolve(
       mutation(data)
     ))
     .catch((error) => {
-      if (error.response?.status === 401 && !authStore.tokenIsValid) {
+      if (error.response?.status === 401 && !authStore.isAuthenticated) {
         reject("For security reasons, your session finished.")
-        authStore.logout();
+        authStore.finishSession();
         router.replace("/")
       } else {
         const feedback = error.response?.data?.message || error.response?.data || error.message || error;
@@ -50,21 +50,21 @@ export const useFundStore = defineStore('fund', () => {
     })
   );
 
-  const createFund = (data) => useService({
+  const createFund = (payload) => useService({
     service: Create,
-    data: { ...data, token: authStore.auth.token },
+    payload,
     mutation: mutations.createFund
   });
 
-  const updateFund = (data) => useService({
+  const updateFund = (payload) => useService({
     service: Update,
-    data: { ...data, token: authStore.auth.token },
+    payload,
     mutation: mutations.updateFund
   });
 
-  const deleteFund = (data) => useService({
+  const deleteFund = (payload) => useService({
     service: Delete,
-    data: { ...data, token: authStore.auth.token },
+    payload,
     mutation: mutations.deleteFund
   });
 

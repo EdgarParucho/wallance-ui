@@ -115,69 +115,29 @@
           <ArrowUturnLeftIcon class="w-4 text-left" />
           <span class="mx-auto">Reset form</span>
         </button>
-        <button type="button" class="w-full h-6 sm:w-36 flex items-center bg-white dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 rounded-sm px-4" @click="savingQueryFormIsOpen = true">
-          <BookmarkIcon class="w-4 text-left" />
-          <span class="mx-auto">Save config</span>
-        </button>
       </div>
     </div>
   </form>
 
-  <Dialog :form-is-open="savingQueryFormIsOpen" @close-form="savingQueryFormIsOpen = false" title="Saving Query Config" subtitle="Name and confirm to save" :icon="BookmarkIcon">
-    <div class="py-6 px-8">
-      <form @submit.prevent="savePreferredQuery({ filters, name: queryName })">
-        <input
-        type="text"
-        class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
-        placeholder="Query Name"
-        required
-        :maxlength="20"
-        v-model="queryName"
-        >
-        <div class="flex items-center gap-2">
-          <button
-          type="submit"
-          class="flex justify-center items-center space-x-2 w-full my-2 py-1 outline-none font-bold rounded-sm text-white bg-violet-500 hover:bg-violet-400 disabled:bg-stone-300 dark:disabled:bg-stone-800 dark:disabled:text-stone-500 focus:outline-violet-500 outline-1"
-          :disabled="queryName === ''"
-          >
-            Confirm
-          </button>
-          
-          <button
-          type="button"
-          class="flex justify-center items-center space-x-2 w-full my-2 py-1 outline-none font-bold rounded-sm dark:text-white dark:bg-stone-800 hover:dark:bg-stone-700 hover:bg-stone-200 bg-stone-300 focus:outline-violet-500 outline-1"
-          @click="savingQueryFormIsOpen = false"
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
-  </Dialog>
 </template>
 
 <script setup>
-import { ref, computed, inject } from 'vue';
 import { storeToRefs } from "pinia";
-import { BookmarkIcon, CalendarIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/solid';
+import { ref, computed, inject } from 'vue';
+import { CalendarIcon, MagnifyingGlassIcon } from '@heroicons/vue/24/solid';
 import { ArrowUturnLeftIcon, CalendarDaysIcon } from '@heroicons/vue/24/outline';
 import { useRecordStore } from '../../stores/recordStore';
 import { useFundStore } from '../../stores/fundStore';
 import Dialog from '../layout/Dialog.vue';
-import { useUserStore } from '../../stores/userStore';
 
 const showAlert = inject("showAlert");
 const showToast = inject("showToast");
 
 const fundStore = useFundStore();
 const recordStore = useRecordStore();
-const userStore = useUserStore();
 const { funds } = storeToRefs(fundStore);
-const { preferences } = storeToRefs(userStore);
 
-const queryName = ref("");
 const dateFormIsOpen = ref(false);
-const savingQueryFormIsOpen = ref(false);
 const filters = ref({
   tag: null,
   note: null,
@@ -188,7 +148,11 @@ const filters = ref({
 });
 const loading = ref(false);
 
-const types = [{ name: "debits", value: 2 }, { name: "credits", value: 1 }, { name: "assignments", value: 0 }];
+const types = [
+  { name: "debits", value: 2 },
+  { name: "credits", value: 1 },
+  { name: "assignments", value: 0 }
+];
 
 const appliedFilters = computed(() => {
   const filtersEntries = Object.entries(filters.value);
@@ -214,19 +178,5 @@ function resetForm() {
     fundID: null,
   };
 }
-
-function savePreferredQuery(query) {
-  const payload = JSON.parse(JSON.stringify(preferences.value));
-  payload.queries.push(query);
-  userStore.updateUser({ OTP: null, updateEntries: { preferences: payload } })
-    .then((message) => {
-      showToast(message);
-      preferences.value = payload;
-    })
-    .catch((error) => console.log(error))
-  savingQueryFormIsOpen.value = false;
-}
-
-defineExpose({ submitQuery });
 
 </script>

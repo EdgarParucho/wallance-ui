@@ -130,14 +130,14 @@ export const useRecordStore = defineStore('records', () => {
     }
   };
 
-  const useService = ({ service, data, mutation }) => new Promise((resolve, reject) => service(data)
+  const useService = ({ service, payload, mutation }) => new Promise((resolve, reject) => service(payload)
     .then(({ data }) => resolve(
       mutation(data)
     ))
     .catch((error) => {
-      if (error.response?.status === 401 && !authStore.tokenIsValid) {
+      if (error.response?.status === 401 && !authStore.isAuthenticated) {
         reject("For security reasons, your session finished.")
-        authStore.logout();
+        authStore.finishSession();
         router.replace("/")
       } else {
         const feedback = error.response?.data?.message || error.response?.data || error.message || error;
@@ -146,29 +146,27 @@ export const useRecordStore = defineStore('records', () => {
     })
   );
 
-  const getRecords = (data = { filters: {} }, forSample = false) => {
-    return useService({
-      service: Find,
-      data: { ...data, token: authStore.auth.token },
-      mutation: forSample ? mutations.setSample : mutations.setRecords,
-    })
-  };
+  const getRecords = (payload = { filters: {} }, forSample = false) => useService({
+    service: Find,
+    payload,
+    mutation: forSample ? mutations.setSample : mutations.setRecords,
+  });
 
-  const createRecord = (data) => useService({
+  const createRecord = (payload) => useService({
     service: Create,
-    data: { ...data, token: authStore.auth.token },
+    payload,
     mutation: mutations.createRecord
   });
 
-  const updateRecord = (data) => useService({
+  const updateRecord = (payload) => useService({
     service: Update,
-    data: { ...data, token: authStore.auth.token },
+    payload,
     mutation: mutations.updateRecord
   });
 
-  const deleteRecord = (data) => useService({
+  const deleteRecord = (payload) => useService({
     service: Delete,
-    data: { ...data, token: authStore.auth.token  },
+    payload,
     mutation: mutations.deleteRecord
   });
 

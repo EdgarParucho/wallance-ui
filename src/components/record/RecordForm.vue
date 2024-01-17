@@ -199,22 +199,6 @@
               >
             </div>
           </div>
-
-        <div class="my-2 space-y-2 px-1 text-left">
-          <label for="template" class="text-xs font-semibold block">
-            Template name
-          </label>
-          <input
-            type="text"
-            name="template"
-            id="template"
-            class="w-1/2 focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
-            maxlength="100"
-            placeholder="Fill only to save template"
-            v-model="templateName"
-          >
-        </div>
-
       </fieldset>
 
       <div class="h-1/2 flex items-center justify-end my-4 space-x-2">
@@ -253,7 +237,6 @@ import { storeToRefs } from "pinia";
 import { ref, watch, computed, reactive, inject, onMounted } from 'vue';
 import { DocumentPlusIcon, PencilSquareIcon, MinusIcon, PlusIcon, ArrowsRightLeftIcon } from '@heroicons/vue/24/outline';
 import { useRecordStore } from '../../stores/recordStore';
-import { useUserStore } from '../../stores/userStore';
 import { useFundStore } from '../../stores/fundStore';
 import Dialog from '../layout/Dialog.vue';
 
@@ -264,7 +247,6 @@ const showToast = inject("showToast");
 const emit = defineEmits(['close-form']);
 
 const props = defineProps({
-  meta: { type: Object, default: {} },
   editing: { type: Boolean, default: false },
   preset: { type: Object, default: undefined },
   formIsOpen: { type: Boolean, default: false, },
@@ -276,8 +258,6 @@ const { funds } = storeToRefs(fundStore);
 const recordStore = useRecordStore();
 const { tagNames } = storeToRefs(recordStore);
 
-const userStore = useUserStore();
-const { preferences } = storeToRefs(userStore);
 
 const form = reactive({
   amount: 1,
@@ -326,14 +306,10 @@ const formHasErrors = computed(() => {
 function onSave(formValues) {
   loading.value = true;
   const action = props.editing ? recordStore.updateRecord : recordStore.createRecord;
-  const data = normalizeRecord(formValues);
-  action(data)
+  const body = normalizeRecord(formValues);
+  action(body)
     .then((message) => showToast(message))
-    .then(() => {
-      if (props.meta.firstSteps) updateFirstStepsStatus();
-      if (templateName.value !== "") saveTemplate({ formValues: data.body, name: templateName.value });
-      emit('close-form')
-    })
+    .then(() => emit('close-form'))
     .catch((message) => showAlert({ title: "Something went wrong", type: "error", text: message }))
     .finally(() => loading.value = false)
 };
@@ -344,7 +320,7 @@ function normalizeRecord({ amount, date, time, ...rest }) {
     date: new Date(`${date}T${time}:01`).toISOString(),
     ...rest,
   };
-  if (!props.editing) return { body: normalized };
+  if (!props.editing) return normalized;
   else removeUnaltered(normalized);
   return { id: props.preset.id, body: normalized };
 }
@@ -352,21 +328,6 @@ function normalizeRecord({ amount, date, time, ...rest }) {
 function removeUnaltered(formValues) {
   const keys = Object.keys(formValues);
   for (const key of keys) if (formValues[key] === props.preset[key]) delete formValues[key];
-}
-
-async function saveTemplate({ formValues, name }) {
-  const { fundID, otherFundID, amount, tag, note, type } = formValues;
-  const payload = JSON.parse(JSON.stringify(preferences.value));
-  payload.templates.push({
-    fields: { fundID, otherFundID, amount, tag, note, type },
-    name,
-  });
-  userStore.updateUser({ OTP: null, updateEntries: { preferences: payload } })
-    .then((message) => {
-      showToast(message)
-      preferences.value = payload
-    })
-    .catch((error) => console.error(error))
 }
 
 function handleTagList(e) {
@@ -382,20 +343,9 @@ function handleTagEnter(tag) {
   showTags.value = false;
 }
 
-async function updateFirstStepsStatus() {
-  const payload = JSON.parse(JSON.stringify(preferences.value));
-  payload.FirstStepsStatus[props.meta.stepIndex] = "Completed";
-  userStore.updateUser({ OTP: null, updateEntries: { preferences: payload } })
-    .then((message) => {
-      showToast(message)
-      preferences.value = payload
-    })
-    .catch((error) => console.error(error))
-}
-
 function setStartingData() {
-  setStartingDate()
-  normalizeAmount()
+  setStartingDate();
+  normalizeAmount();
 }
 
 function setStartingDate() {
@@ -423,8 +373,8 @@ watch(() => form.type, (type) => {
 })
 
 watch(focusedTagIndex, (i) => {
-  if (i < 0) focusedTagIndex.value = (typeTags.value.length - 1)
-  if (i >= typeTags.value.length) focusedTagIndex.value = 0
+  if (i < 0) focusedTagIndex.value = (typeTags.value.length - 1);
+  if (i >= typeTags.value.length) focusedTagIndex.value = 0;
 })
 
 </script>
