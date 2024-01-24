@@ -7,10 +7,13 @@
       <p class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">
         Overall result of your management
       </p>
-      <div class="mt-4 md:w-1/2 lg:w-1/3 xl:w-1/4 p-16 mx-auto rounded-xl text-center shadow-md bg-white dark:bg-stone-800">
-        <h2 class="text-5xl">{{ balance }}</h2>
+      <div
+      class="mt-4 md:w-1/2 lg:w-1/3 xl:w-1/4 p-16 mx-auto rounded-xl text-center shadow-md bg-white dark:bg-stone-800"
+      :class="{ 'animate-pulse': loggingIn }"
+      >
+        <h2 v-show="!loggingIn" class="text-5xl">{{ balance }}</h2>
       </div>
-      <FundsList class="md:w-1/2 lg:w-1/3 xl:w-1/4 mx-auto" />
+      <FundsList class="md:w-1/2 lg:w-1/3 xl:w-1/4 mx-auto" :class="{ 'animate-pulse': loggingIn }" />
     </section>
 
     <div class="flex items-end justify-center mx-auto my-20 space-x-2">
@@ -61,18 +64,19 @@
 
 <script setup>
 import { storeToRefs } from 'pinia';
-import { useAuth0 } from '@auth0/auth0-vue';
-import { computed, ref, defineAsyncComponent } from 'vue';
-import { CircleStackIcon, PlusIcon, LinkIcon, ArchiveBoxIcon, DocumentDuplicateIcon } from '@heroicons/vue/24/solid';
+import { computed, ref, defineAsyncComponent, watch, inject } from 'vue';
+import { CircleStackIcon, PlusIcon, LinkIcon, ArchiveBoxIcon } from '@heroicons/vue/24/solid';
 import { useFundStore } from '../stores/fundStore';
+import { useAuthStore } from '../stores/authStore';
 import Logo from '../components/layout/Logo.vue';
 import FundsList from '../components/fund/FundsList.vue';
 
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
 
 const fundStore = useFundStore();
-const { user } = useAuth0();
+const authStore = useAuthStore();
 const { funds } = storeToRefs(fundStore);
+const { loggingIn } = storeToRefs(authStore);
 const recordFormIsOpen = ref(false);
 
 let recordFormOptions = {

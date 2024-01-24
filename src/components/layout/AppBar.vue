@@ -51,7 +51,7 @@ const atHome = computed(() => route.fullPath === '/');
 
 function onLogout() {
   logout();
-  authStore.logout();
+  authStore.finishSession();
 }
 
 </script>

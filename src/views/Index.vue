@@ -8,10 +8,10 @@
     <div class="mt-10 flex justify-center my-2 space-x-4">
       <button
       class="rounded-sm py-1 w-52 hover:scale-105 transition-all font-bold focus:outline-violet-500 focus:outline-1 bg-stone-800 text-white shadow-lg disabled:bg-stone-700 disabled:animate-pulse"
-      @click="onSubmit"
-      :disabled="loading"
+      @click="loginWithRedirect"
+      :disabled="isLoading"
       >
-        {{ loading ? '...loading' : 'Join' }}
+        {{ isLoading ? '...loading' : 'Join' }}
       </button>
     </div>
     <div class="flex justify-center">
@@ -45,25 +45,17 @@
 </template>
 
 <script setup>
-import { ref, inject, watch } from 'vue';
+import { inject, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth0 } from '@auth0/auth0-vue';
 import { LinkIcon } from '@heroicons/vue/24/outline';
 import { useAuthStore } from '../stores/authStore';
-import { useUserStore } from '../stores/userStore';
 import Logo from '../components/layout/Logo.vue';
-import API from '../services/API';
 
-const showAlert = inject("showAlert");
 const showToast = inject("showToast");
-
-const router = useRouter();
+const { loginWithRedirect, isLoading, isAuthenticated } = useAuth0();
 const authStore = useAuthStore();
-const userStore = useUserStore();
-const { user, isAuthenticated, loginWithRedirect, getAccessTokenSilently } = useAuth0();
-
-const loading = ref(false);
-
+const router = useRouter();
 const links = [
   {
     URL: 'https://www.linkedin.com/in/edgarparucho/',
@@ -82,41 +74,12 @@ const links = [
   },
 ];
 
-function onSubmit() {
-  loginWithRedirect();
-}
-
-async function getUserData(data) {
-  loading.value = true;
-  const accessToken = await getAccessTokenSilently({
-    authorizationParams: {
-      audience: import.meta.env.VITE_AUTH0_AUDIENCE,
-      scope: import.meta.env.VITE_AUTH0_SCOPE,
-    }
-  });
-  API.defaults.headers.common['Authorization'] = "Bearer " + accessToken;
-  authStore.login(data)
-    .then((message) => {
-      authStore.accessToken = accessToken;
-      userStore.setActiveTheme(user.value.theme);
-      router.replace('/dashboard');
-      showToast(message);
-    })
-    .catch((message) => showAlert({
-      title: "Couldn't authenticate you",
-      type: "error", text: message
-    }))
-    .finally(() => loading.value = false)
-}
-
 watch(() => isAuthenticated.value, (isAuth) => {
   if (isAuth) {
-    if (!user.value.email_verified) showAlert({
-      type: "info",
-      text: "Please use the verification link sent to the provided email so you can keep your access.",
-    });
-    getUserData({ email: user.value.email });
-}
+    router.replace("/dashboard")
+    showToast("It's great that you're here")
+  }
+  else if (authStore.accessToken !== "" || authStore.isAuthenticated) authStore.finishSession();
 }, { immediate: true })
 
 </script>
