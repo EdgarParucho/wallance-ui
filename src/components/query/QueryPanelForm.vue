@@ -1,4 +1,3 @@
-
 <template>
   <form class="my-10 p-8 shadow-md rounded-sm bg-white dark:bg-stone-800 xl:w-3/5 2xl:w-2/5 mx-auto">
     <fieldset class="grid space-y-4 justify-center">
@@ -162,7 +161,7 @@ const appliedFilters = computed(() => {
 
 function submitQuery(filters) {
   loading.value = true;
-  recordStore.getRecords({ filters })
+  recordStore.getRecords(filters)
     .then((message) => showToast(message))
     .catch((message) => showAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)

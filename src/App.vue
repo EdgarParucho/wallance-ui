@@ -47,7 +47,7 @@ async function getUserData(data) {
   API.defaults.headers.common['Authorization'] = "Bearer " + APIAccessToken;
   authStore.login(data)
     .then(() => {
-      authStore.accessToken = APIAccessToken;
+      accessToken.value = APIAccessToken;
       userStore.setActiveTheme(user.value.theme);
     })
     .catch((message) => showAlert({
@@ -61,10 +61,10 @@ watch(activeTheme, (theme) => document.querySelector("html").className = theme, 
 watch(() => isLoading.value, (isLoading) => {
   if (isLoading) return;
   if (!isAuthenticated.value) {
-    if (authStore.accessToken !== "" || authStore.isAuthenticated) authStore.finishSession();
+    if (accessToken.value !== "" || authStore.isAuthenticated) authStore.finishSession();
     return;
   }
-  if (authStore.accessToken === "") getUserData({ email: user.value.email });
+  if (accessToken.value === "") getUserData({ email: user.value.email });
 }, { immediate: true })
 
 
