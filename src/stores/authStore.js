@@ -18,6 +18,7 @@ export const useAuthStore = defineStore('auth', () => {
     login: ({ data, message }) => {
       resetStores();
       fundStore.mutations.setFunds(data.funds);
+      recordStore.records = data.records;
       return message;
     },
   };
