@@ -99,7 +99,7 @@ export const useRecordStore = defineStore('records', () => {
     setRecords: ({ data, message }) => {
       resetState();
       updateStore(data);  
-      if (data.length > 0) records.value = [...data];
+      records.value = [...data];
       return message;
     },
     setSample: ({ data, message }) => {

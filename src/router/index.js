@@ -1,7 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Index from "../views/Index.vue";
 import Dashboard from "../views/Dashboard.vue";
-import Records from "../views/Records.vue";
 import Funds from "../views/Funds.vue";
 import Account from "../views/Account.vue";
 import { authGuard } from '@auth0/auth0-vue';
@@ -17,12 +16,6 @@ const routes = [
     path: "/dashboard",
     name: "Dashboard",
     component: Dashboard,
-    beforeEnter: authGuard,
-  },
-  {
-    path: "/records",
-    name: "Records",
-    component: Records,
     beforeEnter: authGuard,
   },
   {

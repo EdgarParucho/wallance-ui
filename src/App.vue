@@ -72,7 +72,7 @@ watch(() => isLoading.value, (isLoading) => {
 
 <template>
   <AppBar />
-  <router-view class="pb-28 pt-12 px-2" v-slot="{ Component }">
+  <router-view class="px-2" v-slot="{ Component }">
     <transition name="fade" mode="out-in">
       <component :is="Component" />
     </transition>
