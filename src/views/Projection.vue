@@ -130,7 +130,7 @@ async function runProjection() {
 
 function getSampleRecords() {
   if (sampleRecords.value.length > 0) return;
-  return recordStore.getRecords({ filters: sampleDateRange.value }, true)
+  return recordStore.getRecords(sampleDateRange.value, true)
     .then((message) => {
       if (sampleRecords.value.length > 0) return showToast(message);
       showAlert({ type: "info", text: message });

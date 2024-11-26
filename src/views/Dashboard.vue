@@ -82,7 +82,7 @@
       <div class="mt-20 space-x-2 justify-center flex items-center">
         <ArrowTrendingUpIcon class="w-6" />
         <h3 class="font-bold text-2xl">Planning Time?</h3>
-        <router-link to="/projection" class="bg-violet-500 text-white py-0.5 px-2 font-bold rounded-sm flex gap-2 w-52" @click.native="scrollToTop">
+        <router-link to="/projection" class="bg-violet-500 text-white py-0.5 px-2 font-bold rounded-sm flex justify-center gap-1 w-52" @click.native="scrollToTop">
           <LinkIcon class="w-4" />
           <span>Check projection</span>
         </router-link>
