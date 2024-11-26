@@ -1,14 +1,12 @@
 <template>
   <dl>
-    <div v-for="fund in funds" :key="fund.id" class="my-1 rounded-sm shadow-lg bg-white dark:bg-stone-800 flex justify-between items-center">
-      <dt class="flex items-center gap-4 p-3">
-        <ArchiveBoxIcon class="w-8 mx-auto p-1.5 rounded-full shadow-sm text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
-        {{ fund.name }}
-      </dt>
-      <dd class="flex justify-end my-2 mr-3">
-        {{ getFundBalance(fund) }}
-      </dd>
-    </div>
+    <FundCard
+      v-for="fund in funds"
+      :key="fund.id"
+      :fund="fund"
+      @edit-fund="(fund) => editFund(fund)"
+      @confirm-deletion="(fund) => confirmDeletion(fund)"
+    />
   </dl>
 </template>
 
@@ -17,6 +15,7 @@ import { ArchiveBoxIcon } from "@heroicons/vue/24/outline";
 import { storeToRefs } from "pinia";
 import { useRecordStore } from '../../stores/recordStore';
 import { useFundStore } from '../../stores/fundStore';
+import FundCard from './FundCard.vue';
 
 const props = defineProps({
   balanceOnRecords: {

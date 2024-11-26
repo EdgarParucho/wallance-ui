@@ -1,5 +1,5 @@
 <template>
-  <div class="font-sans lg:block h-36 lg:w-2/3 mx-auto rounded-xl dark:shadow-[#101010] shadow-lg bg-white dark:bg-stone-800">
+  <div class="my-1 font-sans lg:block h-36 mx-auto rounded-xl shadow-lg bg-white dark:bg-stone-800">
     <div class="flex justify-between">
       <p class="ml-2 font-bold">{{ fund.name }}</p>
       <span v-if="fund.isDefault" class="flex items-center justify-center h-6 w-16 text-sm rounded-sm bg-stone-200 text-stone-700 font-bold">

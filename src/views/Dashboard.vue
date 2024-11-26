@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="pb-20">
 
     <header class="h-screen grid items-center">
       <div>
@@ -18,11 +18,20 @@
         </div>
         <FundsList class="md:w-1/2 lg:w-1/3 xl:w-1/4 mx-auto" :class="{ 'animate-pulse': loggingIn }" />
       </div>
+
       <div class="flex items-center space-x-2 justify-center">
-        <p class="font-bold text-xl">Outdated?</p>
-        <button class="text-white hover:bg-violet-600 bg-violet-500 rounded-md w-32 inline-flex items-center justify-center gap-1" @click="recordFormIsOpen = true">
+        <button
+        class="text-white hover:bg-violet-600 bg-violet-500 rounded-md w-32 px-2 flex items-center justify-around gap-1"
+        @click="recordFormIsOpen = true"
+        >
           <PlusIcon class="w-5" />
           <span>Add Record</span>
+        </button>
+        <button
+        class="ring-1 ring-violet-500 rounded-md w-32 px-2 flex items-center justify-around gap-1"
+        @click="fundFormIsOpen = true">
+          <PlusIcon class="w-5" />
+          <span class="mx-auto">Add Fund</span>
         </button>
       </div>
     </header>
@@ -90,6 +99,12 @@
     :preset="recordFormOptions.preset"
     />
 
+    <FundForm
+    v-if="fundFormIsOpen"
+    @close-form="fundFormIsOpen = false"
+    :form-is-open="fundFormIsOpen"
+    />
+
   </div>
 </template>
 
@@ -113,6 +128,7 @@ const QueryTotals = defineAsyncComponent(() => import('../components/query/Query
 const QueryTable = defineAsyncComponent(() => import('../components/query/QueryTable.vue'));
 const FundsChart = defineAsyncComponent(() => import('../components/query/QueryFundsChart.vue'));
 const RecordForm = defineAsyncComponent(() => import('../components/record/RecordForm.vue'));
+const FundForm = defineAsyncComponent(() => import('../components/fund/FundForm.vue'));
 
 const fundStore = useFundStore();
 const recordStore = useRecordStore();
@@ -122,6 +138,7 @@ const { funds } = storeToRefs(fundStore);
 const { records } = storeToRefs(recordStore);
 const { loggingIn } = storeToRefs(authStore);
 const recordFormIsOpen = ref(false);
+const fundFormIsOpen = ref(false);
 
 const { tagData } = storeToRefs(recordStore);
 const { typeSum } = storeToRefs(recordStore);
