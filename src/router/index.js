@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from "vue-router";
 import { authGuard } from '@auth0/auth0-vue';
 import Index from "../views/Index.vue";
 import Dashboard from "../views/Dashboard.vue";
-import Account from "../views/Account.vue";
 
 const routes = [
   {
@@ -20,13 +19,7 @@ const routes = [
   {
     path: "/account",
     name: "Account",
-    component: Account,
-    beforeEnter: authGuard,
-  },
-  {
-    path: "/projection",
-    name: "Projection",
-    component: () => import('../views/Projection.vue'),
+    component: () => import('../views/Account.vue'),
     beforeEnter: authGuard,
   },
   {

@@ -8,7 +8,6 @@ import router from '../router';
 export const useRecordStore = defineStore('records', () => {
 
   const records = useLocalStorage('vueUseRecords', []);
-  const sampleRecords = useLocalStorage('vueUseSample', []);
   const authStore = useAuthStore();
   const fundStore = useFundStore();
 
@@ -102,10 +101,6 @@ export const useRecordStore = defineStore('records', () => {
       records.value = [...data];
       return message;
     },
-    setSample: ({ data, message }) => {
-      sampleRecords.value = [...data];
-      return message;
-    },
     createRecord: ({ data, message }) => {
       data.funds.forEach((fund) => fundStore.mutations.updateFund({ data: fund }));
       resetState();
@@ -146,10 +141,10 @@ export const useRecordStore = defineStore('records', () => {
     })
   );
 
-  const getRecords = (payload = { filters: {} }, forSample = false) => useService({
+  const getRecords = (payload = { filters: {} }) => useService({
     service: Find,
     payload,
-    mutation: forSample ? mutations.setSample : mutations.setRecords,
+    mutation: mutations.setRecords,
   });
 
   const createRecord = (payload) => useService({
@@ -172,7 +167,6 @@ export const useRecordStore = defineStore('records', () => {
 
   return {
     records,
-    sampleRecords,
     getRecords,
     setRecords: mutations.setRecords,
     createRecord,

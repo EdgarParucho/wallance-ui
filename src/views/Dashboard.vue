@@ -65,7 +65,7 @@
         </div>
       </div>
 
-      <div v-if="funds.length > 2" class="my-20">
+      <div v-if="funds.length > 2" class="mt-20">
         <ArchiveBoxIcon class="my-4 w-12 mx-auto p-2.5 rounded-full shadow-lg text-stone-500 dark:text-stone-400 dark:shadow-[#101010] bg-stone-100 dark:bg-stone-800" />
         <h2 class="mb-2 text-3xl font-bold text-center">Funds management</h2>
         <p class="text-center">Credits, debits, and balance by fund</p>
@@ -78,16 +78,6 @@
           </div>
         </div>
       </div>
-
-      <div class="mt-20 space-x-2 justify-center flex items-center">
-        <ArrowTrendingUpIcon class="w-6" />
-        <h3 class="font-bold text-2xl">Planning Time?</h3>
-        <router-link to="/projection" class="bg-violet-500 text-white py-0.5 px-2 font-bold rounded-sm flex justify-center gap-1 w-52" @click.native="scrollToTop">
-          <LinkIcon class="w-4" />
-          <span>Check projection</span>
-        </router-link>
-      </div>
-      <p class="text-center">For a quick calculation based on this year's records.</p>
 
     </div>
 
