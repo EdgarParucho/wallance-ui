@@ -5,7 +5,7 @@
       {{ queryCompleted ? 'Query Results' : 'Current Month' }}
     </p>
     <button
-    class="my-8 mx-auto text-white hover:bg-violet-600 bg-violet-500 rounded-md w-32 flex items-center justify-center gap-1"
+    class="mx-auto text-white transition-all hover:bg-violet-600 bg-violet-500 rounded-md w-36 px-2 flex items-center justify-around gap-1"
     @click="queryPanelIsOpen = true">
       <MagnifyingGlassIcon class="w-4" />
       <span>Make a Query</span>

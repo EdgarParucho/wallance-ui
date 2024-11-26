@@ -1,11 +1,11 @@
 <template>
   <div class="pb-20">
 
-    <header class="h-screen grid items-center">
+    <header class="mt-10 mb-32 grid items-center">
       <div>
         <h2 class="text-4xl font-bold text-center">Status</h2>
-        <p class="text-center text-lg text-stone-500 dark:text-stone-400">
-          Find anything in your data
+        <p class="mb-4 text-center text-lg text-stone-500 dark:text-stone-400">
+          Overall balance
         </p>
       </div>
       
@@ -19,16 +19,16 @@
         <FundsList class="md:w-1/2 lg:w-1/3 xl:w-1/4 mx-auto" :class="{ 'animate-pulse': loggingIn }" />
       </div>
 
-      <div class="flex items-center space-x-2 justify-center">
+      <div class="mt-10 flex items-center space-x-2 justify-center">
         <button
-        class="text-white hover:bg-violet-600 bg-violet-500 rounded-md w-32 px-2 flex items-center justify-around gap-1"
+        class="text-white transition-all hover:bg-violet-600 bg-violet-500 rounded-md w-32 px-2 flex items-center justify-around gap-1"
         @click="recordFormIsOpen = true"
         >
           <PlusIcon class="w-5" />
           <span>Add Record</span>
         </button>
         <button
-        class="ring-1 ring-violet-500 rounded-md w-32 px-2 flex items-center justify-around gap-1"
+        class="bg-white transition-all hover:ring-1 hover:ring-stone-400 dark:bg-stone-800 dark:hover:bg-stone-700 dark:hover:ring-0 rounded-md w-32 px-2 flex items-center justify-around gap-1"
         @click="fundFormIsOpen = true">
           <PlusIcon class="w-5" />
           <span class="mx-auto">Add Fund</span>
@@ -82,7 +82,7 @@
       <div class="mt-20 space-x-2 justify-center flex items-center">
         <ArrowTrendingUpIcon class="w-6" />
         <h3 class="font-bold text-2xl">Planning Time?</h3>
-        <router-link to="/projection" class="bg-violet-500 text-white py-0.5 px-2 font-bold rounded-sm flex gap-2" @click.native="scrollToTop">
+        <router-link to="/projection" class="bg-violet-500 text-white py-0.5 px-2 font-bold rounded-sm flex gap-2 w-52" @click.native="scrollToTop">
           <LinkIcon class="w-4" />
           <span>Check projection</span>
         </router-link>
