@@ -1,47 +1,35 @@
 <template>
-  <div class="my-1 font-sans lg:block h-36 mx-auto rounded-xl shadow-lg bg-white dark:bg-stone-800">
-    <div class="flex justify-between">
-      <p class="ml-2 font-bold">{{ fund.name }}</p>
-      <span v-if="fund.isDefault" class="flex items-center justify-center h-6 w-16 text-sm rounded-sm bg-stone-200 text-stone-700 font-bold">
-        Main
-      </span>
+  <div class="mb-1 mx-auto h-26 pt-1 w-80 rounded-sm bg-white dark:bg-stone-800">
+    <div class="px-2 flex justify-between">
+      <ArchiveBoxIcon class="rounded-full w-7 h-7 p-1 bg-stone-200 dark:bg-stone-900 text-stone-500 dark:text-stone-400" />
+      <strong class="text-lg font-light">{{ amountFormatted(fund.balance) }}</strong>
     </div>
-    <div class="justify-end flex items-baseline my-2 mr-3">
-      <span class="text-3xl">{{ amountFormatted(fund.balance) }}</span>
-    </div>
-    <p class="ml-2 text-md h-11">{{ fund.description }}</p>
-    <div class="flex align-bottom">
+    <dt class="px-2 text-sm">{{ fund.name }}</dt>
+    <dd class="px-2 text-xs text-stone-500 dark:text-stone-400">{{ fund.description }}</dd>
+
+    <div class="flex justify-evenly">
       <button
-      class="w-1/2 py-1 hover:bg-stone-100 dark:hover:bg-stone-700 focus:bg-stone-100 dark:focus:bg-stone-700 focus:outline-none transition-colors"
-      @click="editFund(fund)"
+      class="w-1/2 py-0.5 hover:bg-stone-100 dark:hover:bg-stone-700 focus:bg-stone-100 dark:focus:bg-stone-700 focus:outline-none transition-colors"
+      @click="$emit('editFund')"
       >
         <PencilSquareIcon class="w-4 mx-auto" aria-hidden="true" />
       </button>
       <button
-      class="w-1/2 py-1 text-red-400 hover:bg-red-100 dark:hover:bg-red-900 focus:bg-red-100 dark:focus:bg-red-900 focus:outline-none transition-colors disabled:text-stone-400 disabled:hover:bg-stone-100 dark:disabled:hover:bg-stone-800"
-      @click="validateDeletion(fund)"
+      class="w-1/2 py-0.5 text-red-400 hover:bg-red-100 dark:hover:bg-red-900 focus:bg-red-100 dark:focus:bg-red-900 focus:outline-none transition-colors disabled:text-stone-400 disabled:hover:bg-stone-100 dark:disabled:hover:bg-stone-800"
+      @click="$emit('validateDeletion')"
       :disabled="fund.isDefault"
       >
         <TrashIcon class="w-4 mx-auto" aria-hidden="true" />
       </button>
     </div>
-    <FundForm v-if="fundFormIsOpen" :form-is-open="fundFormIsOpen" @close-form="closeForm" :editing-fund="editingFund" />
   </div>
 </template>
 
 <script setup>
-import { ref, inject } from "vue";
-import { PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
-import { useFundStore } from "../../stores/fundStore";
-import FundForm from "./FundForm.vue";
-import swal from "sweetalert";
+import { ArchiveBoxIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
 
 const props = defineProps(['fund']);
-const showAlert = inject("showAlert");
-const showToast = inject("showToast");
-const fundStore = useFundStore();
-let fundFormIsOpen = ref(false);
-let editingFund = null;
+const emit = defineEmits(['edit-fund', 'validate-deletion']);
 
 function amountFormatted(amount = 0) {
   const integer = Math.floor(amount);
@@ -53,44 +41,6 @@ function amountFormatted(amount = 0) {
     style: "currency",
     currency: "USD",
    }).format(recomposed)
-}
-
-function validateDeletion(fund) {
-  if (props.fund.isDefault) return showAlert({
-    type: "info",
-    title: "Can't complete the action",
-    text: "The default fund can't be deleted. It helps to work the consistency and logic of your records."
-  });
-  else if (props.fund.balance > 0) return showAlert({
-    type: "info",
-    title: "Can't complete the action",
-    text: 'First, move the balance to another fund, then retry this action.'
-  });
-  confirmDeletion(fund);
-}
-
-async function confirmDeletion(fund) {
-  const deleteIsConfirmed = await swal({
-    icon: "warning",
-    title: "Caution",
-    text: `Please confirm to delete "${fund.name}". The action is irreversible.`,
-    buttons: true,
-    timer: null,
-  });
-  if(!deleteIsConfirmed) return;
-  fundStore.deleteFund(fund.id)
-    .then((message) => showToast(message))
-    .catch((message) => showAlert({ type: "error", text: message }))
-}
-
-function editFund(fund) {
-  editingFund = fund
-  fundFormIsOpen.value = true
-}
-
-function closeForm() {
-  editingFund = null
-  fundFormIsOpen.value = false
 }
 
 </script>
