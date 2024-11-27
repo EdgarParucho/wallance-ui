@@ -1,15 +1,6 @@
 <template>
   <div>
-    <h2 class="text-4xl font-bold text-center">Records</h2>
-    <p class="text-center text-lg text-stone-500 dark:text-stone-400 mb-6">
-      {{ queryCompleted ? 'Query Results' : 'Current Month' }}
-    </p>
-    <button
-    class="mx-auto text-white transition-all hover:bg-violet-600 bg-violet-500 rounded-md w-36 px-2 flex items-center justify-around gap-1"
-    @click="queryPanelIsOpen = true">
-      <MagnifyingGlassIcon class="w-4" />
-      <span>Make a Query</span>
-    </button>
+    <h3 class="mt-8 text-center font-bold text-xl">Query Balance</h3>
     <dl class="md:flex md:items-center mx-auto w-full 2xl:w-2/3">
       <dd
       v-for="stat in stats" :key="stat.id"
@@ -23,12 +14,6 @@
           </span>
       </dd>
     </dl>
-    <QueryPanel
-    v-if="queryPanelIsOpen"
-    @close-form="queryPanelIsOpen = false"
-    @confirm-query-completion="queryCompleted = true"
-    :form-is-open="queryPanelIsOpen"
-    />    
   </div>
 </template>
 
@@ -37,18 +22,12 @@ import { computed, watch, ref } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useRecordStore } from '../../stores/recordStore';
 import { MinusIcon, PlusIcon, Bars2Icon } from '@heroicons/vue/24/outline';
-import { MagnifyingGlassIcon } from '@heroicons/vue/24/solid';
-import QueryPanel from './QueryPanel.vue';
-
 
 const recordStore = useRecordStore();
 const { records } = storeToRefs(recordStore);
 
 let creditsSum = ref(0);
 let debitsSum = ref(0);
-const queryCompleted = ref(false);
-
-const queryPanelIsOpen = ref(false);
 
 function getAmountFormatted(amount) {
   const integer = Math.floor(amount);

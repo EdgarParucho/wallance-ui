@@ -6,7 +6,7 @@ import { PlusIcon } from '@heroicons/vue/24/outline';
 const route = useRoute();
 const atHome = computed(() => route.fullPath === '/');
 
-const RecordForm = defineAsyncComponent(() => import('../record/RecordForm.vue'));
+const RecordForm = defineAsyncComponent(() => import('../form/RecordForm.vue'));
 let recordFormIsOpen = ref(false);
 
 </script>

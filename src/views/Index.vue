@@ -1,46 +1,44 @@
 <template>
-  <div class="pt-32">
-    <Logo size="lg" />
-    <h1 class="text-5xl font-bold text-center mt-16">Wallance</h1>
-    <p class="text-lg text-center mt-4 font-medium">
-      Track your records, then fix, plan, improve accordingly.
-    </p>
-    <div class="mt-10 flex justify-center my-2 space-x-4">
+  <div>
+    <header class="mt-16">
+      <Logo size="lg" />
+      <h1 class="text-5xl font-bold text-center mt-16">Wallance</h1>
+      <p class="text-lg text-center mt-4 font-medium">
+        Track your records, then fix, plan, improve accordingly.
+      </p>
       <button
-      class="rounded-sm py-1 w-52 hover:scale-105 transition-all font-bold focus:outline-violet-500 focus:outline-1 bg-stone-800 text-white shadow-lg disabled:bg-stone-700 disabled:animate-pulse"
+      class="mx-auto mt-10 block rounded-sm py-1 w-32 hover:scale-105 transition-all font-bold focus:outline-violet-500 focus:outline-1 bg-stone-800 text-white shadow-lg disabled:bg-stone-700 disabled:animate-pulse"
       @click="loginWithRedirect"
       :disabled="isLoading"
       >
         {{ isLoading ? '...loading' : 'Join' }}
       </button>
-    </div>
-    <div class="flex justify-center">
-      <footer class="absolute h-16 dark:bg-stone-800 w-11/12 lg:w-5/12 flex items-center justify-between rounded-sm p-4">
-        <div class="grid">
-          <div class="text-zinc-600 dark:text-zinc-400 sm:text-xs">
-            <h1 class="tracking-tight">
-              Made by
-              <span class="text-zinc-900 dark:text-zinc-100 signature">Edgar Parucho</span>
-            </h1>
-            <a href="https://edgarparucho.github.io/" target="_blank" class="text-zinc-900 dark:text-zinc-100 underline flex gap-1">
-              <LinkIcon class="w-4" />
-              edgarparucho.github.io
-            </a>
-          </div>
-        </div>
-        <div class="flex items-center justify-center space-x-2">
-          <a
-          v-for="link, k in links" :key="k"
-          :href="link.URL"
-          target="_blank"
-          :title="link.title"
-          class="rounded-full border border-transparent shadow-sm shadow-zinc-900 bg-white hover:scale-110 transition-all"
-          >
-            <img width="32" height="32" :src="link.icon" :alt="link.title">
+    </header>
+    <footer class="w-full absolute bottom-0 h-16 dark:bg-stone-800 flex items-center justify-between rounded-sm p-4">
+      <div class="grid">
+        <div class="text-zinc-600 dark:text-zinc-400 sm:text-xs">
+          <h1 class="tracking-tight">
+            Made by
+            <span class="text-zinc-900 dark:text-zinc-100 signature">Edgar Parucho</span>
+          </h1>
+          <a href="https://edgarparucho.github.io/" target="_blank" class="text-zinc-900 dark:text-zinc-100 underline flex gap-1">
+            <LinkIcon class="w-4" />
+            edgarparucho.github.io
           </a>
         </div>
-      </footer>
-    </div>
+      </div>
+      <div class="flex items-center justify-center space-x-2">
+        <a
+        v-for="link, k in links" :key="k"
+        :href="link.URL"
+        target="_blank"
+        :title="link.title"
+        class="rounded-full border border-transparent shadow-sm shadow-zinc-900 bg-white hover:scale-110 transition-all"
+        >
+          <img width="32" height="32" :src="link.icon" :alt="link.title">
+        </a>
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -63,7 +61,7 @@ const links = [
     icon: "https://img.icons8.com/ios-filled/50/linkedin-circled--v1.png",
   },
   {
-    URL: 'mailto:parucho.edgar@outlook.es',
+    URL: 'mailto:e.parucho@outlook.com',
     title: "Email",
     icon: "https://img.icons8.com/ios-filled/50/circled-envelope.png",
   },

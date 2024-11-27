@@ -108,7 +108,7 @@ import { useRecordStore } from '../../stores/recordStore';
 import { storeToRefs } from "pinia";
 import { breakpointsTailwind, useBreakpoints, useDateFormat } from '@vueuse/core';
 
-const RecordForm = defineAsyncComponent(() => import('../record/RecordForm.vue'));
+const RecordForm = defineAsyncComponent(() => import('../form/RecordForm.vue'));
 
 const showAlert = inject("showAlert");
 const showToast = inject("showToast");

@@ -76,9 +76,9 @@ import { ref, inject, watch } from 'vue';
 import { Cog6ToothIcon } from '@heroicons/vue/24/outline'
 import { useUserStore } from '../stores/userStore';
 import { useAuth0 } from '@auth0/auth0-vue';
-import UpdateEmail from '../components/user/UpdateEmail.vue';
-import UpdatePassword from '../components/user/UpdatePassword.vue';
-import DeleteAccount from '../components/user/DeleteAccount.vue';
+import UpdateEmail from '../components/form/UpdateEmail.vue';
+import UpdatePassword from '../components/form/UpdatePassword.vue';
+import DeleteAccount from '../components/form/DeleteAccount.vue';
 
 const showToast = inject("showToast");
 const userStore = useUserStore();
