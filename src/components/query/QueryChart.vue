@@ -5,6 +5,10 @@
 <script setup>
 import { computed } from 'vue';
 import { Doughnut } from 'vue-chartjs'
+import { Chart as ChartJS, Tooltip, Legend, ArcElement } from 'chart.js';
+
+ChartJS.register(Tooltip, Legend, ArcElement);
+ChartJS.defaults = { responsive: true };
 
 const props = defineProps({
   taglistRef: {

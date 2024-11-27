@@ -10,7 +10,7 @@ import { useUserStore } from "./stores/userStore";
 import { useAuthStore } from "./stores/authStore";
 import API from "./services/API";
 import AppBar from "./components/layout/AppBar.vue";
-import NavBar from "./components/layout/NavBar.vue";
+import MainButton from "./components/layout/MainButton.vue";
 
 const userStore = useUserStore();
 const authStore = useAuthStore();
@@ -78,7 +78,7 @@ watch(() => isLoading.value, (isLoading) => {
       <component :is="Component" />
     </transition>
   </router-view>
-  <NavBar />
+  <MainButton />
 </template>
 
 <style>
