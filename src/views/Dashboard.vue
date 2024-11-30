@@ -67,25 +67,29 @@
 
       <MagnifyingGlassIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
       <h2 class="text-4xl font-bold text-center">Records</h2>
-      <p v-if="records.length > 0" class="mb-8 text-center text-lg text-stone-500 dark:text-stone-400">
+      <p v-if="oneOrMoreRecords" class="mb-8 text-center text-lg text-stone-500 dark:text-stone-400">
         {{ queryCompleted ? 'Query Results' : 'Current Month' }}
       </p>
       
-      <QueryTable v-if="records.length > 0" />
-      <QueryBalance v-if="records.length > 0" :records="records" />
+      <QueryTable v-if="oneOrMoreRecords" />
+      <QueryBalance v-if="oneOrMoreRecords" :records="records" />
 
       <div class="mt-10 flex items-center space-x-2 justify-center">
         <button class="btn-primary w-36" @click="queryPanelIsOpen = true">
           <MagnifyingGlassIcon class="w-5" />
           <span>Make a Query</span>
         </button>
-        <download-excel v-if="records.length > 0" :fetch="formatToXls" class="btn-secondary cursor-pointer w-36">
+        <download-excel v-if="oneOrMoreRecords" :fetch="formatToXls" class="btn-secondary cursor-pointer w-36">
           <ArrowDownIcon class="w-5" />
           <span>Export .xls</span>
         </download-excel>
       </div>
 
-      <div v-if="records.length > 0" v-show="tagData[1].length > 0 || tagData[2].length > 0" class="my-20">
+      <p class="mt-20 text-center bg-violet-500 bg-opacity-20 w-1/2 mx-auto border-l-2 border-violet-500 rounded-sm">
+        oneOrMoreTags: {{ oneOrMoreTags }}
+      </p>
+
+      <div v-if="oneOrMoreRecords" v-show="oneOrMoreTags" class="my-20">
         <TagIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
         <h2 class="text-4xl font-bold text-center">Tags Measurement</h2>
         <p class="mb-8 text-center text-lg text-stone-500 dark:text-stone-400">
@@ -93,11 +97,11 @@
         </p>
         <div class="md:flex my-10 md:justify-center gap-2">
           <div class="md:w-1/2 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
-            <QueryTags ref="taglistRef" :tag-data="tagData" :type-sum="typeSum" />
+            <!-- <QueryTags ref="taglistRef" :tag-data="tagData" :type-sum="typeSum" /> -->
           </div>
-          <div class="md:w-1/2 xl:w-1/4 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
+          <!-- <div class="md:w-1/2 xl:w-1/4 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
             <QueryChart :taglist-ref="taglistRef" :tag-names="tagNames" />
-          </div>
+          </div> -->
         </div>
       </div>
 
@@ -165,15 +169,16 @@ const authStore = useAuthStore();
 const { funds } = storeToRefs(fundStore);
 const { records } = storeToRefs(recordStore);
 const { loggingIn } = storeToRefs(authStore);
-const { tagData } = storeToRefs(recordStore);
-const { typeSum } = storeToRefs(recordStore);
-const { tagNames } = storeToRefs(recordStore);
 
 const recordFormIsOpen = ref(false);
 const fundFormIsOpen = ref(false);
 const queryPanelIsOpen = ref(false);
 const queryCompleted = ref(false);
 const taglistRef = ref(null);
+
+const oneOrMoreTags =  computed(() => Object.values(recordStore.tagsByType).flat().length > 0);
+
+const oneOrMoreRecords = computed(() => recordStore.records.length > 0);
 
 let editingFund = null;
 

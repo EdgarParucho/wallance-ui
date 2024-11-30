@@ -38,15 +38,11 @@
       </div>
         
       <div class="h-1/3 flex items-center justify-end my-4 space-x-2">
-        <button
-        class="mt-3 inline-flex w-full justify-center rounded-md px-4 py-2 text-base font-bold shadow-sm bg-stone-300 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-violet-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-        type="button"
-        @click="$emit('close-form')"
-        >
+        <button class="btn-secondary" type="button" @click="$emit('close-form')" :disabled="loading">
           Cancel
         </button>
         <button
-        class="mt-3 inline-flex gap-2 w-full justify-center rounded-md px-4 py-2 text-base font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-white sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm hover:bg-violet-500 bg-violet-600 text-white disabled:bg-stone-300 dark:disabled:bg-stone-700 dark:disabled:text-stone-400"
+        class="btn-primary disabled:bg-stone-300 dark:disabled:bg-stone-700 dark:disabled:text-stone-400"
         type="submit"
         :disabled="invalidForm"
         >

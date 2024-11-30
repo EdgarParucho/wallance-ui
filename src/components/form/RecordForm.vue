@@ -5,206 +5,175 @@
   :icon="editing ? PencilSquareIcon : DocumentPlusIcon"
   title="Record Form"
   :subtitle="`You are ${editing ? 'editing' : 'creating'} a record`"
-  widthClasses="w-96 md:w-2/3 xl:w-1/3"
   >
-    <form class="px-4">
-      <fieldset>
-        <div class="mb-4 space-y-2 text-left px-1">
-          <div class="w-full">
-            <label for="date" class="text-xs font-semibold">
-              Date
-            </label>
-          </div>
-          <div class="flex items-center">
+    <form>
+      <fieldset class="px-2">
+        <div class="my-2 grid grid-cols-3 gap-1">
+          <label for="date" class="grid text-left text-xs font-semibold">
+            Date
             <input
             type="date"
-            name="date"
             id="date"
-            class="w-1/2 focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 invalid:text-red-400 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
+            class="font-normal focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 invalid:text-red-400 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
             required
             v-model="form.date"
             >
+          </label>
+          <label for="time" class="grid text-left text-xs font-semibold">
+            Time
             <input
             type="time"
-            name="time"
             id="time"
-            class="w-1/2 focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 invalid:text-red-400 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
+            class="font-normal focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 invalid:text-red-400 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
             required
             v-model="form.time"
             >
-          </div>
-        </div>
-
-        <div class="mb-4 text-left px-1">
-          <div class="lg:flex md:items-center gap-1">
-            <div class="flex items-center space-x-4 w-3/5">
-              <div class="my-2 flex items-center space-x-2">
-                <input
-                  id="credit"
-                  name="credit"
-                  type="radio"
-                  class=" text-violet-500 focus:ring-violet-500 p-2"
-                  :value="1"
-                  v-model="form.type"
-                  required
-                >
-                <label for="credit" class="text-xs font-semibold">
-                  Credit
-                </label>
-              </div>
-              <div class="flex items-center space-x-2">
-                <input
-                  id="debit"
-                  name="debit"
-                  type="radio"
-                  class=" text-violet-500 focus:ring-violet-500 p-2"
-                  :value="2"
-                  v-model="form.type"
-                  required
-                >
-                <label for="debit" class="text-xs font-semibold">
-                  Debit
-                </label>
-              </div>
-              <div class="flex items-center space-x-2">
-                <input
-                  id="assignment"
-                  name="assignment"
-                  type="radio"
-                  class=" text-violet-500 focus:ring-violet-500 p-2 disabled:bg-stone-300 dark:disabled:bg-stone-700"
-                  required
-                  :disabled="funds.length < 2"
-                  :value="0"
-                  v-model="form.type"
-                >
-                <label for="assignment" class="text-xs font-semibold">
-                  Assignment
-                </label>
-              </div>
-            </div>
-
-            <div class="relative rounded-md w-2/5">
-              <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 space-x-2">
+          </label>
+          <label for="amount" class="grid text-left text-xs font-semibold">
+            Amount
+            <div class="flex">
+              <div class="flex items-center pl-3 space-x-2">
                 <component
                 :class="[operationIconStyles, 'bg-opacity-20 p-1 rounded-full h-5 w-5']"
-                :is="operationIcon" />
-                <span class="sm:text-md">$</span>
-              </div>
-              <input
-                type="number"
-                :min="0"
-                id="amount"
-                class="w-full bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-400 dark:border-b-stone-700 rounded-sm pl-6 text-right disabled:text-stone-400"
-                :class="{ 'border-b-red-400 dark:border-b-red-400': Number(form.amount) <= 0 }"
-                placeholder="0"
-                required
-                v-model.number.lazy="form.amount"
-              >
+              :is="operationIcon" />
+              <span class="sm:text-md">$</span>
             </div>
+            <input
+            type="number"
+            :min="0"
+            id="amount"
+            class="w-24 font-normal bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-400 dark:border-b-stone-700 rounded-sm pl-6 text-right disabled:text-stone-400"
+            :class="{ 'border-b-red-400 dark:border-b-red-400': Number(form.amount) <= 0 }"
+            placeholder="0"
+            required
+            v-model.number.lazy="form.amount"
+            >
           </div>
+          </label>
         </div>
 
-        <div class="mb-4 space-y-2 text-left px-1">
-          <div class="flex items-center gap-1">
-            <div class="grid space-y-2 w-1/2">
-              <label for="fundID" class="text-xs font-semibold">
-                Main Fund
-              </label>
-              <select
-              id="fundID"
-              name="fundID"
-              class="border-transparent dark:focus:border-1 focus:border-violet-500 dark:focus:border-violet-500 shadow-sm shadow-stone-400 dark:shadow-black rounded-full invalid:text-red-400 bg-transparent focus:ring-0"
-              required
-              :disabled="isCredit"
-              v-model="form.fundID"
-              >
-                <option
-                class="text-white bg-stone-800 disabled:text-opacity-50 text-sm"
-                v-for="fund in funds" :key="fund.id"
-                :value="fund.id"
-                >
-                  <span>{{ fund.name }}</span>
-                </option>
-              </select>
-            </div>
-            <div class="grid space-y-2 w-1/2">
-              <label for="otherFundID" :class="[{ 'text-stone-400': form.type !== 0 || !form.fundID }, 'text-xs font-semibold']">
-                Correlated Fund
-              </label>
-              <select
-              id="otherFundID"
-              name="otherFundID"
-              class="border-transparent dark:focus:border-1 focus:border-violet-500 dark:focus:border-violet-500 shadow-sm shadow-stone-400 dark:shadow-black rounded-full invalid:text-red-400 bg-transparent focus:ring-0"
-              :disabled="form.type !== 0 || !form.fundID"
-              required
-              v-model="form.otherFundID"
-              >
-                <option
-                class="text-white bg-stone-800 disabled:text-opacity-50 text-sm hover:bg-opacity-95"
-                v-for="fund in funds" :key="fund.id"
-                :value="fund.id"
-                v-show="fund.id !== form.fundID"
-                >
-                  <span>{{ fund.name }}</span>
-                </option>
-              </select>
-            </div>
-          </div>
+        <div class="my-6 flex justify-around">
+          <label for="credit" class="flex items-center gap-2 text-left text-xs font-semibold">
+            <input
+            id="credit"
+            name="credit"
+            type="radio"
+            class="text-violet-500 focus:ring-violet-500"
+            required
+            v-model="form.type"
+            :value="1"
+            >
+            Credit
+          </label>
+          <label for="debit" class="flex items-center gap-2 text-left text-xs font-semibold">
+            <input
+            id="debit"
+            name="debit"
+            type="radio"
+            class="text-violet-500 focus:ring-violet-500"
+            required
+            v-model="form.type"
+            :value="2"
+            >
+            Debit
+          </label>
+          <label for="assignment" class="flex items-center gap-2 text-left text-xs font-semibold">
+            <input
+            id="assignment"
+            name="assignment"
+            type="radio"
+            class="text-violet-500 focus:ring-violet-500 p-2 disabled:bg-stone-300 dark:disabled:bg-stone-700"
+            required
+            v-model="form.type"
+            :disabled="funds.length < 2"
+            :value="0"
+            >
+            Fund to Fund
+          </label>
         </div>
 
-        <div class="mb-4 text-left px-1 flex items-center gap-2">
-            <div class="w-1/2">
-              <label for="tag" class="text-xs font-semibold">
-                Tag
-              </label>
-              <input
-              @focusin="showTags = true"
-              @focusout="(e) => handleTagList(e)"
-              @keydown.tab="showTags = false"
-              @keydown.backspace="showTags = true"
-              @keydown.arrow-up="focusedTagIndex--"
-              @keydown.arrow-down="focusedTagIndex++"
-              @keydown.enter="handleTagEnter(typeTags[focusedTagIndex])"
-              id="tag"
-              type="text"
-              name="tag"
-              class="w-full focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
-              required
-              v-model.trim="form.tag"
+        <div class="my-2 grid grid-cols-2 gap-1">
+          <label for="fundID" class="grid text-left text-xs font-semibold">
+            Main Fund
+            <select
+            id="fundID"
+            name="fundID"
+            class="mt-2 border-transparent font-normal dark:focus:border-1 focus:border-violet-500 dark:focus:border-violet-500 rounded-full bg-transparent focus:ring-0 shadow-sm shadow-stone-400 dark:shadow-black invalid:text-red-400"
+            required
+            :disabled="isCredit"
+            v-model="form.fundID"
+            >
+              <option
+              class="text-white bg-stone-800 disabled:text-opacity-50 text-sm"
+              v-for="fund in funds" :key="fund.id"
+              :value="fund.id"
               >
-              <div v-show="showTags" class="px-1 text-sm rounded-sm mt-4 bg-white dark:bg-stone-800 border-violet-500 border absolute w-72">
-                <button
-                v-for="tag, i in typeTags" Key="i"
-                type="button"
-                class="tag hover:text-violet-500 w-full cursor-pointer text-left"
-                :class="{'bg-violet-200 dark:bg-violet-600 dark:bg-opacity-10': focusedTagIndex === i }"
-                @click="form.tag = tag, showTags = false"
-                >
-                  {{ tag }}
-                </button>
-              </div>
-            </div>
-            <div class="w-1/2">
-              <label for="note" class="text-xs font-semibold">
-                Note
-              </label>
-              <input
-              type="text"
-              name="note"
-              id="note"
-              maxlength="240"
-              required
-              v-model.trim="form.note"
-              class="w-full focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
+                {{ fund.name }}
+              </option>
+            </select>
+          </label>
+          <label for="otherFundID" :class="[{ 'text-stone-400': form.type !== 0 || !form.fundID }, 'grid text-left text-xs font-semibold']">
+            Correlated Fund
+            <select
+            id="otherFundID"
+            name="otherFundID"
+            class="mt-2 border-transparent font-normal dark:focus:border-1 focus:border-violet-500 dark:focus:border-violet-500 rounded-full bg-transparent focus:ring-0 shadow-sm shadow-stone-400 dark:shadow-black invalid:text-red-400"
+            :disabled="form.type !== 0 || !form.fundID"
+            required
+            v-model="form.otherFundID"
+            >
+              <option
+              class="text-white bg-stone-800 disabled:text-opacity-50 text-sm hover:bg-opacity-95"
+              v-for="fund in funds" :key="fund.id"
+              :value="fund.id"
+              v-show="fund.id !== form.fundID"
               >
-            </div>
-          </div>
+                {{ fund.name }}
+              </option>
+            </select>
+          </label>
+        </div>
+
+        <div class="my-6 grid grid-cols-2">
+          <label for="tag" class="text-left text-xs font-semibold">
+            Tag
+            <input
+            id="tag"
+            type="text"
+            name="tag"
+            class="font-normal focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 invalid:text-red-400 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
+            required
+            v-model.trim="form.tag"
+            >
+          </label>
+          <label for="note" class="text-left text-xs font-semibold">
+            Note
+            <input
+            type="text"
+            name="note"
+            id="note"
+            maxlength="240"
+            required
+            v-model.trim="form.note"
+            class="font-normal focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 invalid:text-red-400 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
+            >
+          </label>
+        </div>
+        <div class="mt-2 w-full min-h-4 px-1 flex flex-wrap gap-1">
+          <option
+          v-for="tag, i in tags" :Key="i"
+          class="px-2 rounded-sm text-white inline text-xs bg-violet-500 cursor-pointer"
+          @click="form.tag = tag, showTags = false"
+          >
+            {{ tag }}
+          </option>
+        </div>
       </fieldset>
 
-      <div class="h-1/2 flex items-center justify-end my-4 space-x-2">
+      <div class="h-1/2 my-6 flex items-center justify-center space-x-2">
         <button
         type="button"
-        class="mt-3 inline-flex w-full justify-center rounded-md px-4 py-2 text-base font-bold shadow-sm bg-stone-300 dark:bg-stone-800 hover:bg-stone-100 dark:hover:bg-stone-700 focus:outline-none focus:ring-2 focus:ring-violet-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+        class="btn-secondary"
         @click="$emit('close-form')"
         ref="cancelButtonRef"
         :disabled="loading"
@@ -213,7 +182,7 @@
       </button>
       <button
       type="button"
-      class="mt-3 inline-flex gap-2 w-full justify-center rounded-md px-4 py-2 text-base font-bold shadow-sm focus:outline-none focus:ring-2 focus:ring-white sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm hover:bg-violet-500 bg-violet-600 text-white disabled:bg-stone-300 dark:disabled:bg-stone-700 dark:disabled:text-stone-400"
+      class="btn-primary disabled:bg-stone-300 dark:disabled:bg-stone-700 dark:disabled:text-stone-400"
       @click="onSave(form)"
       :disabled="loading || formHasErrors"
       >
@@ -253,31 +222,30 @@ const props = defineProps({
 });
 
 const fundStore = useFundStore();
+const recordStore = useRecordStore();
+
 const { funds } = storeToRefs(fundStore);
 
-const recordStore = useRecordStore();
-const { tagNames } = storeToRefs(recordStore);
-
-
+const defaultFundID = fundStore.funds.find(fund => fund.isDefault).id;
 const form = reactive({
   amount: 1,
   date: new Date(),
   note: "",
   tag: "",
-  fundID: fundStore.defaultFund.id,
+  fundID: defaultFundID,
   otherFundID: null,
   type: 2,
   ...props.preset,
 });
 
-const loading = ref(false);
-const templateName = ref("");
-const showTags = ref(false);
-const focusedTagIndex = ref(0);
+const { tagsByType } = storeToRefs(recordStore);
 
-const typeTags = computed(() => {
+const loading = ref(false);
+const showTags = ref(false);
+
+const tags = computed(() => {
   const formTag = form.tag?.toLowerCase() || "";
-  const matchingTags = tagNames.value[form.type]
+  const matchingTags = tagsByType.value[form.type]
     .filter(tag => tag.toLowerCase().includes(formTag))
     .sort();
   return matchingTags;
@@ -330,19 +298,6 @@ function removeUnaltered(formValues) {
   for (const key of keys) if (formValues[key] === props.preset[key]) delete formValues[key];
 }
 
-function handleTagList(e) {
-  const tagSelected = e.relatedTarget?.className?.includes('tag');
-  if (!tagSelected) return showTags.value = false;
-  form.tag = e.relatedTarget.innerText;
-  showTags.value = false;
-}
-
-function handleTagEnter(tag) {
-  form.tag = tag;
-  focusedTagIndex.value = 0;
-  showTags.value = false;
-}
-
 function setStartingData() {
   setStartingDate();
   normalizeAmount();
@@ -368,13 +323,8 @@ function normalizeAmount() {
 }
 
 watch(() => form.type, (type) => {
-  form.fundID = type !== 2 ? fundStore.defaultFund.id : "";
+  form.fundID = type !== 2 ? defaultFundID : "";
   form.otherFundID = null;
-})
-
-watch(focusedTagIndex, (i) => {
-  if (i < 0) focusedTagIndex.value = (typeTags.value.length - 1);
-  if (i >= typeTags.value.length) focusedTagIndex.value = 0;
 })
 
 </script>

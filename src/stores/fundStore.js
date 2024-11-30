@@ -1,7 +1,6 @@
-import { computed } from 'vue';
 import { defineStore } from 'pinia';
 import { useLocalStorage } from '@vueuse/core';
-import { useAuthStore } from "./authStore";
+import { useAuthStore } from './authStore';
 import { useRecordStore } from './recordStore';
 import { Create, Update, Delete } from '../services/fundAPI';
 import router from '../router';
@@ -9,7 +8,6 @@ import router from '../router';
 export const useFundStore = defineStore('fund', () => {
   const recordStore = useRecordStore();
   const funds = useLocalStorage('vueUseFunds', []);
-  const defaultFund = computed(() => funds.value.find(fund => fund.isDefault));
   const authStore = useAuthStore();
 
   const mutations = {
@@ -21,7 +19,7 @@ export const useFundStore = defineStore('fund', () => {
       funds.value.push(data)
       return message;
     },
-    updateFund: ({ data, message = "Fund updated." }) => {
+    updateFund: ({ data, message = 'Fund updated.' }) => {
       const index = funds.value.findIndex(fund => fund.id === data.id);
       funds.value.splice(index, 1, data);
       return message;
@@ -40,9 +38,9 @@ export const useFundStore = defineStore('fund', () => {
     ))
     .catch((error) => {
       if (error.response?.status === 401 && !authStore.isAuthenticated) {
-        reject("For security reasons, your session finished.")
+        reject('For security reasons, your session finished.')
         authStore.finishSession();
-        router.replace("/")
+        router.replace('/')
       } else {
         const feedback = error.response?.data?.message || error.response?.data || error.message || error;
         reject(feedback);
@@ -68,5 +66,5 @@ export const useFundStore = defineStore('fund', () => {
     mutation: mutations.deleteFund
   });
 
-  return { funds, defaultFund, mutations, createFund, updateFund, deleteFund }
+  return { funds, mutations, createFund, updateFund, deleteFund }
 })

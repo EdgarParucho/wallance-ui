@@ -33,19 +33,18 @@
 </template>
 
 <script setup>
+import { computed, defineAsyncComponent, ref, watch } from 'vue';
 import { TagIcon, PlusIcon, MinusIcon } from '@heroicons/vue/24/outline';
-import { computed, defineAsyncComponent, ref } from 'vue';
+import { useRecordStore } from '../../stores/recordStore.js';
 
 const props = defineProps({
   tagData: {
     type: Object,
     required: true,
-  },
-  typeSum: {
-    type: Object,
-    required: true,
   }
 });
+
+const recordStore = useRecordStore();
 
 const type = ref(2);
 const tagList = computed(() => props.tagData[type.value]);
@@ -59,8 +58,13 @@ const iconStyles = {
   1: 'text-green-500 bg-green-600',
 };
 
+const sumByType = ref({
+  2: 0,
+  1: 0,
+});
+
 const tagPercentage = (tagSum) => {
-  return ((tagSum / props.typeSum[type.value].total) * 100).toFixed(1)
+  return ((tagSum / sumByType.value[type.value]) * 100).toFixed(1)
 };
 
 function getAmountFormatted(amount) {
@@ -74,6 +78,13 @@ function getAmountFormatted(amount) {
     currency: "USD",
   }).format(recomposed)
 }
+
+watch(recordStore.records, (records) => {
+  if (recordStore.records.length > 0) records.forEach((record) => {
+    if (record.type == 2) sumByType.value[2] += record.amount;
+    else if (record.type == 1) sumByType.value[1] += record.amount;
+  })
+}, { immediate: true })
 
 defineExpose({ type, tagList });
 

@@ -10,7 +10,7 @@ import API from '../services/API';
 export const useAuthStore = defineStore('auth', () => {
   const recordStore = useRecordStore();
   const fundStore = useFundStore();
-  const accessToken = useLocalStorage("vueUseAccessToken", "");
+  const accessToken = useLocalStorage('vueUseAccessToken', '');
   const { isAuthenticated } = useAuth0();
   const loggingIn = ref(false);
 
@@ -24,7 +24,7 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   function resetStores() {
-    accessToken.value = "";
+    accessToken.value = '';
     recordStore.records = [];
     recordStore.sampleRecords = [];
     fundStore.funds = [];
@@ -43,7 +43,7 @@ export const useAuthStore = defineStore('auth', () => {
   };
 
   watch(() => accessToken.value, (token) => {
-    API.defaults.headers.common['Authorization'] = "Bearer " + token;
+    API.defaults.headers.common['Authorization'] = 'Bearer ' + token;
   }, { immediate: true })
 
   return {
