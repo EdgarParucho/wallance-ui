@@ -33,7 +33,7 @@
             Amount
             <div class="flex">
               <div class="flex items-center pl-3 space-x-2">
-                <component :is="recordTypeIcon.icon" :class="['bg-opacity-20 p-1 rounded-full h-5 w-5', recordTypeIcon.class]" />
+                <RecordIcon :recordType="form.type" />
                 <span class="sm:text-md">$</span>
               </div>
               <input
@@ -208,6 +208,7 @@ import {
 import { useRecordStore } from '../../stores/recordStore';
 import { useFundStore } from '../../stores/fundStore';
 import Dialog from '../layout/Dialog.vue';
+import RecordIcon from '../layout/RecordIcon.vue';
 
 const showAlert = inject("showAlert");
 const showToast = inject("showToast");
@@ -240,6 +241,7 @@ const getTimeFormatted = () => {
   const date = props.editing ? new Date(props.preset.date) : new Date();
   return date.toTimeString().slice(0, 5);
 };
+
 const getAmountFormatted = () => {
   const amount = props.editing ? props.preset.amount : form.amount;
   return (amount < 0) ? String(Number(-amount).toFixed(2)) : String(Number(amount).toFixed(2))

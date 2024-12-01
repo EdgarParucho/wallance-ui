@@ -13,7 +13,7 @@
         <div class="mb-1 pt-1 h-20 w-80 rounded-sm bg-white dark:bg-stone-800">
           <div class="px-2 flex justify-between">
             <ScaleIcon class="rounded-icon" />
-            <strong v-if="!loggingIn" class="text-2xl">{{ balance }}</strong>
+            <strong v-if="!loggingIn" class="text-2xl">${{ balance }}</strong>
           </div>
           <dt class="px-2 text-sm">Budget</dt>
           <dd class="px-2 text-xs text-stone-500 dark:text-stone-400">Total balance from funds.</dd>
@@ -26,7 +26,7 @@
         >
           <div class="px-2 flex justify-between">
             <ArchiveBoxIcon class="rounded-icon" />
-            <strong class="text-lg font-light">{{ amountFormatted(fund.balance) }}</strong>
+            <strong class="text-lg font-light">${{ amountFormatted(fund.balance) }}</strong>
           </div>
           <dt class="px-2 text-sm">{{ fund.name }}</dt>
           <dd class="px-2 text-xs text-stone-500 dark:text-stone-400">{{ fund.description }}</dd>
@@ -84,20 +84,20 @@
           <span>Export .xls</span>
         </download-excel>
       </div>
+    </section>
 
-      <div v-if="oneOrMoreRecords" v-show="oneOrMoreTags" class="my-20">
-        <TagIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
-        <h2 class="text-4xl font-bold text-center">Tags Measurement</h2>
-        <p class="mb-8 text-center text-lg text-stone-500 dark:text-stone-400">
-          Check the tags among the results
-        </p>
-        <div class="md:flex my-10 md:justify-center gap-2">
-          <div class="md:w-1/2 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
-            <!-- <QueryTags ref="taglistRef" :tag-data="tagData" :type-sum="typeSum" /> -->
-          </div>
-          <!-- <div class="md:w-1/2 xl:w-1/4 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
-            <QueryChart :taglist-ref="taglistRef" :tag-names="tagNames" />
-          </div> -->
+    <section v-if="oneOrMoreRecords" v-show="oneOrMoreTags" class="px-2 mt-12 py-12">
+      <TagIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
+      <h2 class="text-4xl font-bold text-center">Tags Measurement</h2>
+      <p class="mb-8 text-center text-lg text-stone-500 dark:text-stone-400">
+        Check the tags among the results
+      </p>
+      <div class="md:flex my-10 md:justify-center gap-2">
+        <div class="md:w-1/2 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
+          <QueryTags ref="tagsDataRef" />
+        </div>
+        <div class="md:w-1/2 xl:w-1/4 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
+          <QueryChart :tags-data-ref="tagsDataRef" />
         </div>
       </div>
 
@@ -122,12 +122,14 @@
       />
     </transition>
 
-    <QueryPanel
-    v-if="queryPanelIsOpen"
-    @close-form="queryPanelIsOpen = false"
-    @confirm-query-completion="queryCompleted = true"
-    :form-is-open="queryPanelIsOpen"
-    />
+    <transition name="fade" mode="out-in">
+      <QueryPanel
+      v-if="queryPanelIsOpen"
+      @close-form="queryPanelIsOpen = false"
+      @confirm-query-completion="queryCompleted = true"
+      :form-is-open="queryPanelIsOpen"
+      />
+    </transition>
 
   </main>
 </template>
@@ -174,18 +176,13 @@ const recordFormIsOpen = ref(false);
 const fundFormIsOpen = ref(false);
 const queryPanelIsOpen = ref(false);
 const queryCompleted = ref(false);
-const taglistRef = ref(null);
-
-const oneOrMoreTags =  computed(() => Object.values(recordStore.tagsByRecordType).flat().length > 0);
+const tagsDataRef = ref(null);
 
 const oneOrMoreRecords = computed(() => recordStore.records.length > 0);
+const oneOrMoreTags =  computed(() => Object.values(recordStore.tagsByRecordType).flat().length > 0);
 
 let editingFund = null;
-
-let recordFormOptions = {
-  preset: null,
-};
-
+let recordFormOptions = { preset: null };
 let recordsXls = [];
 const typeNames = {
   0: "Assignment",
@@ -194,28 +191,12 @@ const typeNames = {
 };
 
 const balance = computed(() => {
-  const total = funds.value.reduce((totalBalance, { balance }) => totalBalance + Number(balance), 0);
-  const integer = Math.floor(total);
-  const fractions = total
-    .toString()
-    .split('.')[1] || "0";
-  const recomposed = [integer, fractions.slice(0, 2)].join(".");
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(recomposed);
+  const fundsBalance = funds.value.reduce((sum, { balance }) => sum + Number(balance), 0);
+  return amountFormatted(fundsBalance);
 });
 
 function amountFormatted(amount = 0) {
-  const integer = Math.floor(amount);
-  const fractions = amount
-    .toString()
-    .split('.')[1] || "0";
-  const recomposed = [integer, fractions.slice(0, 2)].join(".")
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-   }).format(recomposed)
+  return (amount < 0) ? String(Number(-amount).toFixed(2)) : String(Number(amount).toFixed(2));
 }
 
 function validateDeletion(fund) {

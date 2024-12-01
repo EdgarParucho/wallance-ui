@@ -5,7 +5,6 @@
   :icon="DocumentMagnifyingGlassIcon"
   title="Query Form"
   subtitle="Define your query in the following form."
-  widthClasses="w-96 md:w-2/3 xl:w-2/3"
   >
     <form class="my-10 p-8 shadow-md rounded-sm mx-auto">
       <fieldset class="grid space-y-4 justify-center">
@@ -97,13 +96,23 @@
             <span class="mx-auto">Reset form</span>
           </button>
         </div>
+        <div class="flex justify-center">
+          <button
+          type="button"
+          class="w-full h-6 sm:w-36 flex items-center bg-white dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 rounded-sm px-4"
+          @click="$emit('close-form')"
+          >
+            <XMarkIcon class="w-4 text-left" />
+            <span class="mx-auto">Cancel</span>
+          </button>
+        </div>
       </div>
     </form>
   </Dialog>
 </template>
 
 <script setup>
-import { DocumentMagnifyingGlassIcon } from '@heroicons/vue/24/outline';
+import { DocumentMagnifyingGlassIcon, XMarkIcon } from '@heroicons/vue/24/outline';
 import { storeToRefs } from "pinia";
 import { ref, computed, inject, defineProps } from 'vue';
 import { MagnifyingGlassIcon } from '@heroicons/vue/24/solid';
