@@ -11,7 +11,7 @@ export const useRecordStore = defineStore('records', () => {
   const records = useLocalStorage('vueUseRecords', []);
   const authStore = useAuthStore();
   const fundStore = useFundStore();
-  // const tagsByType =  useLocalStorage('vueUseTagsByType', { 0: [], 1: [], 2: [] });
+  // const tagsByRecordType =  useLocalStorage('vueUseTagsByType', { 0: [], 1: [], 2: [] });
 
   const mutations = {
     setRecords: ({ data, message }) => {
@@ -76,14 +76,12 @@ export const useRecordStore = defineStore('records', () => {
     mutation: mutations.deleteRecord
   });
 
-  const tagsByType = computed(() => {
+  const tagsByRecordType = computed(() => {
     let tags = { 0: [], 1: [], 2: [] };
     records.value.forEach(({ type, tag }) => tags[type].push(tag))
     for (let type in tags) tags[type] = [...new Set(tags[type])]
     return tags
   })
-
-  // watch(() => records, (r) => { setTags(r) })
 
   return {
     records,
@@ -92,6 +90,6 @@ export const useRecordStore = defineStore('records', () => {
     createRecord,
     updateRecord,
     deleteRecord,
-    tagsByType,
+    tagsByRecordType,
   };
 })

@@ -85,10 +85,6 @@
         </download-excel>
       </div>
 
-      <p class="mt-20 text-center bg-violet-500 bg-opacity-20 w-1/2 mx-auto border-l-2 border-violet-500 rounded-sm">
-        oneOrMoreTags: {{ oneOrMoreTags }}
-      </p>
-
       <div v-if="oneOrMoreRecords" v-show="oneOrMoreTags" class="my-20">
         <TagIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
         <h2 class="text-4xl font-bold text-center">Tags Measurement</h2>
@@ -108,19 +104,23 @@
     </section>
 
 
-    <RecordForm
-    v-if="recordFormIsOpen"
-    @close-form="resetRecordForm"
-    :form-is-open="recordFormIsOpen"
-    :preset="recordFormOptions.preset"
-    />
-
-    <FundForm
-    v-if="fundFormIsOpen"
-    :editing-fund="editingFund"
-    :form-is-open="fundFormIsOpen"
-    @close-form="closeForm"
-    />
+    <transition name="fade" mode="out-in">
+      <RecordForm
+        v-if="recordFormIsOpen"
+        @close-form="resetRecordForm"
+        :form-is-open="recordFormIsOpen"
+        :preset="recordFormOptions.preset"
+        />
+    </transition>
+    
+    <transition name="fade" mode="out-in">
+      <FundForm
+      v-if="fundFormIsOpen"
+      :editing-fund="editingFund"
+      :form-is-open="fundFormIsOpen"
+      @close-form="closeForm"
+      />
+    </transition>
 
     <QueryPanel
     v-if="queryPanelIsOpen"
@@ -176,7 +176,7 @@ const queryPanelIsOpen = ref(false);
 const queryCompleted = ref(false);
 const taglistRef = ref(null);
 
-const oneOrMoreTags =  computed(() => Object.values(recordStore.tagsByType).flat().length > 0);
+const oneOrMoreTags =  computed(() => Object.values(recordStore.tagsByRecordType).flat().length > 0);
 
 const oneOrMoreRecords = computed(() => recordStore.records.length > 0);
 
