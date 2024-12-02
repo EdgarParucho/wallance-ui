@@ -8,7 +8,7 @@
   >
     <form>
       <fieldset class="px-2">
-        <div class="my-2 grid sm:grid-cols-3 gap-1">
+        <div class="my-2 grid sm:grid-cols-3">
           <label for="date" class="grid text-left text-xs font-semibold">
             Date
             <input
