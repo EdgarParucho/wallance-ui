@@ -14,7 +14,7 @@
             <input
             type="date"
             id="date"
-            class="font-normal focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 invalid:text-red-400 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
+            class="w-full font-normal focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 invalid:text-red-400 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
             required
             v-model="form.date"
             >
@@ -24,7 +24,7 @@
             <input
             type="time"
             id="time"
-            class="font-normal focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 invalid:text-red-400 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
+            class="w-full font-normal focus:border-b-violet-500 dark:focus:border-b-violet-500 border-b-stone-400 dark:border-b-stone-700 invalid:text-red-400 focus:border-transparent focus:ring-0 border-transparent bg-transparent"
             required
             v-model="form.time"
             >
@@ -40,7 +40,7 @@
               type="number"
               :min="0"
               id="amount"
-              class="w-24 font-normal bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-400 dark:border-b-stone-700 rounded-sm pl-6 text-right disabled:text-stone-400"
+              class="w-24 w-full font-normal bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-stone-400 dark:border-b-stone-700 rounded-sm pl-6 text-right disabled:text-stone-400"
               :class="{ 'border-b-red-400 dark:border-b-red-400': Number(form.amount) <= 0 }"
               placeholder="0"
               required
