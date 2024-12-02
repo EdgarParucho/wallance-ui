@@ -197,14 +197,7 @@
 <script setup>
 import { ref, watch, computed, reactive, inject, onMounted } from 'vue';
 import { storeToRefs } from "pinia";
-import {
-  DocumentPlusIcon,
-  PencilSquareIcon,
-  MinusIcon,
-  PlusIcon,
-  ArrowsRightLeftIcon
-} from '@heroicons/vue/24/outline';
-
+import { DocumentPlusIcon, PencilSquareIcon, } from '@heroicons/vue/24/outline';
 import { useRecordStore } from '../../stores/recordStore';
 import { useFundStore } from '../../stores/fundStore';
 import Dialog from '../layout/Dialog.vue';
@@ -217,7 +210,7 @@ const emit = defineEmits(['close-form']);
 
 const props = defineProps({
   editing: { type: Boolean, default: false },
-  preset: { type: Object, default: undefined },
+  selectedRecord: { type: Object, default: undefined },
   formIsOpen: { type: Boolean, default: false },
 });
 
@@ -230,7 +223,7 @@ function setFormattedData() {
 }
 
 const getDateFormatted = () => {
-  const date = props.editing ? new Date(props.preset.date) : new Date();
+  const date = props.editing ? new Date(props.selectedRecord.date) : new Date();
   const currentYear = date.getFullYear();
   const currentMonth = String(date.getMonth() + 1).padStart(2, '0');
   const currentDate = String(date.getDate()).padStart(2, '0');
@@ -238,12 +231,12 @@ const getDateFormatted = () => {
 };
 
 const getTimeFormatted = () => {
-  const date = props.editing ? new Date(props.preset.date) : new Date();
+  const date = props.editing ? new Date(props.selectedRecord.date) : new Date();
   return date.toTimeString().slice(0, 5);
 };
 
 const getAmountFormatted = () => {
-  const amount = props.editing ? props.preset.amount : form.amount;
+  const amount = props.editing ? props.selectedRecord.amount : form.amount;
   return (amount < 0) ? String(Number(-amount).toFixed(2)) : String(Number(amount).toFixed(2))
 };
 
@@ -262,7 +255,7 @@ const form = reactive({
   fundID: defaultFundID,
   otherFundID: null,
   type: 2,
-  ...props.preset,
+  ...props.selectedRecord,
 });
 
 const loading = ref(false);
@@ -276,12 +269,6 @@ const tags = computed(() => {
     .filter(tag => tag.toLowerCase().includes(formTag))
     .sort();
   return filteredTags;
-});
-
-const recordTypeIcon = computed(() => {
-  if (form.type === 0) return { icon: ArrowsRightLeftIcon, class: "text-stone-500 bg-stone-600" };
-  else if (form.type === 1) return { icon: PlusIcon, class: "text-green-500 bg-green-600" };
-  else return { icon: MinusIcon, class: "text-red-500 bg-red-600" };
 });
 
 const formHasErrors = computed(() => {
@@ -310,12 +297,12 @@ function normalizeRecord({ amount, date, time, ...rest }) {
   };
   if (!props.editing) return normalizedRecord;
   else removeUnalteredProperties(normalizedRecord);
-  return { id: props.preset.id, body: normalizedRecord };
+  return { id: props.selectedRecord.id, body: normalizedRecord };
 }
 
 function removeUnalteredProperties(formValues) {
   const keys = Object.keys(formValues);
-  for (const key of keys) if (formValues[key] === props.preset[key]) delete formValues[key];
+  for (const key of keys) if (formValues[key] === props.selectedRecord[key]) delete formValues[key];
 }
 
 watch(() => form.type, (type) => {

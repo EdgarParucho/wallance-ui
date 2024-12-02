@@ -40,7 +40,7 @@
             </button>
             <button
             class="w-1/2 py-0.5 text-red-400 hover:bg-red-100 dark:hover:bg-red-900 focus:bg-red-100 dark:focus:bg-red-900 focus:outline-none transition-colors disabled:text-stone-400 disabled:hover:bg-stone-100 dark:disabled:hover:bg-stone-800"
-            @click="validateDeletion(fund)"
+            @click="confirmFundDeletion(fund)"
             :disabled="fund.isDefault"
             >
               <TrashIcon class="w-4 mx-auto" aria-hidden="true" />
@@ -70,8 +70,12 @@
       <p v-if="oneOrMoreRecords" class="mb-8 text-center text-lg text-stone-500 dark:text-stone-400">
         {{ queryCompleted ? 'Query Results' : 'Current Month' }}
       </p>
-      
-      <QueryTable v-if="oneOrMoreRecords" />
+
+      <QueryTable
+      v-if="oneOrMoreRecords"
+      @edit-record="editRecord"
+      @confirm-record-deletion="confirmRecordDeletion"
+      />
       <QueryBalance v-if="oneOrMoreRecords" :records="records" />
 
       <div class="mt-10 flex items-center space-x-2 justify-center">
@@ -103,31 +107,32 @@
 
     </section>
 
-
     <transition name="fade" mode="out-in">
       <RecordForm
         v-if="recordFormIsOpen"
-        @close-form="resetRecordForm"
+        :editing="editingRecord"
         :form-is-open="recordFormIsOpen"
-        :preset="recordFormOptions.preset"
+        :selected-record="selectedRecord"
+        @close-form="closeRecordForm"
         />
     </transition>
-    
+
     <transition name="fade" mode="out-in">
       <FundForm
       v-if="fundFormIsOpen"
-      :editing-fund="editingFund"
       :form-is-open="fundFormIsOpen"
-      @close-form="closeForm"
+      :editing="editingFund"
+      :selected-fund="selectedFund"
+      @close-form="closeFundForm"
       />
     </transition>
 
     <transition name="fade" mode="out-in">
       <QueryPanel
       v-if="queryPanelIsOpen"
+      :form-is-open="queryPanelIsOpen"
       @close-form="queryPanelIsOpen = false"
       @confirm-query-completion="queryCompleted = true"
-      :form-is-open="queryPanelIsOpen"
       />
     </transition>
 
@@ -181,11 +186,13 @@ const tagsDataRef = ref(null);
 const oneOrMoreRecords = computed(() => recordStore.records.length > 0);
 const oneOrMoreTags =  computed(() => Object.values(recordStore.tagsByRecordType).flat().length > 0);
 
-let editingFund = null;
-let recordFormOptions = { preset: null };
+let selectedFund = null;
+let selectedRecord = null;
+let editingRecord = false;
+let editingFund = false;
 let recordsXls = [];
 const typeNames = {
-  0: "Assignment",
+  0: "Fund to Fund",
   1: "Credit",
   2: "Debit"
 };
@@ -195,20 +202,17 @@ const balance = computed(() => {
   return amountFormatted(fundsBalance);
 });
 
-function amountFormatted(amount = 0) {
+function amountFormatted(amount) {
   return (amount < 0) ? String(Number(-amount).toFixed(2)) : String(Number(amount).toFixed(2));
 }
 
-function validateDeletion(fund) {
-  if (fund.balance > 0) showAlert({
-    type: "info",
-    title: "Can't complete the action",
-    text: "First, move the balance to another fund, then retry this action."
-  });
-  else confirmDeletion(fund);
+function editFund(fund) {
+  editingFund = true;
+  selectedFund = fund;
+  fundFormIsOpen.value = true;
 }
 
-async function confirmDeletion(fund) {
+async function confirmFundDeletion(fund) {
   const deleteIsConfirmed = await swal({
     icon: "warning",
     title: "Caution",
@@ -222,25 +226,36 @@ async function confirmDeletion(fund) {
     .catch((message) => showAlert({ type: "error", text: message }))
 }
 
-function editFund(fund) {
-  editingFund = fund
-  fundFormIsOpen.value = true
+function closeFundForm() {
+  editingFund = false;
+  selectedFund = null;
+  fundFormIsOpen.value = false;
 }
 
-function closeForm() {
-  editingFund = null
-  fundFormIsOpen.value = false
+function editRecord(record) {
+  editingRecord = true;
+  selectedRecord = record;
+  recordFormIsOpen.value = true;
 }
 
-function resetRecordForm() {
-  recordFormOptions = {
-    preset: null,
-  };
+async function confirmRecordDeletion(record) {
+  const deleteIsConfirmed = await swal({
+    icon: "warning",
+    title: "Caution",
+    text: `Please confirm to delete this record. The action is irreversible.`,
+    buttons: true,
+    timer: null,
+  });
+  if(!deleteIsConfirmed) return;
+  recordStore.deleteRecord({ id: record.id })
+    .then((message) => showToast(message))
+    .catch((message) => showAlert({ type: "error", text: message }))
+}
+
+function closeRecordForm() {
+  editingRecord = false;
+  selectedRecord = null;
   recordFormIsOpen.value = false;
-}
-
-function getFundName (id) {
-  return funds.value.find(f => f.id === id).name
 }
 
 function formatToXls() {
@@ -256,6 +271,10 @@ function formatToXls() {
     }
   })
   return recordsXls;
+}
+
+function getFundName (id) {
+  return funds.value.find(f => f.id === id).name;
 }
 
 </script>

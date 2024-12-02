@@ -2,9 +2,9 @@
   <Dialog
   :form-is-open="formIsOpen"
   @close-form="$emit('close-form')"
-  :icon="editing ? PencilSquareIcon : PlusIcon"
+  :icon="props.editing ? PencilSquareIcon : PlusIcon"
   title="Fund Form"
-  :subtitle="`You are ${ editing ? 'editing' : 'creating' } a fund`"
+  :subtitle="`You are ${ props.editing ? 'editing' : 'creating' } a fund`"
   >
     <form @submit.prevent="handleSubmit(fund)" class="px-4">
       <div class="my-4 space-y-2 text-left px-1">
@@ -36,7 +36,7 @@
           v-model="fund.description"
         ></textarea>
       </div>
-        
+
       <div class="h-1/3 flex items-center justify-end my-4 space-x-2">
         <button class="btn-secondary" type="button" @click="$emit('close-form')" :disabled="loading">
           Cancel
@@ -72,7 +72,11 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
-  editingFund: {
+  editing: {
+    type: Boolean,
+    default: false
+  },
+  selectedFund: {
     type: Object,
     default: null,
   },
@@ -86,17 +90,17 @@ const fundStore = useFundStore();
 
 const fund = ref({ name: '', description: '' });
 const loading = ref(false);
-const editing = props.editingFund !== null
-if (editing) {
-  const { name, description } = props.editingFund;
+
+if (props.editing) {
+  const { name, description } = props.selectedFund;
   fund.value = { name, description };
 }
 
 const invalidForm = computed(() => fund.value.name === "" || fund.value.description === "");
 
 function handleSubmit(body) {
-  if (!editing) return createFund(body);
-  const { id } = props.editingFund;
+  if (!props.editing) return createFund(body);
+  const { id } = props.selectedFund;
   updateFund(id, body);
 }
 
