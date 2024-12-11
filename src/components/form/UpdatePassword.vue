@@ -24,7 +24,7 @@
         autocomplete="off"
         >
       </fieldset>
-      <div class="w-full flex gap-1 justify-center">
+      <div class="w-full my-4 flex gap-1 justify-center">
         <button
         type="button"
         class="btn-secondary"

@@ -1,13 +1,14 @@
 <template>
-  <div v-if="!atHome" class="flex justify-between items-center px-4 py-2 w-full shadow-stone-300 shadow-md dark:shadow-md bg-stone-200 dark:bg-stone-800">
-    <router-link to="/dashboard" class="flex items-center gap-2">
+  <div v-if="!atHome" class="flex justify-between items-center w-full shadow-stone-300 shadow-md dark:shadow-md bg-stone-200 dark:bg-stone-800">
+
+    <router-link to="/dashboard" class="m-1 flex items-center gap-1">
       <ScaleIcon class="w-7" />
       <span class="text-lg first-letter:font-serif first-letter:text-stone-400 first-letter:text-3xl font-bold">
         Wallance
       </span>
     </router-link>
 
-    <div class="flex space-x-4 text-stone-400">
+    <div class="m-1 flex space-x-4 text-stone-400">
       <Menu as="div" class="relative inline-block text-left">
         <MenuButton class="inline-flex justify-center rounded-full p-1 text-sm font-semibold shadow-sm bg-stone-500 text-white hover:bg-stone-600 dark:text-white dark:bg-stone-700 dark:hover:bg-stone-600">
           <UserIcon class="w-6" />
@@ -86,8 +87,7 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent, inject, ref, computed, watch } from 'vue';
-import { storeToRefs } from 'pinia';
+import { defineAsyncComponent, inject, ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '../../stores/authStore';
 import { useUserStore } from '../../stores/userStore';
@@ -104,8 +104,6 @@ const route = useRoute();
 const { logout } = useAuth0();
 const userStore = useUserStore();
 const authStore = useAuthStore();
-
-const { activeTheme } = storeToRefs(userStore);
 
 const requestingOTP = ref(false);
 const emailFormIsOpen = ref(false);
@@ -126,7 +124,7 @@ function toggleDarkMode() {
   const payload = { user_metadata: { theme: newMode } };
   userStore.updateUser(payload)
     .then(() => {
-      userStore.setActiveTheme(theme);
+      userStore.setActiveTheme(newMode);
       showToast("Preferences updated");
     })
     .catch((error) => console.error(error))
@@ -135,14 +133,6 @@ function toggleDarkMode() {
 </script>
 
 <style>
-.toggle-path {
-    transition: background 0.3s ease-in-out;
-}
-.toggle-circle {
-    top: 0.2rem;
-    left: 0.25rem;
-    transition: all 0.3s ease-in-out;
-}
 input:checked ~ .toggle-circle {
     transform: translateX(100%);
 }
