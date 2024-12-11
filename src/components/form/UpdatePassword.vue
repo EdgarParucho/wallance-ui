@@ -5,28 +5,36 @@
   title="Updating Password"
   :icon="KeyIcon"
   >
-    <div class="mt-12 px-8">
-      <form @submit.prevent="onSubmit(newPassword)">
-        <fieldset class="my-6">
-          <input
-          type="password"
-          class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
-          placeholder="New password"
-          required
-          v-model="newPassword"
-          autocomplete="off"
-          >
-          <input
-          type="password"
-          class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
-          placeholder="Password confirmation"
-          required
-          v-model="reEnteredPassword"
-          autocomplete="off"
-          >
-        </fieldset>
+    <form @submit.prevent="onSubmit(newPassword)" class="p-2">
+      <fieldset class="flex">
+        <input
+        type="password"
+        class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
+        placeholder="New password"
+        required
+        v-model="newPassword"
+        autocomplete="off"
+        >
+        <input
+        type="password"
+        class="w-full my-2 p-1 focus:ring-0 border-transparent focus:border-transparent focus:border-b-violet-500 border-b-stone-400 bg-transparent"
+        placeholder="Password confirmation"
+        required
+        v-model="reEnteredPassword"
+        autocomplete="off"
+        >
+      </fieldset>
+      <div class="w-full flex gap-1 justify-center">
         <button
-        class="flex justify-center items-center space-x-2 w-full my-2 py-1 outline-none font-bold rounded-sm text-white bg-stone-800 dark:disabled:bg-stone-800 dark:disabled:text-stone-500 hover:bg-stone-700 disabled:bg-stone-300 focus:outline-violet-500 outline-1"
+        type="button"
+        class="btn-secondary"
+        @click="$emit('close-form')"
+        :disabled="loading"
+        >
+          Cancel
+        </button>
+        <button
+        class="btn-primary disabled:bg-stone-300 dark:disabled:bg-stone-700 dark:disabled:text-stone-400"
         type="submit"
         :disabled="loading || passwordMismatch || someFieldIsEmpty"
         >
@@ -39,8 +47,8 @@
           <span v-if="loading" class="mx-auto">Processing...</span>
           <span v-else>Update Now</span>
         </button>
-      </form>
-    </div>
+      </div>
+    </form>
   </Dialog>
 </template>
 

@@ -18,5 +18,7 @@ let recordFormIsOpen = ref(false);
     >
       <PlusIcon class="w-10 mx-auto" />
     </button>
-    <RecordForm v-if="recordFormIsOpen" :form-is-open="recordFormIsOpen" @close-form="recordFormIsOpen = false" :editing="false" />
+    <transition name="fade" mode="out-in">
+      <RecordForm v-if="recordFormIsOpen" :form-is-open="recordFormIsOpen" @close-form="recordFormIsOpen = false" :editing="false" />
+    </transition>
 </template>

@@ -4,14 +4,13 @@ import { useAuthStore } from './authStore';
 import { useFundStore } from './fundStore';
 import { Find, Create, Update, Delete } from '../services/recordAPI';
 import router from '../router';
-import { computed, watch, watchEffect } from 'vue';
+import { computed } from 'vue';
 
 export const useRecordStore = defineStore('records', () => {
 
   const records = useLocalStorage('vueUseRecords', []);
   const authStore = useAuthStore();
   const fundStore = useFundStore();
-  // const tagsByRecordType =  useLocalStorage('vueUseTagsByType', { 0: [], 1: [], 2: [] });
 
   const mutations = {
     setRecords: ({ data, message }) => {

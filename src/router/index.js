@@ -17,12 +17,6 @@ const routes = [
     beforeEnter: authGuard,
   },
   {
-    path: "/account",
-    name: "Account",
-    component: () => import('../views/Account.vue'),
-    beforeEnter: authGuard,
-  },
-  {
     path: "/:catchAll(.*)",
     component: () => import('../views/NotFound.vue'),
   },

@@ -140,7 +140,7 @@
 </template>
 
 <script setup>
-import { computed, ref, defineAsyncComponent, inject } from 'vue';
+import { defineAsyncComponent, inject, ref, computed, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useDateFormat } from '@vueuse/shared';
 import {
@@ -153,10 +153,10 @@ import {
   ArrowDownIcon,
   TagIcon,
 } from '@heroicons/vue/24/solid';
-import { useFundStore } from '../stores/fundStore';
 import { useAuthStore } from '../stores/authStore';
+import { useFundStore } from '../stores/fundStore';
 import { useRecordStore } from '../stores/recordStore';
-import swal from "sweetalert";
+import swal from 'sweetalert';
 
 const QueryPanel = defineAsyncComponent(() => import('../components/query/QueryPanel.vue'));
 const QueryTags = defineAsyncComponent(() => import('../components/query/QueryTags.vue'));

@@ -16,7 +16,7 @@
           id="fund-name"
           v-model="fund.name"
           placeholder="College"
-          class="w-full bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-white transition-colors rounded-sm focus:outline-none"
+          class="w-1/3 bg-transparent focus:border-transparent focus:border-b-violet-500 focus:ring-0 border border-transparent border-b-white transition-colors rounded-sm focus:outline-none"
           required
           >
         </div>
