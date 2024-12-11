@@ -131,8 +131,8 @@
       <QueryPanel
       v-if="queryPanelIsOpen"
       :form-is-open="queryPanelIsOpen"
-      @close-form="queryPanelIsOpen = false"
       @confirm-query-completion="queryCompleted = true"
+      @close-form="queryPanelIsOpen = false"
       />
     </transition>
 

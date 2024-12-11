@@ -157,8 +157,8 @@ function submitQuery(filters) {
   recordStore.getRecords(filters)
     .then((message) => {
       showToast(message)
-      emit('confirm-query-completion')
-      emit('close-form')
+      emit('confirmQueryCompletion')
+      emit('closeForm')
     })
     .catch((message) => showAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)
