@@ -49,7 +49,7 @@
         </div>
       </dl>
 
-      <div class="mt-10 flex items-center space-x-2 justify-center disabled:bg-stone-600">
+      <div class="mt-10 flex items-center space-x-2 justify-center disabled:bg-stone-600 dark:disabled:bg-stone-600">
         <button class="btn-primary" @click="recordFormIsOpen = true" :disabled="loggingIn">
           <PlusIcon class="w-5" />
           <span>Add Record</span>

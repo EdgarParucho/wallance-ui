@@ -18,7 +18,7 @@ const recordFormIsOpen = ref(false);
 <template>
   <button
   v-if="!atHome"
-  class="fixed right-10 bottom-10 shadow-lg focus:outline-none flex items-center rounded-full -mt-16 w-14 h-14 text-white hover:bg-opacity-80 bg-gradient-to-tr from-violet-700 to-violet-400 hover:scale-110 transition-transform disabled:bg-stone-600"
+  class="fixed right-10 bottom-10 shadow-lg focus:outline-none flex items-center rounded-full -mt-16 w-14 h-14 text-white hover:bg-opacity-80 bg-gradient-to-tr from-violet-700 to-violet-400 hover:scale-110 transition-transform disabled:bg-stone-600  dark:disabled:bg-stone-600"
   @click="recordFormIsOpen = true"
   :disabled="loggingIn">
     <PlusIcon class="w-10 mx-auto" />
