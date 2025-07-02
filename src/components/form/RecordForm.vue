@@ -73,7 +73,10 @@
             >
             Debit
           </label>
-          <label for="assignment" class="flex items-center gap-2 text-left text-xs font-semibold">
+          <label
+          for="assignment"
+          class="flex items-center gap-2 text-left text-xs font-semibold"
+          :class="[{ 'text-stone-400 dark:text-stone-600': funds.length < 2 }]">
             <input
             id="assignment"
             type="radio"
@@ -274,7 +277,7 @@ const tags = computed(() => {
 const formHasErrors = computed(() => {
   const invalidDate = new Date(form.date).toString() === "Invalid Date";
   const invalidAmount = form.amount <= 0 || form.amount === "";
-  const invalidFundID = form.fundID === "";
+  const invalidFundID = form.fundID === "" || (form.type === 0 && form.otherFundID === null);
   return invalidDate || invalidAmount || invalidFundID;
 });
 
