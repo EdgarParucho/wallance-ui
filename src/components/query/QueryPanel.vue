@@ -122,7 +122,7 @@ import { useFundStore } from '../../stores/fundStore';
 import Dialog from '../layout/Dialog.vue';
 
 const formIsOpen = defineProps({ type: Boolean, default: false })
-const emit = defineEmits(['close-form', 'confirm-query-completion']);
+const emit = defineEmits(['close-form', 'confirm-query-execution']);
 const showAlert = inject("showAlert");
 const showToast = inject("showToast");
 
@@ -157,8 +157,8 @@ function submitQuery(filters) {
   recordStore.getRecords(filters)
     .then((message) => {
       showToast(message)
-      emit('confirmQueryCompletion')
-      emit('closeForm')
+      emit('confirm-query-execution')
+      emit('close-form')
     })
     .catch((message) => showAlert({ type: "error", text: message }))
     .finally(() => loading.value = false)

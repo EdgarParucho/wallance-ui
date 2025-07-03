@@ -39,6 +39,7 @@ import RecordIcon from '../layout/RecordIcon.vue';
 
 const recordStore = useRecordStore();
 const { tagsByRecordType } = storeToRefs(recordStore);
+const { records } = storeToRefs(recordStore);
 
 const type = ref(2);
 const tagsData = ref([]);
@@ -71,7 +72,7 @@ function getAmountFormatted(amount) {
   return (amount < 0) ? String(Number(-amount).toFixed(2)) : String(Number(amount).toFixed(2));
 }
 
-watch([recordStore.records, type], ([records, type]) => {
+watch([records.value, type], ([records, type]) => {
   updateTypeBalance(records, type);
   updateTagsData(type);
 }, { immediate: true })

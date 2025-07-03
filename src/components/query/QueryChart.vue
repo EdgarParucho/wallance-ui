@@ -15,7 +15,10 @@ ChartJS.defaults = { responsive: true };
 const props = defineProps({
   tagsDataRef: {
     type: Object,
-    default: {},
+    default: {
+      type: 2,
+      tagsData: [],
+    },
   },
 })
 

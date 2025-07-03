@@ -6,20 +6,20 @@
       <ScaleIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
       <h2 class="text-4xl text-center font-bold">Status</h2>
       <p class="mb-8 text-center text-lg text-stone-500 dark:text-stone-400">
-        Overall balance
+        Balance and funds
       </p>
 
       <dl :class="['mx-auto', { 'animate-pulse': loggingIn }]">
         <div class="mb-1 pt-1 h-20 w-80 rounded-sm bg-white dark:bg-stone-800">
           <div class="px-2 flex justify-between">
             <ScaleIcon class="rounded-icon" />
-            <strong v-if="!loggingIn" class="text-2xl">${{ balance }}</strong>
+            <strong v-if="!loggingIn" class="text-lg">${{ balance }}</strong>
           </div>
           <dt class="px-2 text-sm">Budget</dt>
-          <dd class="px-2 text-xs text-stone-500 dark:text-stone-400">Total balance from funds.</dd>
+          <dd class="px-2 text-xs text-stone-500 dark:text-stone-400">Total balance.</dd>
         </div>
         <div
-        class="mb-1 mx-auto h-26 pt-1 w-80 rounded-sm bg-white dark:bg-stone-800"
+        class="mb-1 mx-auto h-26 pt-1 w-80 rounded-sm border border-white dark:border-stone-800"
         v-for="fund in funds"
         :key="fund.id"
         :fund="fund"
@@ -68,7 +68,7 @@
       <MagnifyingGlassIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
       <h2 class="text-4xl font-bold text-center">Records</h2>
       <p v-if="oneOrMoreRecords" class="mb-8 text-center text-lg text-stone-500 dark:text-stone-400">
-        {{ queryCompleted ? 'Query Results' : 'Current Month' }}
+        {{ queryExecuted ? 'Query Results' : 'Current Month' }}
       </p>
 
       <QueryTable
@@ -94,7 +94,7 @@
       <TagIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
       <h2 class="text-4xl font-bold text-center">Tags Measurement</h2>
       <p class="mb-8 text-center text-lg text-stone-500 dark:text-stone-400">
-        Check the tags among the results
+        Tags from records showed above
       </p>
       <div class="md:flex my-10 md:justify-center gap-2">
         <div class="md:w-1/2 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
@@ -131,7 +131,7 @@
       <QueryPanel
       v-if="queryPanelIsOpen"
       :form-is-open="queryPanelIsOpen"
-      @confirm-query-completion="queryCompleted = true"
+      @confirm-query-execution="queryExecuted = true"
       @close-form="queryPanelIsOpen = false"
       />
     </transition>
@@ -180,8 +180,8 @@ const { loggingIn } = storeToRefs(authStore);
 const recordFormIsOpen = ref(false);
 const fundFormIsOpen = ref(false);
 const queryPanelIsOpen = ref(false);
-const queryCompleted = ref(false);
-const tagsDataRef = ref(null);
+const queryExecuted = ref(false);
+const tagsDataRef = ref({ type: 2, tagsData: [] });
 
 const oneOrMoreRecords = computed(() => recordStore.records.length > 0);
 const oneOrMoreTags =  computed(() => Object.values(recordStore.tagsByRecordType).flat().length > 0);
