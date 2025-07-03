@@ -40,26 +40,24 @@
         v-for="record in recordsInRange" :key="record.id" :class="underLgBreakpoint ? 'grid' : ''"
         class="my-1 p-1 bg-stone-100 dark:bg-stone-800"
         >
-          <td class="xl:h-8 py-1 lg:px-2 xl:border xl:border-white xl:dark:border-stone-900">
-            {{ formattedDate(record) }}
+          <td class="py-1 lg:px-2 xl:border xl:border-white xl:dark:border-stone-900">
+            <span>{{ formattedDate(record) }}</span>
           </td>
-          <td class="xl:h-8 py-1 lg:px-2 xl:border xl:border-white xl:dark:border-stone-900">
-            <div class="flex items-center">
-              <span>{{ getFundName(record.fundID) }}</span>
-              <span v-if="record.type === 0">, {{ getFundName(record.otherFundID) }}</span>
-            </div>
+          <td class="py-1 lg:px-2 xl:border xl:border-white xl:dark:border-stone-900 text-wrap whitespace-nowrap overflow-hidden text-ellipsis">
+            <span>{{ getFundName(record.fundID) }}</span>
+            <span v-if="record.type === 0">, {{ getFundName(record.otherFundID) }}</span>
           </td>
-          <td class="xl:h-8 py-1 xl:w-96 lg:px-2 xl:border xl:border-white xl:dark:border-stone-900 whitespace-nowrap overflow-hidden text-ellipsis">
-            <span class="font-medium text-sm">
-              {{ record.note }}
-            </span>
-            <div v-if="record.tag !== ''" class="block">
-              <span class="block w-32 ml-auto px-2 rounded-sm text-sm text-center font-medium whitespace-nowrap overflow-hidden text-ellipsis text-stone-600 dark:text-white bg-stone-300 dark:bg-stone-600">
+          <td class="py-1 xl:w-96 lg:px-2 xl:border xl:border-white xl:dark:border-stone-900">
+            <div class="xl:flex">
+              <span class="font-medium text-sm w-full whitespace-nowrap overflow-hidden text-ellipsis">
+                {{ record.note }}
+              </span>
+              <span v-if="record.tag !== ''" class="block w-32 ml-auto px-2 rounded-sm text-sm text-center font-medium whitespace-nowrap overflow-hidden text-ellipsis text-stone-600 dark:text-white bg-stone-300 dark:bg-stone-600">
                 {{ record.tag }}
               </span>
             </div>
           </td>
-          <td class="xl:h-8 py-1 lg:w-40 lg:px-2 xl:border border-white dark:border-stone-900">
+          <td class="py-1 lg:w-40 lg:px-2 xl:border border-white dark:border-stone-900">
             <div class="flex justify-end lg:justify-between space-x-2 items-center">
               <RecordIcon :recordType="record.type" />
               <span>${{ amountFormatted(record.amount) }}</span>
