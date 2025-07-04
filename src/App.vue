@@ -68,7 +68,6 @@ watch(() => isLoading.value, (isLoading) => {
   if (accessToken.value === "") getUserData({ email: user.value.email });
 }, { immediate: true })
 
-
 </script>
 
 <template>

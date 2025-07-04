@@ -13,10 +13,12 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = useLocalStorage('vueUseAccessToken', '');
   const { isAuthenticated } = useAuth0();
   const loggingIn = ref(false);
+  const inDemoMode = useLocalStorage('vueUseInDemoMode', false)
 
   const mutations = {
-    login: ({ data, message }) => {
+    login: ({ data, message }, inDemo) => {
       resetStores();
+      inDemoMode.value = inDemo;
       fundStore.mutations.setFunds(data.funds);
       recordStore.records = data.records;
       return message;
@@ -25,15 +27,16 @@ export const useAuthStore = defineStore('auth', () => {
 
   function resetStores() {
     accessToken.value = '';
+    inDemoMode.value = false;
     recordStore.records = [];
     recordStore.sampleRecords = [];
     fundStore.funds = [];
   }
 
-  function login() {
+  function login({ inDemoMode = false }) {
     loggingIn.value = true;
-    return GetUser()
-      .then(({ data }) => mutations.login(data))
+    return GetUser({ inDemoMode })
+    .then(({ data }) => mutations.login(data, inDemoMode))
       .catch((error) => error.response?.data?.message || error.response?.data || error.message || error)
       .finally(() => loggingIn.value = false)
   }
@@ -50,6 +53,7 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken,
     isAuthenticated,
     loggingIn,
+    inDemoMode,
     login,
     finishSession,
   };

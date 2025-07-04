@@ -1,18 +1,27 @@
 <template>
-  <div>
+  <main>
     <header class="mt-16">
       <Logo size="lg" />
       <h1 class="text-5xl font-bold text-center mt-16">Wallance</h1>
       <p class="text-lg text-center mt-4 font-medium">
         Track your records, then fix, plan, improve accordingly.
       </p>
-      <button
-      class="mx-auto mt-10 block rounded-sm py-1 w-32 hover:scale-105 transition-all font-bold focus:outline-violet-500 focus:outline-1 bg-stone-800 text-white shadow-lg disabled:bg-stone-700 disabled:animate-pulse"
-      @click="loginWithRedirect"
-      :disabled="isLoading"
-      >
-        {{ isLoading ? '...loading' : 'Join' }}
-      </button>
+      <div class="flex justify-center gap-10 mt-10">
+        <button
+        class="rounded-sm py-1 w-32 hover:scale-105 transition-all font-bold focus:outline-violet-500 focus:outline-1 bg-stone-800 text-white shadow-xl disabled:bg-stone-700 disabled:animate-pulse"
+        @click="loginWithRedirect"
+        :disabled="isLoading"
+        >
+          {{ isLoading ? '...loading' : 'Join' }}
+        </button>
+        <button
+        class="rounded-sm py-1 w-32 hover:scale-105 transition-all border dark:border-stone-800 focus:outline-violet-500 focus:outline-1 shadow-xl disabled:bg-stone-700 disabled:animate-pulse"
+        @click="loginToDemo"
+        :disabled="isLoading"
+        >
+          Demo
+        </button>
+      </div>
     </header>
     <footer class="w-full absolute bottom-0 h-16 dark:bg-stone-800 flex items-center justify-between rounded-sm p-4">
       <div class="grid">
@@ -39,7 +48,7 @@
         </a>
       </div>
     </footer>
-  </div>
+  </main>
 </template>
 
 <script setup>
@@ -51,9 +60,11 @@ import { useAuthStore } from '../stores/authStore';
 import Logo from '../components/layout/Logo.vue';
 
 const showToast = inject("showToast");
-const { loginWithRedirect, isLoading, isAuthenticated } = useAuth0();
-const authStore = useAuthStore();
+
 const router = useRouter();
+const authStore = useAuthStore();
+const { loginWithRedirect, isLoading, isAuthenticated } = useAuth0();
+
 const links = [
   {
     URL: 'https://www.linkedin.com/in/edgarparucho/',
@@ -72,10 +83,19 @@ const links = [
   },
 ];
 
+function loginToDemo() {
+  authStore.login({ inDemoMode: true })
+    .then(() => {
+      showToast("Welcome! You are now in demo mode, try everything around.");
+      router.replace("/demo");
+    })
+    .catch((message) => showToast(message));
+}
+
 watch(() => isAuthenticated.value, (isAuth) => {
   if (isAuth) {
-    router.replace("/dashboard")
-    showToast("It's great that you're here")
+    router.replace("/dashboard");
+    showToast("It's great that you're here");
   }
   else if (authStore.accessToken !== "" || authStore.isAuthenticated) authStore.finishSession();
 }, { immediate: true })

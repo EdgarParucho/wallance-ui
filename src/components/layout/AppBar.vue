@@ -15,49 +15,51 @@
         </MenuButton>
         <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
           <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right bg-stone-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-white">
-            <div>
+            <div v-if="!authStore.inDemoMode">
               <MenuItem v-slot="{ active }">
                 <button
                 @click="toggleDarkMode"
                 :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
                 >
-                  Toggle Dark Mode
-                </button>
-              </MenuItem>
-              <MenuItem v-slot="{ active }">
-                <button
-                @click="emailFormIsOpen = true"
+                Toggle Dark Mode
+              </button>
+            </MenuItem>
+            <MenuItem v-slot="{ active }">
+              <button
+              @click="emailFormIsOpen = true"
+              :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
+              :disabled="requestingOTP"
+              >
+              Update My E-mail
+            </button>
+          </MenuItem>
+          <MenuItem v-slot="{ active }">
+            <button
+            @click="passwordFormIsOpen = true"
                 :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
                 :disabled="requestingOTP"
                 >
-                  Update My E-mail
-                </button>
-              </MenuItem>
-              <MenuItem v-slot="{ active }">
-                <button
-                @click="passwordFormIsOpen = true"
-                :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
-                :disabled="requestingOTP"
-                >
-                  Update My Password
-                </button>
-              </MenuItem>
-              <MenuItem v-slot="{ active }">
-                <button
-                @click="deleteFormIsOpen = true"
-                :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
-                :disabled="requestingOTP"
-                >
-                  Delete My Account
-                </button>
-              </MenuItem>
-              <MenuItem v-slot="{ active }">
-                <button
-                type="button" :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
-                @click="onLogout">
-                  Log out
-                </button>
-              </MenuItem>
+                Update My Password
+              </button>
+            </MenuItem>
+            <MenuItem v-slot="{ active }">
+              <button
+              @click="deleteFormIsOpen = true"
+              :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
+              :disabled="requestingOTP"
+              >
+              Delete My Account
+            </button>
+          </MenuItem>
+          </div>
+          <div>
+          <MenuItem v-slot="{ active }">
+            <button
+            type="button" :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
+            @click="onLogout">
+            Log out
+          </button>
+        </MenuItem>
             </div>
           </MenuItems>
         </transition>
@@ -88,7 +90,7 @@
 
 <script setup>
 import { defineAsyncComponent, inject, ref, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '../../stores/authStore';
 import { useUserStore } from '../../stores/userStore';
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/vue';
@@ -101,6 +103,8 @@ const DeleteAccount = defineAsyncComponent(() => import('../form/DeleteAccount.v
 
 const showToast = inject("showToast");
 const route = useRoute();
+const router = useRouter();
+
 const { logout } = useAuth0();
 const userStore = useUserStore();
 const authStore = useAuthStore();
@@ -113,8 +117,9 @@ const deleteFormIsOpen = ref(false);
 const atHome = computed(() => route.fullPath === '/');
 
 function onLogout() {
-  logout();
+  if (!authStore.inDemoMode) logout();
   authStore.finishSession();
+  router.replace('/');
 }
 
 function toggleDarkMode() {

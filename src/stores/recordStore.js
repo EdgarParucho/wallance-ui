@@ -35,7 +35,7 @@ export const useRecordStore = defineStore('records', () => {
     }
   };
 
-  const useService = ({ service, payload, mutation }) => new Promise((resolve, reject) => service(payload)
+  const useService = ({ service, payload, mutation }) => new Promise((resolve, reject) => service(payload, { inDemoMode: authStore.inDemoMode })
     .then(({ data }) => resolve(
       mutation(data)
     ))
