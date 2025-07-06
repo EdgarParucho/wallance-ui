@@ -1,8 +1,13 @@
 <template>
   <main>
 
-    <div class="sticky top-16 w-16 px-2 rounded-dm text-sm bg-violet-500 border-l border-violet-500 text-violet-500 bg-opacity-20">Demo</div>
-    <header class="mt-12 py-6 grid items-center">
+    <div
+    v-if="authStore.inDemoMode"
+    role="alert"
+    class="sticky left-2 top-16 w-16 px-2 rounded-dm text-sm bg-violet-500 border-l border-violet-500 text-violet-500 bg-opacity-20"
+    >Demo</div>
+
+    <section class="mt-12">
 
       <ScaleIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-stone-200 dark:bg-stone-800 shadow-md" />
       <h2 class="text-4xl text-center font-bold">Status</h2>
@@ -10,20 +15,33 @@
         Balance and funds
       </p>
 
-      <dl :class="['mx-auto', { 'animate-pulse': loggingIn }]">
-        <div class="mb-1 pt-1 h-20 w-80 rounded-sm bg-stone-200 dark:bg-stone-800 shadow-lg dark:shadow-none">
-          <div class="px-2 flex justify-between">
-            <ScaleIcon class="rounded-icon" />
-            <strong v-if="!loggingIn" class="text-lg">${{ balance }}</strong>
-          </div>
-          <dt class="px-2 text-sm">Budget</dt>
-          <dd class="px-2 text-xs text-stone-500 dark:text-stone-400">Total balance.</dd>
+      <div :class="['mb-1 mx-auto h-26 p-2 w-80 rounded-sm shadow-md', { 'animate-pulse': loggingIn }]">
+        <div class="flex justify-between">
+          <ScaleIcon class="rounded-icon" />
+          <dd>
+            <strong v-if="!loggingIn" class="text-lg font-light">
+              ${{ balance }}
+            </strong>
+          </dd>
         </div>
+        <dt class="text-sm">Balance</dt>
+      </div>
+
+      <div
+      v-if="authStore.inDemoMode"
+      class="alert"
+      role="note"
+      >
+        <p>Funds allow you to organize your balance and group related records.</p>
+      </div>
+
+      <dl
+      class="grid grid-cols-1 md:grid-cols-2 grid-flow-row-dense gap-4"
+      :class="{'lg:grid-cols-3': funds.length % 3 == 0 }">
         <div
-        class="mb-1 mx-auto h-26 pt-1 w-80 rounded-sm shadow-lg dark:shadow-none dark:border dark:border-stone-800"
+        :class="['mb-1 mx-auto h-26 pt-1 w-80 rounded-sm shadow-md', { 'animate-pulse': loggingIn }]"
         v-for="fund in funds"
         :key="fund.id"
-        :fund="fund"
         >
           <div class="px-2 flex justify-between">
             <ArchiveBoxIcon class="rounded-icon" />
@@ -31,7 +49,6 @@
           </div>
           <dt class="px-2 text-sm">{{ fund.name }}</dt>
           <dd class="px-2 text-xs text-stone-500 dark:text-stone-400">{{ fund.description }}</dd>
-
           <div class="flex justify-evenly">
             <button
             class="w-1/2 py-0.5 hover:bg-stone-100 dark:hover:bg-stone-700 focus:bg-stone-100 dark:focus:bg-stone-700 focus:outline-none transition-colors"
@@ -61,7 +78,7 @@
         </button>
       </div>
 
-    </header>
+    </section>
 
 
     <section  class="mt-12 py-12">
@@ -69,8 +86,16 @@
       <MagnifyingGlassIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
       <h2 class="text-4xl font-bold text-center">Records</h2>
       <p v-if="oneOrMoreRecords" class="mb-8 text-center text-lg text-stone-500 dark:text-stone-400">
-        {{ queryExecuted ? 'Query Results' : 'Current Month' }}
+        {{ (queryExecuted || authStore.inDemoMode) ? 'Query Results' : 'Current Month' }}
       </p>
+
+      <div
+      v-if="authStore.inDemoMode"
+      class="alert"
+      role="note"
+      >
+        <p>Here you'll find the records loaded on log in, or from queries.</p>
+      </div>
 
       <QueryTable
       v-if="oneOrMoreRecords"
@@ -91,18 +116,25 @@
       </div>
     </section>
 
-    <section v-if="oneOrMoreRecords" v-show="oneOrMoreTags" class="px-2 mt-12 py-12">
+    <section v-if="oneOrMoreRecords && oneOrMoreTags" class="px-2 mt-12 py-12">
       <TagIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
       <h2 class="text-4xl font-bold text-center">Tags Measurement</h2>
       <p class="mb-8 text-center text-lg text-stone-500 dark:text-stone-400">
         Tags from records showed above
       </p>
+      <div
+      v-if="authStore.inDemoMode"
+      class="alert"
+      role="note"
+      >
+        <p>This section is here to help you analyze the records shown above.</p>
+      </div>
       <div class="md:flex my-10 md:justify-center gap-2">
         <div class="md:w-1/2 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
-          <QueryTags ref="tagsDataRef" />
+          <QueryTags v-if="oneOrMoreRecords && oneOrMoreTags" ref="tagsDataRef" />
         </div>
         <div class="md:w-1/2 xl:w-1/4 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
-          <QueryChart :tags-data-ref="tagsDataRef" />
+          <QueryChart v-if="oneOrMoreRecords && oneOrMoreTags" :tags-data-ref="tagsDataRef" />
         </div>
       </div>
 
@@ -284,10 +316,9 @@ function getFundName (id) {
 }
 
 function loginToDemo() {
-  showToast("Welcome! You are now in demo mode.");
   authStore.login({ inDemoMode: true })
+    .then(() => showToast('Welcome! Check around and manage the data freely.'))
     .then(() => recordStore.getRecords({}))
-    .then(() => showToast('Your data is here. Manage it freely.'))
     .catch((message) => showToast(message));
 }
 

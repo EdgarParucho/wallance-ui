@@ -3,8 +3,8 @@ import { useLocalStorage } from '@vueuse/core';
 import { useAuthStore } from './authStore';
 import { useFundStore } from './fundStore';
 import { Find, Create, Update, Delete } from '../services/recordAPI';
-import router from '../router';
 import { computed } from 'vue';
+import router from '../router';
 
 export const useRecordStore = defineStore('records', () => {
 

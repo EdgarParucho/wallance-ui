@@ -85,8 +85,9 @@ watch(() => isAuthenticated.value, (isAuth) => {
   if (isAuth) {
     router.replace("/dashboard");
     showToast("It's great that you're here");
+  } else {
+    authStore.finishSession();
   }
-  else if (authStore.accessToken !== "" || authStore.isAuthenticated) authStore.finishSession();
 }, { immediate: true })
 
 </script>

@@ -44,11 +44,11 @@ const colors = [
 
 const chartData = computed(() => {
   return {
-    labels: tagsByRecordType.value[props.tagsDataRef.type],
+    labels: tagsByRecordType.value[props.tagsDataRef?.type],
     datasets: [
       {
         label: " $",
-        data: props.tagsDataRef.tagsData.map(([, balance]) => balance),
+        data: props.tagsDataRef?.tagsData?.map(([, balance]) => balance),
         backgroundColor: colors
       },
     ],

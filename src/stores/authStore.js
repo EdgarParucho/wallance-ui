@@ -20,7 +20,7 @@ export const useAuthStore = defineStore('auth', () => {
       resetStores();
       inDemoMode.value = inDemo;
       fundStore.mutations.setFunds(data.funds);
-      recordStore.records = data.records;
+      if (!inDemo) recordStore.records = data.records;
       return message;
     },
   };
@@ -36,7 +36,7 @@ export const useAuthStore = defineStore('auth', () => {
   function login({ inDemoMode = false }) {
     loggingIn.value = true;
     return GetUser({ inDemoMode })
-    .then(({ data }) => mutations.login(data, inDemoMode))
+      .then(({ data }) => mutations.login(data, inDemoMode))
       .catch((error) => error.response?.data?.message || error.response?.data || error.message || error)
       .finally(() => loggingIn.value = false)
   }

@@ -12,6 +12,9 @@
   .rounded-icon {
     @apply rounded-full w-7 h-7 p-1 bg-stone-200 dark:bg-stone-900 text-stone-500 dark:text-stone-400
   }
+  .alert {
+    @apply flex w-fit my-4 mx-auto p-2 rounded-sm text-sm bg-violet-500 border-l-2 border-violet-500 text-violet-500 bg-opacity-20
+  }
 }
 
 :root {
