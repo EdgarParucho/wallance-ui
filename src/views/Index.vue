@@ -14,13 +14,11 @@
         >
           {{ isLoading ? '...loading' : 'Join' }}
         </button>
-        <button
-        class="rounded-sm py-1 w-32 hover:scale-105 transition-all border dark:border-stone-800 focus:outline-violet-500 focus:outline-1 shadow-xl disabled:bg-stone-700 disabled:animate-pulse"
-        @click="loginToDemo"
+        <router-link
+        class="rounded-sm py-1 w-32 hover:scale-105 transition-all focus:outline-violet-500 focus:outline-1 shadow-xl disabled:bg-stone-700 disabled:animate-pulse text-center"
+        to="/demo"
         :disabled="isLoading"
-        >
-          Demo
-        </button>
+        >Demo</router-link>
       </div>
     </header>
     <footer class="w-full absolute bottom-0 h-16 dark:bg-stone-800 flex items-center justify-between rounded-sm p-4">
@@ -82,15 +80,6 @@ const links = [
     icon: "https://img.icons8.com/ios-filled/50/github--v1.png",
   },
 ];
-
-function loginToDemo() {
-  authStore.login({ inDemoMode: true })
-    .then(() => {
-      showToast("Welcome! You are now in demo mode, try everything around.");
-      router.replace("/demo");
-    })
-    .catch((message) => showToast(message));
-}
 
 watch(() => isAuthenticated.value, (isAuth) => {
   if (isAuth) {

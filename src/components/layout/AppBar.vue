@@ -1,7 +1,7 @@
 <template>
   <div v-if="!atHome" class="flex justify-between items-center w-full shadow-stone-300 shadow-md dark:shadow-md bg-stone-200 dark:bg-stone-800">
 
-    <router-link to="/dashboard" class="m-1 flex items-center gap-1">
+    <router-link :to="authStore.inDemoMode ? '/demo' : '/dashboard'" class="m-1 flex items-center gap-1">
       <ScaleIcon class="w-7" />
       <span class="text-lg first-letter:font-serif first-letter:text-stone-400 first-letter:text-3xl font-bold">
         Wallance
@@ -21,36 +21,36 @@
                 @click="toggleDarkMode"
                 :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
                 >
-                Toggle Dark Mode
-              </button>
-            </MenuItem>
-            <MenuItem v-slot="{ active }">
-              <button
-              @click="emailFormIsOpen = true"
-              :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
-              :disabled="requestingOTP"
-              >
-              Update My E-mail
-            </button>
-          </MenuItem>
-          <MenuItem v-slot="{ active }">
-            <button
-            @click="passwordFormIsOpen = true"
+                  Toggle Dark Mode
+                </button>
+              </MenuItem>
+              <MenuItem v-slot="{ active }">
+                <button
+                @click="emailFormIsOpen = true"
                 :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
                 :disabled="requestingOTP"
                 >
-                Update My Password
+                Update My E-mail
               </button>
             </MenuItem>
             <MenuItem v-slot="{ active }">
               <button
-              @click="deleteFormIsOpen = true"
-              :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
-              :disabled="requestingOTP"
-              >
-              Delete My Account
-            </button>
-          </MenuItem>
+              @click="passwordFormIsOpen = true"
+                  :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
+                  :disabled="requestingOTP"
+                  >
+                  Update My Password
+                </button>
+              </MenuItem>
+              <MenuItem v-slot="{ active }">
+                <button
+                @click="deleteFormIsOpen = true"
+                :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
+                :disabled="requestingOTP"
+                >
+                Delete My Account
+              </button>
+            </MenuItem>
           </div>
           <div>
           <MenuItem v-slot="{ active }">

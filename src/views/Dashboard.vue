@@ -140,7 +140,7 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent, inject, ref, computed, watch } from 'vue';
+import { defineAsyncComponent, inject, ref, computed, onMounted } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useDateFormat } from '@vueuse/shared';
 import {
@@ -157,6 +157,11 @@ import { useAuthStore } from '../stores/authStore';
 import { useFundStore } from '../stores/fundStore';
 import { useRecordStore } from '../stores/recordStore';
 import swal from 'sweetalert';
+import router from '../router';
+
+onMounted(() => {
+  if (router.currentRoute.value.path == '/demo') loginToDemo()
+});
 
 const QueryPanel = defineAsyncComponent(() => import('../components/query/QueryPanel.vue'));
 const QueryTags = defineAsyncComponent(() => import('../components/query/QueryTags.vue'));
@@ -275,6 +280,14 @@ function formatToXls() {
 
 function getFundName (id) {
   return funds.value.find(f => f.id === id).name;
+}
+
+function loginToDemo() {
+  showToast("Welcome! You are now in demo mode.");
+  authStore.login({ inDemoMode: true })
+    .then(() => recordStore.getRecords({}))
+    .then(() => showToast('Your data is here. Manage it freely.'))
+    .catch((message) => showToast(message));
 }
 
 </script>
