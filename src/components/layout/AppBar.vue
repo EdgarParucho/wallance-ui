@@ -15,43 +15,41 @@
         </MenuButton>
         <transition enter-active-class="transition ease-out duration-100" enter-from-class="transform opacity-0 scale-95" enter-to-class="transform opacity-100 scale-100" leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100" leave-to-class="transform opacity-0 scale-95">
           <MenuItems class="absolute right-0 z-10 mt-2 w-56 origin-top-right bg-stone-800 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none text-white">
-            <div v-if="!authStore.inDemoMode">
-              <MenuItem v-slot="{ active }">
-                <button
-                @click="toggleDarkMode"
-                :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
-                >
-                  Toggle Dark Mode
-                </button>
-              </MenuItem>
-              <MenuItem v-slot="{ active }">
-                <button
-                @click="emailFormIsOpen = true"
-                :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
-                :disabled="requestingOTP"
-                >
+            <MenuItem v-slot="{ active }">
+              <button
+              @click="toggleDarkMode"
+              :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
+              >
+                Toggle Dark Mode
+              </button>
+            </MenuItem>
+            <MenuItem v-if="!authStore.inDemoMode" v-slot="{ active }">
+              <button
+              @click="emailFormIsOpen = true"
+              :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
+              :disabled="requestingOTP"
+              >
                 Update My E-mail
               </button>
             </MenuItem>
-            <MenuItem v-slot="{ active }">
+            <MenuItem v-if="!authStore.inDemoMode" v-slot="{ active }">
               <button
               @click="passwordFormIsOpen = true"
-                  :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
-                  :disabled="requestingOTP"
-                  >
-                  Update My Password
-                </button>
-              </MenuItem>
-              <MenuItem v-slot="{ active }">
-                <button
-                @click="deleteFormIsOpen = true"
-                :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
-                :disabled="requestingOTP"
-                >
+              :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
+              :disabled="requestingOTP"
+              >
+                Update My Password
+              </button>
+            </MenuItem>
+            <MenuItem v-if="!authStore.inDemoMode" v-slot="{ active }">
+              <button
+              @click="deleteFormIsOpen = true"
+              :class="[{ 'bg-stone-700': active }, 'block w-full px-4 py-2 text-left text-sm']"
+              :disabled="requestingOTP"
+              >
                 Delete My Account
               </button>
             </MenuItem>
-          </div>
           <div>
           <MenuItem v-slot="{ active }">
             <button
@@ -126,6 +124,7 @@ function toggleDarkMode() {
   const currentMode = document.querySelector("html").getAttribute('class');
   const newMode = currentMode == 'dark' ? 'light' : 'dark';
   document.querySelector("html").className = newMode;
+  if (authStore.inDemoMode) return;
   const payload = { user_metadata: { theme: newMode } };
   userStore.updateUser(payload)
     .then(() => {

@@ -1,16 +1,17 @@
 <template>
   <main>
 
+    <div class="sticky top-16 w-16 px-2 rounded-dm text-sm bg-violet-500 border-l border-violet-500 text-violet-500 bg-opacity-20">Demo</div>
     <header class="mt-12 py-6 grid items-center">
 
-      <ScaleIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
+      <ScaleIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-stone-200 dark:bg-stone-800 shadow-md" />
       <h2 class="text-4xl text-center font-bold">Status</h2>
       <p class="mb-8 text-center text-lg text-stone-500 dark:text-stone-400">
         Balance and funds
       </p>
 
       <dl :class="['mx-auto', { 'animate-pulse': loggingIn }]">
-        <div class="mb-1 pt-1 h-20 w-80 rounded-sm bg-white dark:bg-stone-800">
+        <div class="mb-1 pt-1 h-20 w-80 rounded-sm bg-stone-200 dark:bg-stone-800 shadow-lg dark:shadow-none">
           <div class="px-2 flex justify-between">
             <ScaleIcon class="rounded-icon" />
             <strong v-if="!loggingIn" class="text-lg">${{ balance }}</strong>
@@ -19,7 +20,7 @@
           <dd class="px-2 text-xs text-stone-500 dark:text-stone-400">Total balance.</dd>
         </div>
         <div
-        class="mb-1 mx-auto h-26 pt-1 w-80 rounded-sm border border-white dark:border-stone-800"
+        class="mb-1 mx-auto h-26 pt-1 w-80 rounded-sm shadow-lg dark:shadow-none dark:border dark:border-stone-800"
         v-for="fund in funds"
         :key="fund.id"
         :fund="fund"
