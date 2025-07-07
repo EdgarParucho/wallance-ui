@@ -151,7 +151,7 @@
         </div>
       </fieldset>
 
-      <div class="h-1/2 my-6 flex items-center justify-center space-x-2">
+      <div class="mb-4 flex items-center justify-center gap-2">
         <button
         type="button"
         class="btn-secondary"

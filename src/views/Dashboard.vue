@@ -81,7 +81,7 @@
     </section>
 
 
-    <section  class="h-screen">
+    <section  class="h-screen mb-96">
 
       <MagnifyingGlassIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
       <h2 class="text-4xl font-bold text-center">Records</h2>
