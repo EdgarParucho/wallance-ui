@@ -1,16 +1,10 @@
 <template>
-  <div class="w-screen h-screen fixed top-0 grid place-items-center bg-stone-900 bg-opacity-80 overflow-hidden z-10">
-    <div class="w-11/12 lg:w-1/2 rounded-sm bg-stone-100 dark:bg-stone-800 sticky">
-      <header class="flex items-end text-left justify-center px-10 gap-4">
-        <div class="flex items-center justify-around h-12 w-12 rounded-full bg-stone-100 dark:bg-stone-800 text-stone-500 shadow-sm shadow-stone-400">
-          <component :is="icon" class="h-8 w-8" />
-        </div>
-        <div>
-          <h3 class="text-lg font-bold mt-8">{{ title }}</h3>
-          <p class="text-sm">{{ subtitle }}</p>
-        </div>
+  <div class="w-screen h-screen fixed top-0 grid place-items-center bg-stone-900 bg-opacity-80 overflow-hidden z-10" role="dialog">
+    <div class="w-11/12 md:w-1/2 lg:w-1/3 pt-4 rounded-sm bg-stone-100 dark:bg-stone-800 sticky">
+      <header class="flex items-center justify-center gap-2">
+        <h3 class="text-xl font-bold">{{ title }}</h3>
       </header>
-      <hr class="my-6 border-stone-500">
+      <hr class="my-4 mx-auto border-stone-300 w-2/3">
       <slot></slot>
     </div>
   </div>
@@ -25,15 +19,9 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  icon: {
-    required: true,
-  },
   title: {
     type: String,
-  },
-  subtitle: {
-    type: String,
-  },
+  }
 })
 
 const emit = defineEmits(['close-form'])

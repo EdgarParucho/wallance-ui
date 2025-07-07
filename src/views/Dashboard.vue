@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <main class="pt-12">
 
     <div
     v-if="authStore.inDemoMode"
@@ -7,7 +7,7 @@
     class="sticky left-2 top-16 w-16 px-2 rounded-dm text-sm bg-violet-500 border-l border-violet-500 text-violet-500 bg-opacity-20"
     >Demo</div>
 
-    <section class="mt-12">
+    <section class="h-screen">
 
       <ScaleIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-stone-200 dark:bg-stone-800 shadow-md" />
       <h2 class="text-4xl text-center font-bold">Status</h2>
@@ -36,7 +36,7 @@
       </div>
 
       <dl
-      class="grid grid-cols-1 md:grid-cols-2 grid-flow-row-dense gap-4"
+      class="mt-6 grid grid-cols-1 md:grid-cols-2 grid-flow-row-dense gap-4"
       :class="{'lg:grid-cols-3': funds.length % 3 == 0 }">
         <div
         :class="['mb-1 mx-auto h-26 pt-1 w-80 rounded-sm shadow-md', { 'animate-pulse': loggingIn }]"
@@ -81,7 +81,7 @@
     </section>
 
 
-    <section  class="mt-12 py-12">
+    <section  class="h-screen">
 
       <MagnifyingGlassIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
       <h2 class="text-4xl font-bold text-center">Records</h2>
@@ -116,7 +116,7 @@
       </div>
     </section>
 
-    <section v-if="oneOrMoreRecords && oneOrMoreTags" class="px-2 mt-12 py-12">
+    <section v-if="oneOrMoreRecords && oneOrMoreTags" class="px-2 h-screen">
       <TagIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
       <h2 class="text-4xl font-bold text-center">Tags Measurement</h2>
       <p class="mb-8 text-center text-lg text-stone-500 dark:text-stone-400">

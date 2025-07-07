@@ -1,10 +1,8 @@
 <template>
   <Dialog
+  title="Fund Form"
   :form-is-open="formIsOpen"
   @close-form="$emit('close-form')"
-  :icon="props.editing ? PencilSquareIcon : PlusIcon"
-  title="Fund Form"
-  :subtitle="`You are ${ props.editing ? 'editing' : 'creating' } a fund`"
   >
     <form @submit.prevent="handleSubmit(fund)" class="px-4">
       <div class="my-4 space-y-2 text-left px-1">
@@ -63,7 +61,6 @@
 
 <script setup>
 import { ref, computed, inject } from 'vue'
-import { PlusIcon, PencilSquareIcon } from '@heroicons/vue/24/outline';
 import { useFundStore } from '../../stores/fundStore';
 import Dialog from '../layout/Dialog.vue';
 

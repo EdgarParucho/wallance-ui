@@ -1,10 +1,8 @@
 <template>
   <Dialog
+  title="Deleting Account"
   :form-is-open="formIsOpen"
   @close-form="$emit('close-form')"
-  :icon="ExclamationTriangleIcon"
-  title="Deleting Account"
-  subtitle="Data will be removed at confirmation"
   >
     <div class="mt-12 p-8">
       <form @submit.prevent="onSubmit">
@@ -49,7 +47,6 @@
 <script setup>
 import { computed, ref, inject } from 'vue'
 import { useAuth0 } from '@auth0/auth0-vue';
-import { ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
 import { useUserStore } from '../../stores/userStore';
 import Dialog from '../layout/Dialog.vue';
 

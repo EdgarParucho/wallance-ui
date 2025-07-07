@@ -1,10 +1,8 @@
 <template>
   <Dialog
+  title="Updating email address"
   :form-is-open="formIsOpen"
   @close-form="$emit('close-form')"
-  :icon="AtSymbolIcon"
-  title="Updating email address"
-  subtitle="Verify your email address to avoid loosing access."
   >
     <form @submit.prevent="updateEmail(email)" class="rounded-md px-8 pb-10">
       <fieldset class="my-6">
@@ -46,7 +44,6 @@
 
 <script setup>
 import { computed, ref, inject } from 'vue';
-import { AtSymbolIcon } from '@heroicons/vue/24/outline';
 import { useUserStore } from '../../stores/userStore';
 import Dialog from '../layout/Dialog.vue';
 
