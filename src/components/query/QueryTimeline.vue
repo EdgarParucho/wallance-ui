@@ -79,7 +79,7 @@ const chartData = computed(() => {
     datasets: [
       {
         label: 'Balance',
-        data: months.map(m => (creditsByMonth[m] || 0) - (debitsByMonth[m] || 0)),
+        data: months.map(m => (creditsByMonth[m] || 0) + (debitsByMonth[m] || 0)),
         borderColor: '#6366f1',
         backgroundColor: 'rgba(99,102,241,0.2)',
         fill: true,
