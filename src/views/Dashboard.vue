@@ -7,7 +7,7 @@
     class="sticky left-2 top-16 w-16 px-2 rounded-dm text-sm bg-violet-500 border-l border-violet-500 text-violet-500 bg-opacity-20"
     >Demo</div>
 
-    <section class="h-screen">
+    <section>
 
       <ScaleIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-stone-200 dark:bg-stone-800 shadow-md" />
       <h2 class="text-4xl text-center font-bold">Status</h2>
@@ -81,7 +81,7 @@
     </section>
 
 
-    <section  class="h-screen mb-96">
+    <section  class="my-40">
 
       <MagnifyingGlassIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
       <h2 class="text-4xl font-bold text-center">Records</h2>
@@ -116,11 +116,11 @@
       </div>
     </section>
 
-    <section v-if="oneOrMoreRecords && oneOrMoreTags" class="px-2 h-screen">
+    <section v-if="oneOrMoreRecords" class="px-2">
       <TagIcon class="rounded-icon mx-auto mb-4 w-14 h-14 p-2 bg-white dark:bg-stone-800 shadow-md" />
-      <h2 class="text-4xl font-bold text-center">Tags Measurement</h2>
+      <h2 class="text-4xl font-bold text-center">Overview</h2>
       <p class="mb-8 text-center text-lg text-stone-500 dark:text-stone-400">
-        Tags from records showed above
+        Stats from records shown above
       </p>
       <div
       v-if="authStore.inDemoMode"
@@ -131,13 +131,15 @@
       </div>
       <div class="md:flex my-10 md:justify-center gap-2">
         <div class="md:w-1/2 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
-          <QueryTags v-if="oneOrMoreRecords && oneOrMoreTags" ref="tagsDataRef" />
+          <QueryTags v-if="oneOrMoreTags" ref="tagsDataRef" />
         </div>
         <div class="md:w-1/2 xl:w-1/4 my-1 p-2 shadow-md rounded-md bg-white dark:bg-stone-800">
-          <QueryChart v-if="oneOrMoreRecords && oneOrMoreTags" :tags-data-ref="tagsDataRef" />
+          <QueryChart v-if="oneOrMoreTags" :tags-data-ref="tagsDataRef" />
         </div>
       </div>
-
+        <div class="my-8 mx-auto md:w-3/4 p-6 flex justify-center shadow-md rounded-md bg-white dark:bg-stone-800">
+          <QueryTimeline :records="records" />
+        </div>
     </section>
 
     <transition name="fade" mode="out-in">
@@ -148,6 +150,8 @@
         :selected-record="selectedRecord"
         @close-form="closeRecordForm"
         />
+
+      <!-- Timeline Chart for Credits and Debits -->
     </transition>
 
     <transition name="fade" mode="out-in">
@@ -201,6 +205,7 @@ const QueryTags = defineAsyncComponent(() => import('../components/query/QueryTa
 const QueryChart = defineAsyncComponent(() => import('../components/query/QueryChart.vue'));
 const QueryBalance = defineAsyncComponent(() => import('../components/query/QueryBalance.vue'));
 const QueryTable = defineAsyncComponent(() => import('../components/query/QueryTable.vue'));
+const QueryTimeline = defineAsyncComponent(() => import('../components/query/QueryTimeline.vue'));
 const RecordForm = defineAsyncComponent(() => import('../components/form/RecordForm.vue'));
 const FundForm = defineAsyncComponent(() => import('../components/form/FundForm.vue'));
 
