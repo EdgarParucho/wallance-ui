@@ -74,12 +74,21 @@ const chartData = computed(() => {
     return ad - bd;
   });
 
+  const data = [];
+
+  for (let i in months) {
+    const previousMonthBalance = data[i - 1] || 0;
+    const currentMonthBalance = (creditsByMonth[months[i]] || 0) + (debitsByMonth[months[i]] || 0);
+    const nextBalance = previousMonthBalance + currentMonthBalance;
+    data.push(nextBalance)
+  }
+
   return {
     labels: months,
     datasets: [
       {
         label: 'Balance',
-        data: months.map(m => (creditsByMonth[m] || 0) + (debitsByMonth[m] || 0)),
+        data,
         borderColor: '#6366f1',
         backgroundColor: 'rgba(99,102,241,0.2)',
         fill: true,
