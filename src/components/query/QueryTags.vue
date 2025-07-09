@@ -63,7 +63,7 @@ function updateTypeBalance(records, type) {
 }
 
 function getTagBalance(tag) {
-  return recordStore.records
+  return records.value
     .filter(record => record.tag == tag && record.type == type.value)
     .reduce((acc, { amount }) => acc += type.value == 2 ? -(amount) : amount, 0);
 }
@@ -72,7 +72,7 @@ function getAmountFormatted(amount) {
   return (amount < 0) ? String(Number(-amount).toFixed(2)) : String(Number(amount).toFixed(2));
 }
 
-watch([records.value, type], ([records, type]) => {
+watch([records, type], ([records, type]) => {
   updateTypeBalance(records, type);
   updateTagsData(type);
 }, { immediate: true })
