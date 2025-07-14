@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { GetUser } from '../services/userAPI';
+import { GetFunds } from '../services/fundAPI';
 import { useLocalStorage } from '@vueuse/core';
 import { useFundStore } from './fundStore';
 import { useRecordStore } from './recordStore';
@@ -19,8 +19,7 @@ export const useAuthStore = defineStore('auth', () => {
     login: ({ data, message }, inDemo) => {
       resetStores();
       inDemoMode.value = inDemo;
-      fundStore.mutations.setFunds(data.funds);
-      if (!inDemo) recordStore.records = data.records;
+      fundStore.mutations.setFunds(data);
       return message;
     },
   };
@@ -29,13 +28,12 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken.value = '';
     inDemoMode.value = false;
     recordStore.records = [];
-    recordStore.sampleRecords = [];
     fundStore.funds = [];
   }
 
   function login({ inDemoMode = false }) {
     loggingIn.value = true;
-    return GetUser({ inDemoMode })
+    return GetFunds({ inDemoMode })
       .then(({ data }) => mutations.login(data, inDemoMode))
       .catch((error) => error.response?.data?.message || error.response?.data || error.message || error)
       .finally(() => loggingIn.value = false)

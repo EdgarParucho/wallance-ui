@@ -16,7 +16,7 @@ export const useFundStore = defineStore('fund', () => {
       return
     },
     createFund: ({ data, message }) => {
-      funds.value.push(data)
+      funds.value.push(...data);
       return message;
     },
     updateFund: ({ data, message = 'Fund updated.' }) => {
