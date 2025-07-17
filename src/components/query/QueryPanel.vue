@@ -6,7 +6,7 @@
   >
     <form class="my-10 px-4 shadow-md rounded-sm mx-auto">
       <fieldset class="space-y-4">
-        
+
         <div class="flex justify-center items-end gap-4">
           <label for="type" class="text-sm w-16 inline-block">Get all</label>
           <select id="type" class="py-0 w-60 text-center bg-transparent border-transparent border-b-stone-500 font-bold" v-model="filters.type">

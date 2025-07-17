@@ -105,7 +105,7 @@
       <QueryBalance v-if="oneOrMoreRecords" :records="records" />
 
       <div class="mt-10 flex items-center space-x-2 justify-center">
-        <button class="btn-primary w-36" @click="queryPanelIsOpen = true">
+        <button class="btn-primary w-36 disabled:bg-stone-600 dark:disabled:bg-stone-600" @click="queryPanelIsOpen = true" :disabled="querying">
           <MagnifyingGlassIcon class="w-5" />
           <span>Make a Query</span>
         </button>
@@ -113,6 +113,22 @@
           <ArrowDownIcon class="w-5" />
           <span>Export .xls</span>
         </download-excel>
+      </div>
+      <div class="mt-4 flex justify-center gap-4">
+        <button
+        class="px-2 rounded-sm text-white text-xs bg-stone-400 dark:bg-stone-600 disabled:bg-stone-300 dark:disabled:text-stone-400"
+        @click="submitQuery({ fromDate: thisMonthFirst })"
+        :disabled="querying"
+        >
+          This month
+        </button>
+        <button
+        class="px-2 rounded-sm text-white text-xs bg-stone-400 dark:bg-stone-600 disabled:bg-stone-300 dark:disabled:text-stone-400"
+        @click="submitQuery({ fromDate: thisYearFirst })"
+        :disabled="querying"
+        >
+          This year
+        </button>
       </div>
     </section>
 
@@ -150,8 +166,6 @@
         :selected-record="selectedRecord"
         @close-form="closeRecordForm"
         />
-
-      <!-- Timeline Chart for Credits and Debits -->
     </transition>
 
     <transition name="fade" mode="out-in">
@@ -225,6 +239,7 @@ const fundFormIsOpen = ref(false);
 const queryPanelIsOpen = ref(false);
 const queryExecuted = ref(false);
 const tagsDataRef = ref({ type: 2, tagsData: [] });
+const querying = ref(false);
 
 const oneOrMoreRecords = computed(() => recordStore.records.length > 0);
 const oneOrMoreTags =  computed(() => Object.values(recordStore.tagsByRecordType).flat().length > 0);
@@ -239,6 +254,9 @@ const typeNames = {
   1: "Credit",
   2: "Debit"
 };
+
+const thisMonthFirst = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+const thisYearFirst = new Date(new Date().getFullYear(), 0, 1);
 
 const balance = computed(() => {
   const fundsBalance = funds.value.reduce((sum, { balance }) => sum + Number(balance), 0);
@@ -325,6 +343,18 @@ function loginToDemo() {
     .then(() => showToast('Welcome! Check around and manage the data freely.'))
     .then(() => recordStore.getRecords({}))
     .catch((message) => showToast(message));
+}
+
+function submitQuery(filters) {
+  querying.value = true;
+  recordStore.getRecords(filters)
+    .then((message) => {
+      showToast(message)
+      emit('confirm-query-execution')
+      emit('close-form')
+    })
+    .catch((message) => showAlert({ type: "error", text: message }))
+    .finally(() => querying.value = false)
 }
 
 </script>
