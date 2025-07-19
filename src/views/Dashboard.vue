@@ -341,7 +341,7 @@ function getFundName (id) {
 function loginToDemo() {
   authStore.login({ inDemoMode: true })
     .then(() => showToast('Welcome! Check around and manage the data freely.'))
-    .then(() => recordStore.getRecords({}))
+    .then(() => submitQuery({}))
     .catch((message) => showToast(message));
 }
 
